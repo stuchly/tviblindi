@@ -1,0 +1,3271 @@
+
+.//R/add_column_to_fcs.R,20
+aadd1column11,511
+
+.//R/build_boundary_C.R,25
+bbuild_boundaryC11,499
+
+.//R/clique_perc.R,49
+cclique_comunity1,0
+cclique_comunity_R16,436
+
+.//R/cluster_random_walk.R,36
+aapprox_path1,0
+ppath_dist7,190
+
+.//R/connect_2_points.R,21
+cconnect2points1,0
+
+.//R/debruijn_path.R,132
+kkmers1,0
+ppath_kmers11,333
+kkmers_identical22,591
+kkmers_identical231,959
+kkmers_identical338,1214
+bbuild_graph46,1484
+
+.//R/filt_vals.R,27
+ccreate_k_skeleton13,745
+
+.//R/firstleft_iter.R,49
+ffirstleft_iter1,0
+ffirstleft_iter_cpp16,318
+
+.//R/graph_assign.R,50
+aassign_label38,3130
+aassign_distance110,6550
+
+.//R/hompath.R,808
+mmake_circle_n1,0
+mmake_snowman16,750
+mmake_snowman3d21,937
+mmake_graph_XX26,1395
+mmake_graph_XX_sym35,1727
+ssample_walks45,2041
+pplot_walks59,2989
+sselect_unique_points77,3953
+hhash_cmplx86,4210
+kkeys100,4546
+cclear102,4588
+ppath_keys104,4634
+ffilter_values_f185,7080
+ffilter_values202,7620
+pplot_2cmplx241,8694
+pplot_1cmplx265,9277
+bbuild_boundary_R295,9996
+bbuild_boundary319,10832
+bbuild_boundary_reval347,11665
+rreduce_boundary_R379,12658
+ppath_sum_R428,13915
+ggraph_to_1simplices433,14044
+ssparseadj_to_1simplices442,14317
+iindex_path452,14625
+rreduce_boundary527,17085
+gget_rep546,17950
+gget_representation550,18029
+ppath_sum571,18495
+ssymdiff576,18557
+oonepath_triangulation613,19675
+ppath_triangulation653,21318
+ppers_diagram692,22845
+
+.//R/list_of_sets_union.R,24
+uunifyListsOfSets3,37
+
+.//R/normalize_percentil.R,21
+nnormalize.perc1,0
+
+.//R/path_tools.R,57
+sselect_paths_points11,366
+ppath_neighborhood40,1308
+
+.//R/paths.R,20
+ssample_adjact1,0
+
+.//R/plotting.R,147
+XXvalues1,0
+pplot_data_sets12,175
+ssort_dots516,261
+pplot_data26,515
+ccreate_windows168,5450
+ssort_dots3184,5731
+ssort_dots4192,5904
+
+.//R/pseudo.R,17
+..ps.difuse1,0
+
+.//R/random_walk.R,195
+rrandom_walk_adj_R1,0
+rrandom_walk_adj15,348
+rrandom_walk_adj_u19,447
+rrandom_walk_adj_N23,550
+rrandom_walk_adj_N_push27,655
+rrandom_walk_adj_N_push_std31,758
+rrandom_walk_N50,1827
+
+.//R/RcppExports.R,744
+ccomputeGCD4,127
+ccomputeLCM8,227
+bbicgSparse12,327
+bbuild_boundary_C16,470
+ccgSparse20,625
+cconnect_cliques24,780
+ccreateKNNgraph_cos28,896
+ccreateKNNgraph_eu32,1024
+ffiltration_values_C36,1150
+ffirstleft40,1276
+gget_rep_C44,1424
+gget_rep_lazy48,1544
+jjaccard_coeff52,1686
+pphatBoundary56,1790
+CC_random_walk_adj60,1934
+CC_random_walk_adj_N64,2081
+CC_random_walk_adj_N_push68,2243
+CC_random_walk_adj_N_push_std72,2390
+CC_random_walk76,2545
+CC_random_walk_adj_stf_N80,2674
+CC_random_walk_adj_u84,2884
+rrelative_filtration88,3035
+rremove_back92,3209
+rrips96,3329
+rrips_coo100,3500
+uunique_simplex_inds104,3679
+rreindex_cmplx108,3823
+llowerbound_rb112,3943
+ppath_1simplex_indices116,4109
+
+.//R/relative_filtration.R,26
+rrelativeFiltration3,23
+
+.//R/TDA_scan.R,19
+TTDA_scan21,1037
+
+.//R/triangulation_union.R,24
+uunifyFiltrations3,36
+
+.//R/tviblindi_core.R,441
+kknn.adj.construct54,2210
+kknn.adj.raw98,3931
+kknn.raw2jacc113,4300
+kknn.raw2adj138,5371
+kknn.spadj.construct144,5537
+kknn.spadj2sym186,7127
+kknn.adj2spadj193,7306
+kknn.adj2maxgraph198,7427
+kknn.adj2spadjsim225,8910
+ssparse.Laplacian.construct289,11329
+ssparse.Laplacian.construct.sym366,13843
+ssparse.diffuse407,16110
+kknn.diffuseX509,19893
+ssparse2triples539,21245
+rremove_back_R572,22632
+KKofRawN576,22736
+
+man/plot_walks.Rd,36
+\alias{plot_walks}plot_walks4,106
+
+man/create_k_skeleton.Rd,50
+\alias{create_k_skeleton}create_k_skeleton4,115
+
+man/knn.adj.raw.Rd,38
+\alias{knn.adj.raw}knn.adj.raw4,115
+
+man/random_walk.Rd,38
+\alias{random_walk}random_walk4,111
+
+man/remove_back_R.Rd,42
+\alias{remove_back_R}remove_back_R4,117
+
+man/path_triangulation.Rd,52
+\alias{path_triangulation}path_triangulation4,114
+
+man/make_snowman.Rd,40
+\alias{make_snowman}make_snowman4,108
+
+man/pers_diagram.Rd,40
+\alias{pers_diagram}pers_diagram4,108
+
+man/tviblindi-package.Rd,86
+\alias{tviblindi-package}tviblindi-package2,26
+\alias{tviblindi}tviblindi3,53
+
+man/reduce_boundary.Rd,46
+\alias{reduce_boundary}reduce_boundary4,111
+
+man/add1column.Rd,36
+\alias{add1column}add1column4,116
+
+man/get_rep.Rd,30
+\alias{get_rep}get_rep4,103
+
+man/build_boundaryC.Rd,46
+\alias{build_boundaryC}build_boundaryC4,120
+
+man/knn.raw2adj.Rd,38
+\alias{knn.raw2adj}knn.raw2adj4,115
+
+man/sparse.diffuse.Rd,44
+\alias{sparse.diffuse}sparse.diffuse4,118
+
+man/sparse.Laplacian.construct.Rd,68
+\alias{sparse.Laplacian.construct}sparse.Laplacian.construct4,130
+
+man/rcppeigen_hello_world.Rd,235
+\alias{rcppeigen_hello_world}rcppeigen_hello_world2,27
+\alias{rcppeigen_innerproduct}rcppeigen_innerproduct3,57
+\alias{rcppeigen_outerproduct}rcppeigen_outerproduct4,88
+\alias{rcppeigen_bothproducts}rcppeigen_bothproducts5,119
+
+man/assign_distance.Rd,46
+\alias{assign_distance}assign_distance4,116
+
+man/knn.diffuseX.Rd,40
+\alias{knn.diffuseX}knn.diffuseX4,116
+
+man/select_unique_points.Rd,56
+\alias{select_unique_points}select_unique_points4,116
+
+man/assign_label.Rd,40
+\alias{assign_label}assign_label4,113
+
+man/knn.adj.construct.Rd,50
+\alias{knn.adj.construct}knn.adj.construct4,121
+
+man/knn.adj2spadjsim.Rd,48
+\alias{knn.adj2spadjsim}knn.adj2spadjsim4,120
+
+man/sparse2triples.Rd,44
+\alias{sparse2triples}sparse2triples4,118
+
+man/knn.spadj2sym.Rd,42
+\alias{knn.spadj2sym}knn.spadj2sym4,117
+
+man/select_paths_points.Rd,54
+\alias{select_paths_points}select_paths_points4,118
+
+src/phat/boundary_matrix.h,163
+        bool operator==(operator==132,5544
+        bool operator!=(operator!=150,6334
+        boundary_matrix< Representation >& operator=(operator=155,6558
+
+src/phat/representations/heap_pivot_column.h,464
+    class heap_column 25,926
+        std::priority_queue< index > data;28,969
+        void add_index(30,1015
+        void init(35,1117
+        void add_col(39,1199
+        index get_max_index(44,1366
+        void get_col_and_clear(65,2005
+        bool is_empty(82,2578
+		void clear(86,2661
+		void remove_max(91,2742
+        void set_col(95,2821
+        void get_col(100,2931
+    typedef abstract_pivot_column< heap_column > heap_pivot_column;106,3060
+
+src/phat/representations/sparse_pivot_column.h,457
+    class sparse_column 25,926
+        std::set< index > data;28,971
+        void add_index(30,1006
+        void init(37,1253
+        void add_col(41,1341
+        index get_max_index(46,1508
+        void get_col_and_clear(50,1610
+        bool is_empty(55,1752
+		void clear(59,1826
+		void remove_max(63,1869
+        void set_col(67,1948
+        void get_col(72,2058
+    typedef abstract_pivot_column< sparse_column > sparse_pivot_column;78,2187
+
+src/phat/representations/vector_set.h,524
+    class vector_set 24,846
+        std::vector< dimension > dims;27,885
+        std::vector< std::set< index > > matrix;28,924
+        index _get_num_cols(32,1040
+        void _set_num_cols(35,1130
+        dimension _get_dim(41,1316
+        void _set_dim(44,1408
+        void _get_col(49,1573
+        void _set_col(54,1802
+        bool _is_empty(60,2016
+        index _get_max_index(65,2193
+        void _remove_max(70,2376
+        void _clear(77,2589
+        void _sync(82,2746
+        void _add_to(85,2822
+
+src/phat/representations/abstract_pivot_column.h,718
+    class abstract_pivot_column 30,1158
+        typedef vector_vector Base;33,1242
+        typedef PivotColumn pivot_col;34,1279
+        mutable thread_local_storage< pivot_col > pivot_cols;37,1399
+        mutable thread_local_storage< index > idx_of_pivot_cols;38,1462
+        pivot_col& get_pivot_col(40,1530
+        bool is_pivot_col(44,1621
+        void release_pivot_col(48,1736
+        void make_pivot_col(57,2042
+        void _set_num_cols(65,2245
+        void _add_to(74,2582
+        void _sync(80,2791
+        void _get_col(86,2974
+        bool _is_empty(88,3127
+        index _get_max_index(90,3258
+        void _clear(92,3405
+        void _set_col(94,3514
+        void _remove_max(96,3659
+
+src/phat/representations/vector_list.h,526
+    class vector_list 24,839
+        std::vector< dimension > dims;27,882
+        std::vector< std::list< index > > matrix;28,922
+        index _get_num_cols(32,1043
+        void _set_num_cols(35,1136
+        dimension _get_dim(41,1328
+        void _set_dim(44,1423
+        void _get_col(49,1593
+        void _set_col(55,1829
+        bool _is_empty(62,2110
+        index _get_max_index(67,2292
+        void _remove_max(72,2480
+        void _clear(79,2701
+        void _sync(84,2863
+        void _add_to(87,2942
+
+src/phat/representations/bit_tree_pivot_column.h,737
+    class bit_tree_column31,1248
+        size_t offset;35,1300
+        typedef uint64_t block_type;36,1375
+        std::vector< block_type > data;37,1413
+        size_t debrujin_magic_table[debrujin_magic_table40,1466
+        enum { block_size_in_bits 42,1512
+        enum { block_shift 43,1555
+        size_t rightmost_pos(50,2006
+        void init(56,2236
+        index get_max_index(83,3409
+        bool is_empty(99,3871
+        void add_index(103,3953
+        void get_col_and_clear(125,4953
+        void add_col(136,5282
+		void clear(141,5428
+		void remove_max(149,5633
+        void set_col(153,5712
+        void get_col(158,5821
+    typedef abstract_pivot_column<bit_tree_column> bit_tree_pivot_column;164,5949
+
+src/phat/representations/vector_vector.h,582
+    class vector_vector 24,869
+        std::vector< dimension > dims;27,914
+        std::vector< column > matrix;28,954
+        thread_local_storage< column > temp_column_buffer;30,995
+        index _get_num_cols(34,1125
+        void _set_num_cols(37,1218
+        dimension _get_dim(43,1409
+        void _set_dim(46,1504
+        void _get_col(51,1674
+        void _set_col(54,1779
+        bool _is_empty(59,1938
+        index _get_max_index(64,2118
+        void _remove_max(69,2305
+        void _clear(74,2430
+        void _sync(79,2589
+        void _add_to(82,2668
+
+src/phat/representations/full_pivot_column.h,567
+    class full_column 25,926
+        std::priority_queue< index > history;28,969
+        std::vector< char > is_in_history;29,1016
+        std::vector< char > col_bit_field;30,1060
+        void init(33,1119
+        void add_col(38,1291
+        void add_index(44,1475
+        index get_max_index(53,1737
+        void get_col_and_clear(67,2146
+        bool is_empty(75,2410
+		void clear(79,2498
+		void remove_max(84,2583
+        void set_col(88,2662
+        void get_col(93,2772
+    typedef abstract_pivot_column< full_column > full_pivot_column;99,2901
+
+src/phat/algorithms/twist_reduction.h,64
+    class twist_reduction 25,904
+        void operator 28,991
+
+src/phat/algorithms/spectral_sequence_reduction.h,76
+    class spectral_sequence_reduction 25,874
+        void operator 28,973
+
+src/phat/algorithms/row_reduction.h,62
+    class row_reduction 25,904
+        void operator(28,989
+
+src/phat/algorithms/chunk_reduction.h,417
+    class chunk_reduction 25,904
+        enum column_type 27,946
+        enum column_type { GLOBAL27,946
+                         , LOCAL_POSITIVE28,981
+                         , LOCAL_NEGATIVE 29,1024
+        void operator(33,1130
+        void _get_chunks(103,4982
+        void _local_chunk_reduction(132,6442
+        void _get_active_columns(158,8046
+        void _global_column_simplification(210,10841
+
+src/phat/algorithms/standard_reduction.h,67
+    class standard_reduction 25,904
+        void operator(28,994
+
+src/phat/persistence_pairs.h,609
+    class persistence_pairs 24,869
+        std::vector<std::vector27,918
+        std::vector< std::pair< index, index > > pairs;27,918
+        index get_num_pairs(30,990
+        void append_pair(34,1084
+        std::pair<std::pair38,1217
+        std::pair< index, index > get_pair(38,1217
+        void set_pair(42,1329
+        void clear(46,1475
+        void sort(50,1540
+        bool load_ascii(56,1801
+        bool save_ascii(78,2610
+        bool load_binary(95,3280
+        bool save_binary(116,4171
+        bool operator==(operator==135,4967
+        bool operator!=(operator!=148,5411
+
+src/phat/helpers/thread_local_storage.h,240
+#define PHAT_TLS_SPACING_FACTOR 24,913
+class thread_local_storage28,1058
+    thread_local_storage(32,1100
+    T& operator()(operator()34,1206
+    const T& operator()(operator()38,1324
+    std::vector< T > per_thread_storage;51,1698
+
+src/phat/helpers/misc.h,646
+    typedef __int8 int8_t;41,1245
+    typedef unsigned __int8 uint8_t;42,1273
+    typedef __int16 int16_t;43,1311
+    typedef unsigned __int16 uint16_t;44,1341
+    typedef __int32 int32_t;45,1381
+    typedef unsigned __int32 uint32_t;46,1411
+    typedef __int64 int64_t;47,1451
+    typedef unsigned __int64 uint64_t;48,1481
+    typedef int64_t index;55,1664
+    typedef int8_t dimension;56,1692
+    typedef std::vector< index > column;57,1723
+    #define omp_get_thread_num(64,1849
+    #define omp_get_max_threads(65,1885
+    #define omp_get_num_threads(66,1922
+	void omp_set_num_threads(67,1959
+    #define omp_get_wtime(69,2020
+
+src/gudhi/Persistence_intervals.h,2308
+#define PERSISTENCE_INTERVALS_H_24,968
+class Persistence_intervals 47,1468
+  Persistence_intervals(57,2051
+  Persistence_intervals(64,2415
+  std::pair<std::pair69,2587
+  std::pair<double, double> get_x_range(69,2587
+  std::pair<std::pair82,3083
+  std::pair<double, double> get_y_range(82,3083
+  std::vector<std::vector102,4040
+  std::vector<std::vector141,6294
+  friend std::ostream& operator<<(154,6931
+  void plot(164,7277
+  size_t size(205,9486
+  inline std::pair<std::pair211,9686
+  size_t number_of_projections_to_R(230,10653
+  std::vector<double> vectorize(236,10923
+  size_t number_of_vectorize_functions(243,11241
+  std::vector<std::vector248,11478
+  std::vector<std::pair<double, double> > output_for_visualization(248,11478
+  void set_up_numbers_of_functions_for_vectorization_and_projections_to_reals(251,11588
+  std::vector<std::vector257,11897
+  std::vector<std::pair<double, double> > intervals;257,11897
+  size_t number_of_functions_for_vectorization;258,11950
+  size_t number_of_functions_for_projections_to_reals;259,11998
+Persistence_intervals::Persistence_intervals(Persistence_intervals262,12057
+Persistence_intervals::Persistence_intervals(271,12516
+std::vector<double> Persistence_intervals::length_of_dominant_intervals(length_of_dominant_intervals276,12735
+bool compare(287,13198
+std::vector<std::pair<double, double> > Persistence_intervals::dominant_intervals(dominant_intervals291,13336
+std::vector<size_t> Persistence_intervals::histogram_of_lengths(histogram_of_lengths313,14304
+std::vector<size_t> Persistence_intervals::cumulative_histogram_of_lengths(cumulative_histogram_of_lengths357,16036
+std::vector<double> Persistence_intervals::characteristic_function_of_diagram(characteristic_function_of_diagram369,16408
+std::vector<double> Persistence_intervals::cumulative_characteristic_function_of_diagram(cumulative_characteristic_function_of_diagram419,18244
+bool compare_first_element_of_pair(432,18850
+std::vector<std::pair<double, size_t> > Persistence_intervals::compute_persistent_betti_numbers(compute_persistent_betti_numbers436,18978
+inline double compute_euclidean_distance(458,19884
+std::vector<double> Persistence_intervals::k_n_n(k_n_n462,20108
+double Persistence_intervals::project_to_R(project_to_R556,23816
+
+src/gudhi/Euclidean_witness_complex.h,1343
+#define EUCLIDEAN_WITNESS_COMPLEX_H_24,977
+class Euclidean_witness_complex49,1620
+  typedef Kernel_                                                                      K;53,1858
+  typedef typename K::Point_d                                                          Point_d;54,1948
+  typedef std::vector<Point_d>                                                         Point_range;55,2044
+  typedef Gudhi::spatial_searching::Kd_tree_search<Kernel_,Kernel_56,2144
+  typedef Gudhi::spatial_searching::Kd_tree_search<Kernel_, Point_range>               Kd_tree;56,2144
+  typedef typename Kd_tree::INS_range                                                  Nearest_landmark_range;57,2240
+  typedef typename std::vector<Nearest_landmark_range>                                 Nearest_landmark_table;58,2351
+  typedef typename Nearest_landmark_range::Point_with_transformed_distance Id_distance_pair;60,2463
+  typedef typename Id_distance_pair::first_type Landmark_id;61,2556
+  typedef Landmark_id Vertex_handle;62,2617
+  Point_range                         landmarks_;65,2665
+  Kd_tree                             landmark_tree_;66,2715
+  using Witness_complex<Nearest_landmark_table>::nearest_landmark_table_;nearest_landmark_table_67,2769
+ public:public69,2844
+  Euclidean_witness_complex(84,3395
+  Point_d get_point(95,3928
+
+src/gudhi/Active_witness/Active_witness.h,813
+#define ACTIVE_WITNESS_ACTIVE_WITNESS_H_24,981
+class Active_witness 39,1422
+  typedef Active_witness<Id_distance_pair,Id_distance_pair41,1454
+  typedef Active_witness<Id_distance_pair, INS_range> ActiveWitness;41,1454
+  typedef typename INS_range::iterator INS_iterator;42,1523
+  typedef Active_witness_iterator< ActiveWitness,43,1576
+  typedef Active_witness_iterator< ActiveWitness, Id_distance_pair,43,1576
+  typedef Active_witness_iterator< ActiveWitness, Id_distance_pair, INS_iterator > iterator;43,1576
+  typedef typename std::list<Id_distance_pair> Table;44,1669
+  Table nearest_landmark_table_;46,1724
+  INS_range    search_range_;47,1757
+  INS_iterator iterator_next_;48,1787
+  INS_iterator iterator_end_;49,1818
+  Active_witness(51,1849
+  iterator begin(55,2013
+  iterator end(59,2099
+
+src/gudhi/Active_witness/Active_witness_iterator.h,645
+#define ACTIVE_WITNESS_ACTIVE_WITNESS_ITERATOR_H_24,990
+class Active_witness_iterator42,1614
+  typedef typename std::list<Id_distance_pair>::iterator Pair_iterator;49,1983
+  typedef typename Gudhi::witness_complex::Active_witness_iterator<Gudhi::witness_complex::Active_witness_iterator50,2055
+                                                                   INS_iterator> Iterator;52,2223
+  Active_witness *aw_;aw_54,2315
+  Pair_iterator lh_;55,2338
+  bool is_end_;56,2379
+  Active_witness_iterator(59,2480
+  Active_witness_iterator(63,2603
+  Id_distance_pair& dereference(78,3052
+  bool equal(82,3116
+  void increment(86,3226
+
+src/gudhi/Unitary_tests_utils.h,84
+#define UNITARY_TESTS_UTILS_H_23,967
+void GUDHI_TEST_FLOAT_EQUALITY_CHECK(31,1138
+
+src/gudhi/Simplex_tree/Simplex_tree_node_explicit_storage.h,457
+#define SIMPLEX_TREE_SIMPLEX_TREE_NODE_EXPLICIT_STORAGE_H_24,994
+struct Simplex_tree_node_explicit_storage 42,1359
+  typedef typename SimplexTree::Siblings Siblings;43,1473
+  typedef typename SimplexTree::Filtration_value Filtration_value;44,1524
+  typedef typename SimplexTree::Simplex_key Simplex_key;45,1591
+  Simplex_tree_node_explicit_storage(47,1649
+  void assign_children(56,1897
+  Siblings * children(61,2014
+  Siblings * children_;66,2077
+
+src/gudhi/Simplex_tree/Simplex_tree_siblings.h,811
+#define SIMPLEX_TREE_SIMPLEX_TREE_SIBLINGS_H_24,981
+class Simplex_tree_siblings 43,1456
+  typedef typename SimplexTree::Vertex_handle Vertex_handle;52,1821
+  typedef typename SimplexTree::Filtration_value Filtration_value;53,1882
+  typedef typename SimplexTree::Node Node;54,1949
+  typedef MapContainer Dictionary;55,1992
+  typedef typename MapContainer::iterator Dictionary_it;56,2027
+  Simplex_tree_siblings(59,2113
+  Simplex_tree_siblings(66,2244
+  Simplex_tree_siblings(76,2549
+  void insert(93,3137
+  Dictionary_it find(99,3402
+  Simplex_tree_siblings * oncles(103,3476
+  Vertex_handle parent(107,3538
+  Dictionary & members(111,3596
+  size_t size(115,3649
+  void erase(119,3706
+  Simplex_tree_siblings * oncles_;123,3786
+  Vertex_handle parent_;124,3821
+  Dictionary members_;125,3846
+
+src/gudhi/Simplex_tree/Simplex_tree_iterators.h,2518
+#define SIMPLEX_TREE_SIMPLEX_TREE_ITERATORS_H_24,982
+class Simplex_tree_simplex_vertex_iterator 48,1516
+  typedef typename SimplexTree::Simplex_handle Simplex_handle;53,1782
+  typedef typename SimplexTree::Siblings Siblings;54,1845
+  typedef typename SimplexTree::Vertex_handle Vertex_handle;55,1896
+  explicit Simplex_tree_simplex_vertex_iterator(57,1958
+  Simplex_tree_simplex_vertex_iterator(63,2115
+  bool equal(71,2312
+  Vertex_handle const& dereference(75,2438
+  void increment(79,2503
+  Siblings * sib_;84,2581
+  Vertex_handle v_;85,2600
+class Simplex_tree_boundary_simplex_iterator 94,2873
+  typedef typename SimplexTree::Simplex_handle Simplex_handle;98,3097
+  typedef typename SimplexTree::Vertex_handle Vertex_handle;99,3160
+  typedef typename SimplexTree::Siblings Siblings;100,3221
+  explicit Simplex_tree_boundary_simplex_iterator(103,3295
+  Simplex_tree_boundary_simplex_iterator(112,3543
+  bool equal(136,4447
+  Simplex_handle const& dereference(140,4555
+  void increment(145,4662
+  Vertex_handle last_;179,5731
+  Vertex_handle next_;180,5785
+  boost::container::static_vector<boost::container::static_vector184,6002
+  boost::container::static_vector<Vertex_handle, 40> suffix_;184,6002
+  std::vector<Vertex_handle> suffix_;188,6224
+  Siblings * sib_;190,6269
+  Simplex_handle sh_;191,6330
+  SimplexTree * st_;192,6395
+class Simplex_tree_complex_simplex_iterator 199,6705
+  typedef typename SimplexTree::Simplex_handle Simplex_handle;203,6927
+  typedef typename SimplexTree::Siblings Siblings;204,6990
+  typedef typename SimplexTree::Vertex_handle Vertex_handle;205,7041
+  Simplex_tree_complex_simplex_iterator(208,7125
+  explicit Simplex_tree_complex_simplex_iterator(213,7218
+  bool equal(231,7749
+  Simplex_handle const& dereference(241,8001
+  void increment(246,8094
+  Simplex_handle sh_;263,8501
+  Siblings * sib_;264,8523
+  SimplexTree * st_;265,8542
+class Simplex_tree_skeleton_simplex_iterator 273,8769
+  typedef typename SimplexTree::Simplex_handle Simplex_handle;277,8993
+  typedef typename SimplexTree::Siblings Siblings;278,9056
+  typedef typename SimplexTree::Vertex_handle Vertex_handle;279,9107
+  Simplex_tree_skeleton_simplex_iterator(282,9191
+  Simplex_tree_skeleton_simplex_iterator(289,9329
+  bool equal(310,9963
+  Simplex_handle const& dereference(320,10216
+  void increment(325,10325
+  Simplex_handle sh_;344,10795
+  Siblings * sib_;345,10817
+  SimplexTree * st_;346,10836
+  int dim_skel_;347,10857
+  int curr_dim_;348,10874
+
+src/gudhi/Simplex_tree/indexing_tag.h,80
+#define SIMPLEX_TREE_INDEXING_TAG_H_24,972
+struct linear_indexing_tag 32,1115
+
+src/gudhi/Kd_tree_search.h,2018
+#define KD_TREE_SEARCH_H_24,960
+class Kd_tree_search 69,3085
+    typename Point_range::const_iterator,71,3148
+    CGAL::Identity_property_map<std::ptrdiff_t> >           Point_property_map;72,3190
+  typedef Search_traits                                     Traits;76,3298
+  typedef typename Traits::FT                               FT;78,3404
+  typedef typename Point_range::value_type                  Point;80,3490
+    FT,83,3589
+    FT, Point,83,3589
+    typename Traits::Cartesian_const_iterator_d,84,3604
+    typename Traits::Construct_cartesian_const_iterator_d>  Traits_base;85,3653
+    std::ptrdiff_t,88,3766
+    Point_property_map,89,3786
+    Traits_base>                                            STraits;90,3810
+    std::ptrdiff_t,92,3913
+    Point_property_map,93,3933
+    CGAL::Euclidean_distance<Traits_base> >                 Orthogonal_distance;94,3957
+  typedef CGAL::Orthogonal_k_neighbor_search<STraits>       K_neighbor_search;96,4039
+  typedef typename K_neighbor_search::Tree                  Tree;97,4118
+  typedef typename K_neighbor_search::Distance              Distance;98,4184
+  typedef K_neighbor_search                                 KNS_range;102,4499
+    STraits,105,4627
+    STraits, Distance,105,4627
+    STraits, Distance, CGAL::Sliding_midpoint<CGAL::Sliding_midpoint105,4627
+                                                   Incremental_neighbor_search;106,4689
+  typedef Incremental_neighbor_search                       INS_range;110,5023
+  typedef CGAL::Fuzzy_sphere<STraits>                       Fuzzy_sphere;112,5095
+  Kd_tree_search(116,5340
+  Kd_tree_search(132,6073
+  Kd_tree_search(149,6771
+  void insert(164,7302
+  KNS_range k_nearest_neighbors(174,7779
+  INS_range incremental_nearest_neighbors(200,8673
+  KNS_range k_furthest_neighbors(220,9486
+  INS_range incremental_furthest_neighbors(246,10383
+  void all_near_neighbors(267,11174
+  int tree_depth(274,11402
+  Point_range const& m_points;279,11479
+  Tree m_tree;280,11510
+
+src/gudhi/Skeleton_blocker_link_complex.h,1178
+#define SKELETON_BLOCKER_LINK_COMPLEX_H_24,975
+class Skeleton_blocker_link_complex 42,1474
+  typedef typename ComplexType::Edge_handle Edge_handle;45,1632
+  typedef typename ComplexType::boost_vertex_handle boost_vertex_handle;47,1690
+  bool only_superior_vertices_;50,1774
+  typedef typename ComplexType::Vertex_handle Vertex_handle;53,1816
+  typedef typename ComplexType::Root_vertex_handle Root_vertex_handle;54,1877
+  typedef typename ComplexType::Simplex Simplex;56,1949
+  typedef typename ComplexType::Root_simplex_handle Root_simplex_handle;57,1998
+  typedef typename ComplexType::Blocker_handle Blocker_handle;59,2072
+  typedef typename ComplexType::Root_simplex_handle::Simplex_vertex_const_iterator Root_simplex_handle_iterator;61,2136
+  explicit Skeleton_blocker_link_complex(63,2250
+  Skeleton_blocker_link_complex(71,2573
+  Skeleton_blocker_link_complex(84,3140
+  Skeleton_blocker_link_complex(96,3623
+  void compute_link_vertices(111,4251
+  void compute_link_vertices(149,6151
+  void compute_link_edges(165,7002
+  boost::optional<Vertex_handle> give_equivalent_vertex(204,8785
+  void compute_link_blockers(215,9260
+  void build_link(266,11416
+
+src/gudhi/Persistence_vectors.h,2834
+#define PERSISTENCE_VECTORS_H_24,964
+struct Maximum_distance 44,1388
+  double operator(45,1414
+class Vector_distances_in_diagram 66,2368
+  Vector_distances_in_diagram(71,2454
+  friend std::ostream& operator<<(90,3199
+  inline double vector_in_position(100,3553
+  inline size_t size(109,3880
+  void print_to_file(119,4113
+  bool operator==(operator==129,4336
+  bool operator!=(operator!=137,4730
+  size_t number_of_projections_to_R(152,5451
+  size_t number_of_vectorize_functions(162,5927
+  std::vector<double> output_for_visualization(185,6918
+  void plot(190,7094
+  std::pair<std::pair211,7924
+  std::pair<double, double> get_x_range(211,7924
+  std::pair<std::pair216,8100
+  std::pair<double, double> get_y_range(216,8100
+  Vector_distances_in_diagram multiply_by_scalar(253,10218
+  friend Vector_distances_in_diagram operator+(265,10744
+  friend Vector_distances_in_diagram operator-(272,11108
+  friend Vector_distances_in_diagram operator*(279,11485
+  friend Vector_distances_in_diagram operator*(285,11746
+  Vector_distances_in_diagram operator*(291,12007
+  Vector_distances_in_diagram operator+=(operator+=295,12169
+  Vector_distances_in_diagram operator-=(operator-=302,12369
+  Vector_distances_in_diagram operator*=(operator*=309,12569
+  Vector_distances_in_diagram operator/=(operator/=316,12737
+  std::vector<std::vector323,12929
+  std::vector<std::pair<double, double> > intervals;323,12929
+  std::vector<double> sorted_vector_of_distances;324,12982
+  size_t number_of_functions_for_vectorization;325,13032
+  size_t number_of_functions_for_projections_to_reals;326,13080
+  size_t where_to_cut;327,13135
+  Vector_distances_in_diagram(332,13316
+  void set_up_numbers_of_functions_for_vectorization_and_projections_to_reals(337,13557
+Vector_distances_in_diagram<F>::Vector_distances_in_diagram(Vector_distances_in_diagram345,13946
+Vector_distances_in_diagram<F>::Vector_distances_in_diagram(Vector_distances_in_diagram356,14519
+void Vector_distances_in_diagram<F>::compute_sorted_vector_of_distances_via_heap(compute_sorted_vector_of_distances_via_heap372,15318
+void Vector_distances_in_diagram<F>::compute_sorted_vector_of_distances_via_vector_sorting(compute_sorted_vector_of_distances_via_vector_sorting457,18557
+double Vector_distances_in_diagram<F>::project_to_R(project_to_R488,20291
+void Vector_distances_in_diagram<F>::compute_average(compute_average502,20858
+double Vector_distances_in_diagram<F>::distance(distance530,21823
+std::vector<double> Vector_distances_in_diagram<F>::vectorize(vectorize586,24396
+void Vector_distances_in_diagram<F>::write_to_file(write_to_file599,25103
+void Vector_distances_in_diagram<F>::load_from_file(load_from_file611,25402
+double Vector_distances_in_diagram<F>::compute_scalar_product(compute_scalar_product628,25905
+
+src/gudhi/Point.h,632
+#define POINT_H_25,957
+class Point_d 33,1077
+  Point_d(35,1102
+  Point_d(37,1151
+  Point_d(39,1213
+  Point_d(42,1317
+  size_t dimension(44,1384
+  double x(48,1445
+  double y(52,1494
+  double z(56,1543
+  double& x(60,1592
+  double& y(64,1636
+  double& z(68,1680
+  std::vector<double>::const_iterator begin(72,1724
+  std::vector<double>::const_iterator end(76,1811
+  double squared_norm(88,2032
+  double operator*(106,2436
+  Point_d cross_product(117,2707
+  Point_d operator+(126,3032
+  Point_d operator*(134,3267
+  Point_d operator/(141,3447
+  Point_d operator-(148,3627
+  std::vector<double> coords_;167,4211
+
+src/gudhi/writing_persistence_to_file.h,549
+#define WRITING_PERSISTENCE_TO_FILE_H_24,990
+class Persistence_interval_common 38,1381
+  Persistence_interval_common(43,1503
+  Persistence_interval_common(52,1845
+  Persistence_interval_common(59,2212
+  bool operator==(operator==67,2641
+  bool operator!=(operator!=75,2945
+  bool operator<(82,3291
+  friend std::ostream& operator<<(86,3436
+  Filtration_type birth_;98,3840
+  Filtration_type death_;99,3866
+  unsigned dimension_;100,3892
+  Coefficient_field arith_element_;101,3915
+void write_persistence_intervals_to_stream(108,4083
+
+src/gudhi/Bitmap_cubical_complex/counter.h,432
+#define BITMAP_CUBICAL_COMPLEX_COUNTER_H_24,975
+class counter 44,1725
+  counter(50,1967
+  counter(56,2250
+  bool increment(66,2799
+  bool isFinal(83,3186
+  std::vector< unsigned > find_opposite(95,3628
+  std::vector< bool > directions_of_finals(110,4174
+  friend std::ostream& operator<<(125,4538
+  std::vector< unsigned > begin;134,4811
+  std::vector< unsigned > end;135,4844
+  std::vector< unsigned > current;136,4875
+
+src/gudhi/graph_simplicial_complex.h,438
+#define GRAPH_SIMPLICIAL_COMPLEX_H_24,973
+struct edge_filtration_t 36,1214
+  typedef boost::edge_property_tag kind;37,1241
+struct vertex_filtration_t 41,1328
+  typedef boost::vertex_property_tag kind;42,1357
+using Proximity_graph 52,1727
+template< typename SimplicialComplexForProximityGraph66,2536
+          , typename ForwardPointRange67,2590
+Proximity_graph<SimplicialComplexForProximityGraph> compute_proximity_graph(69,2661
+
+src/gudhi/console_color.h,255
+#define CONSOLE_COLOR_H_24,959
+inline std::ostream& blue(32,1054
+inline std::ostream& red(43,1340
+inline std::ostream& green(53,1579
+inline std::ostream& yellow(63,1822
+inline std::ostream& white(74,2109
+inline std::ostream& black_on_white(85,2390
+
+src/gudhi/Points_3D_off_io.h,545
+#define POINTS_3D_OFF_IO_H_23,964
+class Points_3D_off_visitor_reader 38,1258
+  std::vector<Point_3> point_cloud_;40,1305
+  bool valid_;41,1342
+  void init(54,1816
+  void point(86,3067
+  void maximal_face(102,3541
+  void done(106,3664
+  const std::vector<Point_3>& get_point_cloud(112,3757
+  bool is_valid(120,3964
+class Points_3D_off_reader 152,4862
+  Points_3D_off_reader(161,5157
+  bool is_valid(181,5820
+  const std::vector<Point_3>& get_point_cloud(189,5940
+  std::vector<Point_3> point_cloud;195,6063
+  bool valid_;197,6136
+
+src/gudhi/Neighbors_finder.h,1687
+#define NEIGHBORS_FINDER_H_24,959
+struct Square_query 43,1428
+  typedef CGAL::Dimension_tag<2> D;44,1450
+  typedef Internal_point Point_d;45,1486
+  typedef double FT;46,1520
+  bool contains(47,1541
+  bool inner_range_intersects(50,1655
+  bool outer_range_contains(57,1906
+  Point_d c;64,2155
+  FT size;65,2168
+class Neighbors_finder 76,2504
+  typedef CGAL::Dimension_tag<2> D;77,2529
+  typedef CGAL::Search_traits<double,double78,2565
+  typedef CGAL::Search_traits<double, Internal_point,78,2565
+  typedef CGAL::Search_traits<double, Internal_point, const double*double78,2565
+  typedef CGAL::Search_traits<double, Internal_point, const double*, Construct_coord_iterator,78,2565
+  typedef CGAL::Search_traits<double, Internal_point, const double*, Construct_coord_iterator, D> Traits;78,2565
+  typedef CGAL::Kd_tree<Traits> Kd_tree;79,2671
+  const Persistence_graph& g;93,3314
+  const double r;94,3344
+  Kd_tree kd_t;95,3362
+  std::unordered_set<int> projections_f;96,3378
+class Layered_neighbors_finder 107,3787
+  const Persistence_graph& g;120,4384
+  const double r;121,4414
+  std::vector<std::unique_ptr<Neighbors_finder>> neighbors_finder;122,4432
+inline Neighbors_finder::Neighbors_finder(125,4503
+inline void Neighbors_finder::add(add128,4630
+inline int Neighbors_finder::pull_near(pull_near135,4826
+inline std::vector<int> Neighbors_finder::pull_all_near(pull_all_near160,5763
+inline Layered_neighbors_finder::Layered_neighbors_finder(170,6063
+inline void Layered_neighbors_finder::add(add173,6201
+inline int Layered_neighbors_finder::pull_near(pull_near179,6486
+inline int Layered_neighbors_finder::vlayers_number(vlayers_number185,6724
+
+src/gudhi/Alpha_complex.h,1344
+#define ALPHA_COMPLEX_H_24,962
+                              CGAL::Triangulation_full_cell<Kernel> > TDS;81,3059
+  typedef CGAL::Delaunay_triangulation<Kernel, TDS> Delaunay_triangulation;83,3217
+  typedef typename Kernel::Point_d 86,3337
+  typedef Kernel Geom_traits;89,3508
+  typedef typename Kernel::Compute_squared_radius_d 92,3549
+  typedef typename Kernel::Side_of_bounded_sphere_d 93,3617
+  typedef typename Kernel::Point_dimension_d 94,3681
+  typedef typename std::vector<std::vector97,3846
+  typedef typename Delaunay_triangulation::Vertex_iterator 100,3947
+  typedef typename Delaunay_triangulation::size_type 103,4060
+  typedef typename std::map<std::map106,4206
+                                           CGAL::Identity_property_map<std::ptrdiff_t>> Point_property_map;203,7916
+      typedef CGAL::Spatial_sort_traits_adapter_d<Kernel, Point_property_map> Search_traits_d;204,8024
+    typedef typename SimplicialComplexForAlpha::Filtration_value 233,9440
+    typedef typename SimplicialComplexForAlpha::Vertex_handle 255,10613
+    typedef typename SimplicialComplexForAlpha::Simplex_handle 256,10690
+    typedef std::vector<Vertex_handle> Vector_vertex;257,10769
+    typedef typename SimplicialComplexForAlpha::Filtration_value 355,15372
+    typedef typename SimplicialComplexForAlpha::Vertex_handle 357,15475
+
+src/gudhi/Simple_object_pool.h,543
+#define SIMPLE_OBJECT_POOL_H_24,962
+class Simple_object_pool 38,1313
+  typedef boost::pool<boost::default_user_allocator_malloc_free> Base;40,1419
+  typedef T* pointer;41,1490
+  Base& base(43,1513
+  Base const& base(47,1553
+  typedef T element_type;52,1613
+  typedef boost::default_user_allocator_malloc_free user_allocator;53,1639
+  typedef typename Base::size_type size_type;54,1707
+  typedef typename Base::difference_type difference_type;55,1753
+  Simple_object_pool(58,1834
+  pointer construct(61,1933
+  void destroy(73,2231
+
+src/gudhi/Witness_complex.h,1208
+#define WITNESS_COMPLEX_H_24,967
+class Witness_complex 50,1808
+  typedef typename Nearest_landmark_table_::value_type               Nearest_landmark_range;52,1842
+  typedef std::size_t                                                Witness_id;53,1935
+  typedef std::size_t                                                Landmark_id;54,2016
+  typedef std::pair<Landmark_id,Landmark_id55,2098
+  typedef std::pair<Landmark_id, double>                             Id_distance_pair;55,2098
+  typedef Active_witness<Id_distance_pair,Id_distance_pair56,2185
+  typedef Active_witness<Id_distance_pair, Nearest_landmark_range>   ActiveWitness;56,2185
+  typedef std::list< ActiveWitness >                                 ActiveWitnessList;57,2269
+  typedef std::vector< Landmark_id >                                 typeVectorVertex;58,2357
+  typedef std::vector<Nearest_landmark_range>                        Nearest_landmark_table_internal;59,2444
+  typedef Landmark_id Vertex_handle;60,2546
+  Nearest_landmark_table_internal              nearest_landmark_table_;63,2596
+  Witness_complex(72,2836
+  Witness_complex(84,3383
+  bool create_complex(98,4203
+  bool add_all_faces_of_dimension(145,6253
+
+src/gudhi/Skeleton_blocker_complex.h,9881
+#define SKELETON_BLOCKER_COMPLEX_H_24,970
+class Skeleton_blocker_complex 63,2128
+  typedef typename SkeletonBlockerDS::Graph_vertex Graph_vertex;77,2756
+  typedef typename SkeletonBlockerDS::Graph_edge Graph_edge;82,2921
+  typedef typename SkeletonBlockerDS::Root_vertex_handle Root_vertex_handle;84,2983
+  typedef typename SkeletonBlockerDS::Vertex_handle Vertex_handle;89,3135
+  typedef typename Root_vertex_handle::boost_vertex_handle boost_vertex_handle;90,3202
+  typedef Skeleton_blocker_simplex<Vertex_handle> Simplex;95,3360
+  typedef Skeleton_blocker_simplex<Root_vertex_handle> Root_simplex_handle;96,3419
+  typedef Simplex* Blocker_handle;101,3556
+  typedef typename Root_simplex_handle::Simplex_vertex_const_iterator Root_simplex_iterator;103,3592
+  typedef typename Simplex::Simplex_vertex_const_iterator Simplex_handle_iterator;104,3685
+  typedef typename boost::adjacency_list<boost::adjacency_list107,3781
+  boost::undirectedS, Graph_vertex, Graph_edge> Graph;109,3873
+  typedef typename boost::graph_traits<Graph>::vertex_iterator boost_vertex_iterator;116,4374
+  typedef typename boost::graph_traits<Graph>::edge_iterator boost_edge_iterator;117,4460
+  typedef typename boost::graph_traits<Graph>::adjacency_iterator boost_adjacency_iterator;120,4555
+  typedef typename boost::graph_traits<Graph>::edge_descriptor Edge_handle;126,4715
+  typedef std::multimap<Vertex_handle,Vertex_handle129,4804
+  typedef std::multimap<Vertex_handle, Simplex *> BlockerMap;129,4804
+  typedef typename std::multimap<std::multimap130,4866
+  typedef typename std::multimap<Vertex_handle, Simplex *>::value_type BlockerPair;130,4866
+  typedef typename std::multimap<std::multimap131,4950
+  typedef typename std::multimap<Vertex_handle, Simplex *>::iterator BlockerMapIterator;131,4950
+  typedef typename std::multimap<std::multimap132,5039
+  typedef typename std::multimap<Vertex_handle, Simplex *>::const_iterator BlockerMapConstIterator;132,5039
+  size_t num_vertices_;135,5152
+  size_t num_blockers_;136,5176
+  typedef Skeleton_blocker_complex_visitor<Vertex_handle> Visitor;138,5201
+  Visitor* visitor;140,5303
+  std::vector<boost_vertex_handle> degree_;150,5587
+  Graph skeleton;151,5631
+  BlockerMap blocker_map_;154,5763
+  explicit Skeleton_blocker_complex(165,6034
+  typedef Trie<Simplex> STrie;175,6323
+  Skeleton_blocker_complex(183,6604
+  void add_vertices_and_edges(200,7177
+  void add_blockers(215,7884
+  Skeleton_blocker_complex(258,9695
+  Skeleton_blocker_complex& operator=(operator=273,10045
+  bool operator==(operator==290,10489
+  bool operator!=(operator!=307,11058
+  virtual ~Skeleton_blocker_complex(314,11221
+  virtual void clear(323,11456
+  void set_visitor(339,11734
+  Vertex_handle add_vertex(384,13070
+  void remove_vertex(402,13711
+  bool contains_vertex(415,14031
+  bool contains_vertex(424,14264
+  bool contains_vertices(433,14537
+  virtual boost::optional<Vertex_handle> get_address(444,14909
+  Root_vertex_handle get_id(455,15260
+  Vertex_handle convert_handle_from_another_complex(470,15885
+  int degree(480,16272
+  Vertex_handle first_vertex(524,17534
+  Vertex_handle second_vertex(532,17797
+  Simplex get_vertices(541,18085
+  Edge_handle add_edge(553,18568
+  void add_edge(566,18999
+  Edge_handle add_edge_without_blockers(578,19407
+  void add_edge_without_blockers(597,20011
+  virtual Edge_handle remove_edge(608,20362
+  void remove_edge(625,20831
+  void keep_only_vertices(635,21148
+  bool contains_edge(650,21509
+  bool contains_edges(659,21805
+  Blocker_handle add_blocker(681,22396
+  void add_blocker(703,22980
+  void remove_blocker(723,23520
+  void remove_blocker(744,24163
+  void remove_blockers(754,24455
+  void remove_blocker(770,24869
+  void delete_blocker(782,25142
+  bool contains_blocker(792,25371
+  bool contains_blocker(808,25724
+  bool blocks(826,26094
+  virtual void add_neighbours(841,26508
+  virtual void add_neighbours(865,27238
+  virtual void keep_neighbours(880,27888
+  virtual void remove_neighbours(892,28343
+  typedef Skeleton_blocker_link_complex<Skeleton_blocker_complex> Link_complex;900,28583
+  Link_complex link(905,28739
+  Link_complex link(912,28908
+  Link_complex link(919,29072
+  boost::optional<Simplex> get_simplex_address(931,29415
+  Root_simplex_handle get_id(952,30004
+  virtual bool contains(964,30363
+  bool empty(977,30685
+  int num_vertices(984,30815
+  int num_edges(995,31073
+  int num_triangles(999,31143
+  size_t num_simplices(1007,31371
+  size_t num_simplices(1015,31609
+  size_t num_blockers(1027,31910
+  bool complete(1034,32069
+  int num_connected_components(1041,32270
+  bool is_cone(1052,32672
+  enum simplifiable_status 1152,35609
+    NOT_HOMOTOPY_EQ,1153,35638
+    NOT_HOMOTOPY_EQ, MAYBE_HOMOTOPY_EQ,1153,35638
+    NOT_HOMOTOPY_EQ, MAYBE_HOMOTOPY_EQ, HOMOTOPY_EQ1153,35638
+  simplifiable_status is_remove_star_homotopy_preserving(1156,35696
+  enum contractible_status 1163,36064
+    NOT_CONTRACTIBLE,1164,36093
+    NOT_CONTRACTIBLE, MAYBE_CONTRACTIBLE,1164,36093
+    NOT_CONTRACTIBLE, MAYBE_CONTRACTIBLE, CONTRACTIBLE1164,36093
+  virtual contractible_status is_contractible(1176,36665
+  bool link_condition(1196,37191
+  bool link_condition(1213,37884
+  void contract_edge(1258,39540
+  typedef Vertex_iterator<Skeleton_blocker_complex> Complex_vertex_iterator;1285,40499
+  typedef boost::iterator_range<Complex_vertex_iterator> Complex_vertex_range;1291,40710
+  Complex_vertex_range vertex_range(1296,40878
+  typedef Neighbors_vertices_iterator<Skeleton_blocker_complex> Complex_neighbors_vertices_iterator;1302,41071
+  typedef boost::iterator_range<Complex_neighbors_vertices_iterator> Complex_neighbors_vertices_range;1305,41174
+  Complex_neighbors_vertices_range vertex_range(1310,41393
+  typedef Edge_iterator<Skeleton_blocker_complex> Complex_edge_iterator;1322,41704
+  typedef boost::iterator_range<Complex_edge_iterator> Complex_edge_range;1325,41779
+  Complex_edge_range edge_range(1330,41949
+  typedef Edge_around_vertex_iterator<Skeleton_blocker_complex> Complex_edge_around_vertex_iterator;1337,42133
+  typedef boost::iterator_range <Complex_edge_around_vertex_iterator> Complex_edge_around_vertex_range;1340,42236
+  Complex_edge_around_vertex_range edge_range(1346,42464
+  typedef Skeleton_blocker_link_complex<Skeleton_blocker_complex<SkeletonBlockerDS> > Link;1358,42787
+  typedef Skeleton_blocker_link_superior<Skeleton_blocker_complex<SkeletonBlockerDS> > Superior_link;1359,42879
+  typedef Triangle_around_vertex_iterator<Skeleton_blocker_complex,Skeleton_blocker_complex1362,42991
+  Superior_triangle_around_vertex_iterator;1363,43074
+  typedef boost::iterator_range < Triangle_around_vertex_iterator<Triangle_around_vertex_iterator1364,43118
+  Complex_triangle_around_vertex_range;1365,43218
+  Complex_triangle_around_vertex_range triangle_range(1372,43427
+  typedef boost::iterator_range<Triangle_iterator<Skeleton_blocker_complex> > Complex_triangle_range;1378,43755
+  typedef Triangle_iterator<Skeleton_blocker_complex> Complex_triangle_iterator;1379,43857
+  Complex_triangle_range triangle_range(1386,44091
+  typedef Simplex_around_vertex_iterator<Skeleton_blocker_complex,Skeleton_blocker_complex1401,44472
+  typedef Simplex_around_vertex_iterator<Skeleton_blocker_complex, Link> Complex_simplex_around_vertex_iterator;1401,44472
+  typedef boost::iterator_range < Complex_simplex_around_vertex_iterator > Complex_simplex_around_vertex_range;1407,44760
+  Complex_simplex_around_vertex_range star_simplex_range(1412,44997
+  typedef Simplex_coboundary_iterator<Skeleton_blocker_complex,Skeleton_blocker_complex1418,45362
+  typedef Simplex_coboundary_iterator<Skeleton_blocker_complex, Link> Complex_simplex_coboundary_iterator;1418,45362
+  typedef boost::iterator_range < Complex_simplex_coboundary_iterator > Complex_coboundary_range;1424,45630
+  Complex_coboundary_range coboundary_range(1429,45850
+  typedef Simplex_iterator<Skeleton_blocker_complex> Complex_simplex_iterator;1436,46217
+  typedef boost::iterator_range < Complex_simplex_iterator > Complex_simplex_range;1438,46297
+  Complex_simplex_range complex_simplex_range(1443,46476
+  typename std::multimap<std::multimap1463,46944
+  typename std::multimap<Vertex_handle, Simplex *>::iterator,iterator1463,46944
+  Complex_blocker_around_vertex_iterator;1465,47024
+  typename std::multimap<std::multimap1471,47197
+  typename std::multimap<Vertex_handle, Simplex *>::const_iterator,const_iterator1471,47197
+  Const_complex_blocker_around_vertex_iterator;1473,47289
+  typedef boost::iterator_range <Complex_blocker_around_vertex_iterator> Complex_blocker_around_vertex_range;1475,47338
+  Const_complex_blocker_around_vertex_range;1477,47527
+  Complex_blocker_around_vertex_range blocker_range(1483,47678
+  Const_complex_blocker_around_vertex_range const_blocker_range(1492,48080
+  typename std::multimap<std::multimap1503,48521
+  typename std::multimap<Vertex_handle, Simplex *>::iterator,iterator1503,48521
+  Complex_blocker_iterator;1505,48601
+  typename std::multimap<std::multimap1511,48730
+  typename std::multimap<Vertex_handle, Simplex *>::const_iterator,const_iterator1511,48730
+  Const_complex_blocker_iterator;1513,48822
+  typedef boost::iterator_range <Complex_blocker_iterator> Complex_blocker_range;1515,48857
+  typedef boost::iterator_range <Const_complex_blocker_iterator> Const_complex_blocker_range;1516,48939
+  Complex_blocker_range blocker_range(1522,49114
+  Const_complex_blocker_range const_blocker_range(1531,49444
+  std::string to_string(1544,49882
+  std::string vertices_to_string(1552,50223
+  std::string edges_to_string(1561,50456
+  std::string blockers_to_string(1569,50704
+template<typename Complex,1584,51006
+Complex make_complex_from_top_faces(1585,51065
+  typedef typename Complex::Simplex 1588,51330
+
+src/gudhi/Bottleneck.h,189
+#define BOTTLENECK_H_24,953
+namespace Gudhi 35,1160
+inline double bottleneck_distance_exact(69,2413
+template<typename Persistence_diagram1,110,3931
+double bottleneck_distance(111,4002
+
+src/gudhi/Skeleton_blocker_contractor.h,2749
+#define SKELETON_BLOCKER_CONTRACTOR_H_24,973
+Valid_contraction_policy<Profile>* make_link_valid_contraction(62,2179
+class Contraction_visitor_remove_popable 70,2411
+  typedef typename Profile::Point Point;72,2501
+  typedef typename Profile::Complex Complex;73,2542
+  typedef typename Complex::Vertex_handle Vertex_handle;74,2587
+  void on_contracted(76,2645
+Contraction_visitor<Profile>* make_remove_popable_blockers_visitor(82,2842
+  typedef typename GeometricSimplifiableComplex::Graph_vertex 108,4101
+  typedef typename GeometricSimplifiableComplex::Vertex_handle 109,4177
+  typedef typename GeometricSimplifiableComplex::Simplex 110,4255
+  typedef typename GeometricSimplifiableComplex::Root_vertex_handle 111,4321
+  typedef typename GeometricSimplifiableComplex::Graph_edge 112,4409
+  typedef typename GeometricSimplifiableComplex::Edge_handle 113,4481
+  typedef typename GeometricSimplifiableComplex::Point 114,4555
+  typedef EdgeProfile Profile;116,4618
+  typedef Cost_policy<Profile> Cost_policy_;119,4651
+  typedef Placement_policy<Profile> Placement_policy_;120,4696
+  typedef Valid_contraction_policy<Profile> Valid_contraction_policy_;121,4751
+  typedef Contraction_visitor<EdgeProfile> Contraction_visitor_;122,4822
+  typedef Edge_profile_factory<EdgeProfile> Edge_profile_factory_;123,4887
+  typedef boost::optional<double> Cost_type;127,4957
+  typedef boost::optional<Point> Placement_type;128,5002
+  typedef size_t size_type;130,5052
+  typedef Skeleton_blocker_contractor Self;132,5081
+  struct Compare_id 135,5136
+    Compare_id(136,5158
+    Compare_id(138,5196
+    bool operator()(operator()140,5265
+    Self const* algorithm_;144,5422
+  struct Compare_cost 147,5456
+    Compare_cost(148,5480
+    Compare_cost(150,5520
+    bool operator()(operator()152,5591
+    Self const* algorithm_;160,6020
+  struct Undirected_edge_id 163,6054
+    typedef boost::readable_property_map_tag category;164,6139
+    typedef size_type value_type;165,6194
+    typedef size_type reference;166,6228
+    typedef Edge_handle key_type;167,6261
+    Undirected_edge_id(169,6296
+    Undirected_edge_id(171,6342
+    Self const* algorithm_;177,6526
+  typedef CGAL::Modifiable_priority_queue<Edge_handle, Compare_cost, Undirected_edge_id> PQ;180,6560
+  typedef typename PQ::handle 181,6653
+  class Edge_data 188,6918
+    Edge_data(190,6949
+    Cost_type const& cost(192,6993
+    Cost_type & cost(196,7056
+    pq_handle PQ_handle(200,7108
+    bool is_in_PQ(204,7173
+    void set_PQ_handle(208,7253
+    void reset_PQ_handle(212,7319
+    pq_handle PQHandle_;217,7404
+    Cost_type cost_;218,7429
+  typedef Edge_data* Edge_data_ptr;220,7455
+  typedef boost::scoped_array<Edge_data> Edge_data_array;221,7491
+
+src/gudhi/random_point_generators.h,2215
+#define RANDOM_POINT_GENERATORS_H_24,969
+typename Kernel::Point_d construct_point(52,1771
+typename Kernel::Point_d construct_point(64,2136
+typename Kernel::Point_d construct_point(78,2581
+typename Kernel::Point_d construct_point(93,3065
+std::vector<typename Kernel::Point_d> generate_points_on_plane(107,3561
+  typedef typename Kernel::Point_d 110,3859
+  typedef typename Kernel::FT 111,3901
+std::vector<typename Kernel::Point_d> generate_points_on_moment_curve(129,4376
+  typedef typename Kernel::Point_d 132,4675
+  typedef typename Kernel::FT 133,4717
+std::vector<typename Kernel::Point_d> generate_points_on_torus_3D(155,5341
+  typedef typename Kernel::Point_d 157,5541
+  typedef typename Kernel::FT 158,5583
+template <typename Kernel,189,6429
+static void generate_uniform_points_on_torus_d(190,6481
+std::vector<typename Kernel::Point_d> generate_points_on_torus_d(218,7928
+  typedef typename Kernel::Point_d 220,8152
+  typedef typename Kernel::FT 221,8194
+std::vector<typename Kernel::Point_d> generate_points_on_sphere_d(256,9387
+  typedef typename Kernel::Point_d 258,9606
+std::vector<typename Kernel::Point_d> generate_points_in_ball_d(286,10595
+  typedef typename Kernel::Point_d 287,10709
+std::vector<typename Kernel::Point_d> generate_points_in_cube_d(302,11063
+  typedef typename Kernel::Point_d 303,11177
+std::vector<typename Kernel::Point_d> generate_points_on_two_spheres_d(318,11531
+  typedef typename Kernel::FT 321,11864
+  typedef typename Kernel::Point_d 322,11898
+  typedef typename Kernel::Vector_d 323,11940
+std::vector<typename Kernel::Point_d> generate_points_on_3sphere_and_circle(363,13254
+  typedef typename Kernel::FT 365,13454
+  typedef typename Kernel::Point_d 366,13488
+std::vector<typename Kernel::Point_d> generate_points_on_klein_bottle_3D(394,14266
+  typedef typename Kernel::Point_d 396,14480
+  typedef typename Kernel::FT 397,14522
+std::vector<typename Kernel::Point_d> generate_points_on_klein_bottle_4D(430,15450
+  typedef typename Kernel::Point_d 432,15683
+  typedef typename Kernel::FT 433,15725
+generate_points_on_klein_bottle_variant_5D(469,16852
+  typedef typename Kernel::Point_d 471,17007
+  typedef typename Kernel::FT 472,17049
+
+src/gudhi/Persistence_graph.h,1219
+#define PERSISTENCE_GRAPH_H_24,960
+class Persistence_graph 45,1419
+  template<typename Persistence_diagram1,48,1546
+  Persistence_graph(49,1619
+  bool on_the_u_diagonal(51,1805
+  std::vector<Internal_point> u;74,3237
+  std::vector<Internal_point> v;75,3270
+  double b_alive;76,3303
+template<typename Persistence_diagram1,79,3325
+Persistence_graph::Persistence_graph(80,3396
+inline bool Persistence_graph::on_the_u_diagonal(on_the_u_diagonal109,4693
+inline bool Persistence_graph::on_the_v_diagonal(on_the_v_diagonal113,4827
+inline int Persistence_graph::corresponding_point_in_u(corresponding_point_in_u117,4961
+inline int Persistence_graph::corresponding_point_in_v(corresponding_point_in_v122,5187
+inline double Persistence_graph::distance(distance127,5413
+inline int Persistence_graph::size(size135,5778
+inline double Persistence_graph::bottleneck_alive(bottleneck_alive139,5875
+inline std::vector<double> Persistence_graph::sorted_distances(sorted_distances143,5956
+inline Internal_point Persistence_graph::get_u_point(get_u_point159,6584
+inline Internal_point Persistence_graph::get_v_point(get_v_point167,6913
+inline double Persistence_graph::diameter_bound(diameter_bound175,7242
+
+src/gudhi/Skeleton_blocker_geometric_complex.h,1939
+#define SKELETON_BLOCKER_GEOMETRIC_COMPLEX_H_24,980
+class Skeleton_blocker_geometric_complex 40,1414
+  typedef typename SkeletonBlockerGeometricDS::GT GT;43,1528
+  typedef Skeleton_blocker_complex<SkeletonBlockerGeometricDS> SimplifiableSkeletonblocker;45,1583
+  typedef typename SimplifiableSkeletonblocker::Vertex_handle Vertex_handle;47,1676
+  typedef typename SimplifiableSkeletonblocker::Root_vertex_handle Root_vertex_handle;48,1753
+  typedef typename SimplifiableSkeletonblocker::Edge_handle Edge_handle;49,1840
+  typedef typename SimplifiableSkeletonblocker::Simplex Simplex;50,1913
+  typedef typename SimplifiableSkeletonblocker::Graph_vertex Graph_vertex;52,1979
+  typedef typename SkeletonBlockerGeometricDS::Point Point;54,2055
+  Skeleton_blocker_geometric_complex(56,2116
+  explicit Skeleton_blocker_geometric_complex(62,2247
+  template<typename SimpleHandleOutputIterator,72,2633
+  Skeleton_blocker_geometric_complex(73,2705
+  Skeleton_blocker_geometric_complex(89,3632
+  Vertex_handle add_vertex(97,4064
+  Vertex_handle add_vertex(104,4233
+  const Point& point(113,4471
+  Point& point(121,4661
+  const Point& point(126,4769
+  Point& point(132,4959
+  typedef Skeleton_blocker_link_complex<Skeleton_blocker_geometric_complex> Geometric_link;138,5137
+  Geometric_link link(143,5305
+  Geometric_link link(153,5556
+  Geometric_link link(163,5811
+  typedef Skeleton_blocker_link_complex<Skeleton_blocker_complex<SkeletonBlockerGeometricDS>> Abstract_link;170,5982
+  Abstract_link abstract_link(175,6173
+  Abstract_link abstract_link(182,6353
+  Abstract_link abstract_link(189,6537
+  void add_points_to_link(194,6647
+template<typename SkeletonBlockerGeometricComplex,203,6862
+template<typename SkeletonBlockerGeometricComplex, typename SimpleHandleOutputIterator,203,6862
+SkeletonBlockerGeometricComplex make_complex_from_top_faces(204,6974
+  typedef SkeletonBlockerGeometricComplex SBGC;210,7243
+
+src/gudhi/Persistence_landscape.h,3440
+#define PERSISTENCE_LANDSCAPE_H_24,966
+class Persistence_landscape 72,2872
+  Persistence_landscape(77,2949
+  Persistence_landscape(82,3142
+  Persistence_landscape(90,3648
+  void load_landscape_from_file(96,3968
+  void print_to_file(101,4153
+  friend Persistence_landscape operator+(157,6504
+  friend Persistence_landscape operator-(164,6746
+  friend Persistence_landscape operator*(171,7009
+  friend Persistence_landscape operator*(178,7296
+  Persistence_landscape operator+=(operator+=185,7539
+  Persistence_landscape operator-=(operator-=193,7737
+  Persistence_landscape operator*=(operator*=202,8024
+  Persistence_landscape operator/=(operator/=210,8186
+  bool operator!=(operator!=224,8566
+  double compute_maximum(229,8720
+  double compute_minimum(243,9124
+  double compute_norm_of_landscape(257,9550
+  double operator()(operator()269,9929
+  size_t size(296,11189
+  double project_to_R(318,12068
+  size_t number_of_projections_to_R(326,12368
+  std::vector<double> vectorize(332,12617
+  size_t number_of_vectorize_functions(348,13230
+  void compute_average(354,13522
+  double distance(412,15824
+  double compute_scalar_product(425,16341
+  std::pair<std::pair434,16762
+  std::pair<double, double> get_y_range(434,16762
+  std::vector<std::vector454,17602
+  std::vector<std::vector<std::pair<double, double> > > land;454,17602
+  size_t number_of_functions_for_vectorization;455,17664
+  size_t number_of_functions_for_projections_to_reals;456,17712
+  void set_up_numbers_of_functions_for_vectorization_and_projections_to_reals(465,18314
+Persistence_landscape::Persistence_landscape(Persistence_landscape472,18637
+bool operatorEqualDbg 483,19206
+bool Persistence_landscape::operator==(operator==484,19237
+Persistence_landscape::Persistence_landscape(Persistence_landscape512,20506
+void Persistence_landscape::construct_persistence_landscape_from_barcode(construct_persistence_landscape_from_barcode518,20833
+double Persistence_landscape::find_max(find_max663,27641
+double Persistence_landscape::compute_integral_of_landscape(compute_integral_of_landscape672,27975
+double Persistence_landscape::compute_integral_of_a_level_of_a_landscape(compute_integral_of_a_level_of_a_landscape684,28460
+double Persistence_landscape::compute_integral_of_landscape(compute_integral_of_landscape702,29140
+double Persistence_landscape::compute_value_at_a_given_point(compute_value_at_a_given_point734,30595
+std::ostream& operator<<(793,33192
+void Persistence_landscape::multiply_lanscape_by_real_number_overwrite(multiply_lanscape_by_real_number_overwrite812,33824
+bool AbsDbg 820,34075
+Persistence_landscape Persistence_landscape::abs(abs821,34096
+Persistence_landscape* Persistence_landscape::new_abs(new_abs862,35973
+Persistence_landscape Persistence_landscape::multiply_lanscape_by_real_number_not_overwrite(multiply_lanscape_by_real_number_not_overwrite903,37892
+void Persistence_landscape::print_to_file(print_to_file919,38571
+void Persistence_landscape::load_landscape_from_file(load_landscape_from_file931,38977
+Persistence_landscape operation_on_pair_of_landscapes(986,40980
+double compute_maximal_distance_non_symmetric(1123,47644
+double compute_distance_of_landscapes(1183,50335
+double compute_max_norm_distance_of_landscapes(1219,51474
+bool comparePairsForMerging(1225,51793
+double compute_inner_product(1229,51936
+void Persistence_landscape::plot(plot1336,56033
+
+src/gudhi/Graph_matching.h,567
+#define GRAPH_MATCHING_H_24,957
+class Graph_matching 40,1282
+  explicit Graph_matching(43,1384
+  bool perfect(45,1485
+  std::unordered_set<int> unmatched_in_u;57,2029
+inline Graph_matching::Graph_matching(67,2567
+inline bool Graph_matching::perfect(perfect73,2831
+inline bool Graph_matching::multi_augment(multi_augment77,2913
+inline void Graph_matching::set_r(set_r94,3635
+inline bool Graph_matching::augment(augment98,3699
+inline Layered_neighbors_finder Graph_matching::layering(layering126,4706
+inline void Graph_matching::update(update159,6063
+
+src/gudhi/Witness_complex/all_faces_in.h,207
+#define WITNESS_COMPLEX_ALL_FACES_IN_H_24,980
+template < typename SimplicialComplexForWitness,30,1230
+  bool all_faces_in(32,1309
+    typedef typename SimplicialComplexForWitness::Simplex_handle 35,1448
+
+src/gudhi/Null_output_iterator.h,537
+#define NULL_OUTPUT_ITERATOR_H_24,964
+struct Null_output_iterator 31,1098
+  typedef std::output_iterator_tag iterator_category;32,1128
+  typedef void                     value_type;33,1182
+  typedef void                     difference_type;34,1229
+  typedef void                     pointer;35,1281
+  typedef void                     reference;36,1325
+  Null_output_iterator& operator++(38,1372
+  Null_output_iterator operator++(39,1425
+  struct proxy 40,1480
+    proxy& operator=(operator=42,1519
+  proxy operator*(44,1565
+
+src/gudhi/Hasse_complex.h,1107
+#define HASSE_COMPLEX_H_24,962
+struct Hasse_simplex 42,1286
+  Hasse_simplex(46,1424
+  Hasse_simplex(56,1731
+  typename HasseCpx::Simplex_key key_;63,1998
+  typename HasseCpx::Filtration_value filtration_;64,2037
+  std::vector<typename HasseCpx::Simplex_handle> boundary_;65,2088
+template < typename FiltrationValue 76,2375
+  typedef Hasse_simplex<Hasse_complex> Hasse_simp;82,2511
+  typedef FiltrationValue Filtration_value;83,2562
+  typedef SimplexKey Simplex_key;84,2606
+  typedef int Simplex_handle;85,2640
+  typedef boost::counting_iterator< Simplex_handle > Filtration_simplex_iterator;87,2700
+  typedef boost::iterator_range<Filtration_simplex_iterator> Filtration_simplex_range;88,2782
+  typedef typename std::vector<std::vector90,2870
+  typedef boost::iterator_range<Boundary_simplex_iterator> Boundary_simplex_range;91,2956
+  typedef typename std::vector<std::vector93,3040
+  typedef boost::iterator_range< Skeleton_simplex_iterator > Skeleton_simplex_range;94,3126
+template< typename T1,208,6334
+template< typename T1, typename T2,208,6334
+std::istream& operator>>(209,6384
+
+src/gudhi/Bitmap_cubical_complex_base.h,4736
+#define BITMAP_CUBICAL_COMPLEX_BASE_H_24,972
+class Bitmap_cubical_complex_base 63,2394
+  typedef T filtration_type;65,2439
+  Bitmap_cubical_complex_base(70,2506
+  Bitmap_cubical_complex_base(77,2884
+  Bitmap_cubical_complex_base(84,3171
+  Bitmap_cubical_complex_base(89,3433
+  virtual ~Bitmap_cubical_complex_base(94,3622
+  virtual int compute_incidence_between_cells(143,6528
+  inline unsigned dimension(207,9794
+  inline unsigned size(212,9925
+  std::pair<std::pair246,11860
+  class All_cells_iterator 254,12063
+    All_cells_iterator(256,12147
+    All_cells_iterator operator++(258,12196
+    All_cells_iterator operator++(264,12356
+    All_cells_iterator& operator=(operator=270,12483
+    bool operator==(operator==275,12612
+    bool operator!=(operator!=280,12751
+    std::size_t operator*(289,13247
+    std::size_t counter;293,13362
+  All_cells_iterator all_cells_iterator_begin(299,13484
+  All_cells_iterator all_cells_iterator_end(307,13669
+  class All_cells_range 316,13883
+    All_cells_range(318,13920
+    All_cells_iterator begin(320,13983
+    All_cells_iterator end(322,14057
+    Bitmap_cubical_complex_base<T>* b;325,14139
+  All_cells_range all_cells_range(328,14184
+  typedef typename std::vector<std::size_t>::const_iterator Boundary_iterator;333,14334
+  typedef typename std::vector<std::size_t> Boundary_range;334,14413
+  Boundary_range boundary_range(340,14628
+  typedef typename std::vector<std::size_t>::const_iterator Coboundary_iterator;345,14803
+  typedef typename std::vector<std::size_t> Coboundary_range;346,14884
+  Coboundary_range coboundary_range(352,15101
+  class Top_dimensional_cells_iterator 358,15377
+    Top_dimensional_cells_iterator(360,15473
+    Top_dimensional_cells_iterator operator++(365,15690
+    Top_dimensional_cells_iterator operator++(381,16179
+    Top_dimensional_cells_iterator& operator=(operator=387,16330
+    bool operator==(operator==393,16506
+    bool operator!=(operator!=402,16849
+    std::size_t operator*(411,17357
+    std::size_t compute_index_in_bitmap(413,17430
+    void print_counter(421,17678
+    std::vector<std::size_t> counter;429,17896
+    Bitmap_cubical_complex_base& b;430,17934
+  Top_dimensional_cells_iterator top_dimensional_cells_iterator_begin(436,18095
+  Top_dimensional_cells_iterator top_dimensional_cells_iterator_end(444,18351
+  class Top_dimensional_cells_range 456,18738
+    Top_dimensional_cells_range(458,18787
+    Top_dimensional_cells_iterator begin(460,18862
+    Top_dimensional_cells_iterator end(462,18960
+    Bitmap_cubical_complex_base<T>* b;465,19066
+  Top_dimensional_cells_range top_dimensional_cells_range(468,19111
+  inline std::size_t number_cells(475,19695
+  std::vector<unsigned> sizes;483,20267
+  std::vector<unsigned> multipliers;484,20298
+  std::vector<T> data;485,20335
+  std::size_t total_number_of_cells;486,20358
+  void set_up_containers(488,20396
+  std::size_t compute_position_in_bitmap(499,20804
+  std::vector<unsigned> compute_counter_for_given_cell(507,21066
+void Bitmap_cubical_complex_base<T>::put_data_to_bins(put_data_to_bins527,22152
+void Bitmap_cubical_complex_base<T>::put_data_to_bins(put_data_to_bins546,22784
+std::pair<T, T> Bitmap_cubical_complex_base<T>::min_max_filtration(min_max_filtration564,23439
+std::ostream& operator<<(574,23856
+Bitmap_cubical_complex_base<T>::Bitmap_cubical_complex_base(Bitmap_cubical_complex_base583,24160
+void Bitmap_cubical_complex_base<T>::setup_bitmap_based_on_top_dimensional_cells_list(setup_bitmap_based_on_top_dimensional_cells_list588,24317
+Bitmap_cubical_complex_base<T>::Bitmap_cubical_complex_base(Bitmap_cubical_complex_base618,25967
+void Bitmap_cubical_complex_base<T>::read_perseus_style_file(read_perseus_style_file624,26331
+Bitmap_cubical_complex_base<T>::Bitmap_cubical_complex_base(Bitmap_cubical_complex_base672,27925
+Bitmap_cubical_complex_base<T>::Bitmap_cubical_complex_base(Bitmap_cubical_complex_base681,28376
+Bitmap_cubical_complex_base<T>::Bitmap_cubical_complex_base(Bitmap_cubical_complex_base690,28812
+Bitmap_cubical_complex_base<T>::Bitmap_cubical_complex_base(Bitmap_cubical_complex_base700,29417
+std::vector<std::size_t> Bitmap_cubical_complex_base<T>::get_boundary_of_a_cell(get_boundary_of_a_cell705,29589
+std::vector<std::size_t> Bitmap_cubical_complex_base<T>::get_coboundary_of_a_cell(get_coboundary_of_a_cell732,30554
+unsigned Bitmap_cubical_complex_base<T>::get_dimension_of_a_cell(get_dimension_of_a_cell752,31423
+inline T& Bitmap_cubical_complex_base<T>::get_cell_data(get_cell_data776,32271
+void Bitmap_cubical_complex_base<T>::impose_lower_star_filtration(impose_lower_star_filtration781,32399
+bool compareFirstElementsOfTuples(835,34838
+
+src/gudhi/Euclidean_strong_witness_complex.h,1371
+#define EUCLIDEAN_STRONG_WITNESS_COMPLEX_H_24,984
+class Euclidean_strong_witness_complex47,1615
+  typedef Kernel_                                                                      K;51,1924
+  typedef typename K::Point_d                                                          Point_d;52,2014
+  typedef std::vector<Point_d>                                                         Point_range;53,2110
+  typedef Gudhi::spatial_searching::Kd_tree_search<Kernel_,Kernel_54,2210
+  typedef Gudhi::spatial_searching::Kd_tree_search<Kernel_, Point_range>               Kd_tree;54,2210
+  typedef typename Kd_tree::INS_range                                                  Nearest_landmark_range;55,2306
+  typedef typename std::vector<Nearest_landmark_range>                                 Nearest_landmark_table;56,2417
+  typedef typename Nearest_landmark_range::Point_with_transformed_distance Id_distance_pair;58,2529
+  typedef typename Id_distance_pair::first_type Landmark_id;59,2622
+  typedef Landmark_id Vertex_handle;60,2683
+  Point_range                         landmarks_;63,2731
+  Kd_tree                             landmark_tree_;64,2781
+  using Strong_witness_complex<Nearest_landmark_table>::nearest_landmark_table_;nearest_landmark_table_65,2835
+ public:public67,2917
+  Euclidean_strong_witness_complex(82,3468
+  Point_d get_point(93,3988
+
+src/gudhi/pick_n_random_points.h,39
+#define PICK_N_RANDOM_POINTS_H_24,972
+
+src/gudhi/Off_reader.h,484
+#define OFF_READER_H_26,960
+class Off_reader 43,1275
+  Off_reader(45,1303
+  ~Off_reader(47,1362
+  bool read(65,1967
+  std::ifstream& stream_;89,2679
+  struct Off_info 91,2706
+    int dim;92,2726
+    int num_vertices;93,2739
+    int num_edges;94,2761
+    int num_faces;95,2780
+  Off_info off_info_;98,2805
+  bool read_off_preambule(101,2860
+  bool goto_next_uncomment_line(134,3869
+  bool read_off_points(144,4207
+  bool read_off_faces(159,4729
+void read_off(175,5207
+
+src/gudhi/Skeleton_blocker_simplifiable_complex.h,2430
+#define SKELETON_BLOCKER_SIMPLIFIABLE_COMPLEX_H_24,983
+void Skeleton_blocker_complex<SkeletonBlockerDS>::remove_popable_blockers(remove_popable_blockers57,2009
+void Skeleton_blocker_complex<SkeletonBlockerDS>::remove_popable_blockers(remove_popable_blockers86,2888
+void Skeleton_blocker_complex<SkeletonBlockerDS>::remove_all_popable_blockers(remove_all_popable_blockers105,3487
+void Skeleton_blocker_complex<SkeletonBlockerDS>::remove_star(remove_star133,4297
+void Skeleton_blocker_complex<SkeletonBlockerDS>::update_blockers_after_remove_star_of_vertex_or_edge(update_blockers_after_remove_star_of_vertex_or_edge149,4966
+void Skeleton_blocker_complex<SkeletonBlockerDS>::remove_star(remove_star178,6081
+void Skeleton_blocker_complex<SkeletonBlockerDS>::remove_star(remove_star188,6384
+void Skeleton_blocker_complex<SkeletonBlockerDS>::remove_star(remove_star196,6659
+void Skeleton_blocker_complex<SkeletonBlockerDS>::add_simplex(add_simplex209,7079
+void Skeleton_blocker_complex<SkeletonBlockerDS>::add_blockers_after_simplex_insertion(add_blockers_after_simplex_insertion228,7895
+void Skeleton_blocker_complex<SkeletonBlockerDS>::remove_blocker_containing_simplex(remove_blocker_containing_simplex240,8201
+void Skeleton_blocker_complex<SkeletonBlockerDS>::remove_blocker_include_in_simplex(remove_blocker_include_in_simplex254,8698
+void Skeleton_blocker_complex<SkeletonBlockerDS>::tip_blockers(tip_blockers282,9813
+Skeleton_blocker_complex<SkeletonBlockerDS>::swap_edge(swap_edge313,10800
+Skeleton_blocker_complex<SkeletonBlockerDS>::delete_blockers_around_vertex(delete_blockers_around_vertex321,11082
+Skeleton_blocker_complex<SkeletonBlockerDS>::delete_blockers_around_edge(delete_blockers_around_edge337,11566
+Skeleton_blocker_complex<SkeletonBlockerDS>::contract_edge(contract_edge354,12207
+void Skeleton_blocker_complex<SkeletonBlockerDS>::get_blockers_to_be_added_after_contraction(get_blockers_to_be_added_after_contraction385,13015
+  typedef Skeleton_blocker_link_complex<Skeleton_blocker_complex<SkeletonBlockerDS> > LinkComplexType;390,13394
+Skeleton_blocker_complex<SkeletonBlockerDS>::delete_blockers_around_vertices(delete_blockers_around_vertices420,14368
+Skeleton_blocker_complex<SkeletonBlockerDS>::update_edges_after_contraction(update_edges_after_contraction434,14860
+Skeleton_blocker_complex<SkeletonBlockerDS>::notify_changed_edges(notify_changed_edges452,15446
+
+src/gudhi/Persistence_landscape_on_grid.h,3763
+#define PERSISTENCE_LANDSCAPE_ON_GRID_H_25,979
+class Persistence_landscape_on_grid 72,2963
+  Persistence_landscape_on_grid(77,3048
+  Persistence_landscape_on_grid(85,3305
+  Persistence_landscape_on_grid(92,3650
+  Persistence_landscape_on_grid(103,4462
+  Persistence_landscape_on_grid(114,5285
+  Persistence_landscape_on_grid(124,6014
+  Persistence_landscape_on_grid(136,6898
+  void load_landscape_from_file(142,7199
+  void print_to_file(147,7384
+  double compute_integral_of_landscape(165,7937
+  double compute_integral_of_landscape(206,9742
+  double compute_integral_of_landscape(219,10223
+  friend std::ostream& operator<<(281,12704
+  double compute_value_at_a_given_point(304,13676
+  friend Persistence_landscape_on_grid operator+(373,16796
+  friend Persistence_landscape_on_grid operator-(381,17111
+  friend Persistence_landscape_on_grid operator*(389,17447
+  friend Persistence_landscape_on_grid operator*(396,17750
+  Persistence_landscape_on_grid operator+=(operator+=411,18427
+  Persistence_landscape_on_grid operator-=(operator-=419,18639
+  Persistence_landscape_on_grid operator*=(operator*=428,18942
+  Persistence_landscape_on_grid operator/=(operator/=436,19112
+  bool operator==(operator==445,19364
+  bool operator!=(operator!=476,20534
+  double compute_maximum(481,20696
+  std::pair<std::pair498,21464
+  std::pair<double, double> compute_minimum_maximum(498,21464
+  std::pair<std::pair521,22767
+  std::pair<double, double> get_x_range(521,22767
+  std::pair<std::pair529,23112
+  std::pair<double, double> get_y_range(529,23112
+  size_t number_of_nonzero_levels(534,23321
+  double compute_norm_of_landscape(545,23688
+  double operator()(operator()559,24211
+  void abs(573,25047
+  size_t size(584,25374
+  double find_max(589,25509
+  double project_to_R(776,33152
+  size_t number_of_projections_to_R(784,33439
+  std::vector<double> vectorize(790,33682
+  size_t number_of_vectorize_functions(809,34454
+  void compute_average(815,34758
+  double distance(877,37740
+  double compute_scalar_product(890,38290
+  std::vector<std::vector<double> > output_for_visualization(899,38582
+  void plot(910,39278
+  double grid_min;925,40098
+  double grid_max;926,40117
+  std::vector<std::vector<double> > values_of_landscapes;927,40136
+  size_t number_of_functions_for_vectorization;928,40194
+  size_t number_of_functions_for_projections_to_reals;929,40242
+  void set_up_numbers_of_functions_for_vectorization_and_projections_to_reals(931,40298
+void Persistence_landscape_on_grid::set_up_values_of_landscapes(set_up_values_of_landscapes942,41044
+Persistence_landscape_on_grid::Persistence_landscape_on_grid(Persistence_landscape_on_grid1085,48422
+Persistence_landscape_on_grid::Persistence_landscape_on_grid(Persistence_landscape_on_grid1091,48837
+Persistence_landscape_on_grid::Persistence_landscape_on_grid(Persistence_landscape_on_grid1098,49350
+Persistence_landscape_on_grid::Persistence_landscape_on_grid(Persistence_landscape_on_grid1109,49938
+Persistence_landscape_on_grid::Persistence_landscape_on_grid(Persistence_landscape_on_grid1122,50719
+Persistence_landscape_on_grid::Persistence_landscape_on_grid(Persistence_landscape_on_grid1139,51547
+void Persistence_landscape_on_grid::load_landscape_from_file(load_landscape_from_file1157,52507
+void Persistence_landscape_on_grid::print_to_file(print_to_file1187,53476
+void Persistence_landscape_on_grid::plot(plot1205,54109
+Persistence_landscape_on_grid operation_on_pair_of_landscapes_on_grid(1267,56306
+Persistence_landscape_on_grid Persistence_landscape_on_grid::multiply_lanscape_by_real_number_not_overwrite(multiply_lanscape_by_real_number_not_overwrite1298,57857
+double compute_max_norm_distance_of_landscapes(1315,58623
+
+src/gudhi/GIC.h,2643
+#define GIC_H_24,949
+class Cover_complex 96,3400
+  std::string type;99,3492
+  std::vector<Point> point_cloud;101,3534
+  std::vector<std::vector<double> > distances;102,3604
+  int maximal_dim;103,3679
+  int data_dimension;104,3778
+  int n;105,3854
+  std::vector<double> func;107,3924
+  std::vector<double> func_color;108,4017
+  Graph one_skeleton_OFF;111,4235
+  Graph one_skeleton;112,4330
+  std::vector<Vertex_t> vertices;113,4423
+  std::vector<std::vector<int> > simplices;115,4488
+  std::vector<int> voronoi_subsamples;116,4576
+  Persistence_diagram PD;118,4667
+  std::vector<double> distribution;119,4693
+      cover;122,4763
+  std::map<std::map123,4870
+      cover_back;124,4905
+  std::map<std::map125,5017
+  std::map<int, double> cover_std;125,5017
+  std::map<std::map127,5214
+      cover_fct;128,5235
+  std::map<std::map129,5354
+      cover_color;130,5395
+  std::map<std::map139,5793
+  std::map<int, int> name2id,139,5793
+  std::map<int, int> name2id, name2idinv;139,5793
+  std::string cover_name;141,5836
+  std::string point_cloud_name;142,5862
+  std::string color_name;143,5894
+  void remove_edges(146,5955
+  std::default_random_engine re;154,6304
+  double GetUniform(158,6416
+  void SampleWithoutReplacement(169,6799
+  void set_type(195,7557
+  void set_verbose(203,7794
+  void set_subsampling(213,8062
+  void set_mask(226,8436
+  bool read_point_cloud(234,8634
+  void set_graph_from_file(317,11637
+  void set_graph_from_OFF(334,12198
+  void set_graph_from_rips(350,12741
+  void set_graph_weights(365,13284
+  void compute_pairwise_distances(378,13879
+  double set_graph_from_automatic_rips(425,15641
+  void set_function_from_file(481,17902
+  void set_function_from_coordinate(502,18502
+  void set_function_from_range(515,18942
+  double set_automatic_resolution(532,19714
+  void set_resolution_with_interval_length(573,21233
+  void set_resolution_with_interval_number(579,21448
+  void set_gain(585,21644
+  void set_cover_from_function(591,21846
+  void set_cover_from_file(815,30155
+  void set_cover_from_Voronoi(853,31460
+  const std::vector<int>& subpopulation(922,34173
+  void set_color_from_file(935,34768
+  void set_color_from_coordinate(955,35370
+  void set_color_from_vector(967,35783
+  void plot_DOT(976,36219
+  void write_info(1024,38183
+  void plot_OFF(1063,39991
+  void compute_PD(1111,41800
+  void compute_distribution(1170,44061
+  double compute_distance_from_confidence_level(1216,45887
+  double compute_confidence_level_from_distance(1229,46325
+  double compute_p_value(1243,46896
+  void create_complex(1262,47731
+  void find_simplices(1276,48270
+
+src/gudhi/Bitmap_cubical_complex_periodic_boundary_conditions_base.h,2066
+#define BITMAP_CUBICAL_COMPLEX_PERIODIC_BOUNDARY_CONDITIONS_BASE_H_24,1001
+class Bitmap_cubical_complex_periodic_boundary_conditions_base 52,2194
+  Bitmap_cubical_complex_periodic_boundary_conditions_base(59,2461
+  Bitmap_cubical_complex_periodic_boundary_conditions_base(67,3003
+  Bitmap_cubical_complex_periodic_boundary_conditions_base(74,3419
+  Bitmap_cubical_complex_periodic_boundary_conditions_base(82,4055
+  virtual ~Bitmap_cubical_complex_periodic_boundary_conditions_base(89,4393
+  virtual int compute_incidence_between_cells(129,6556
+  std::vector<bool> directions_in_which_periodic_b_cond_are_to_be_imposed;165,8321
+  void set_up_containers(167,8397
+void Bitmap_cubical_complex_periodic_boundary_conditions_base<T>::construct_complex_based_on_top_dimensional_cells(construct_complex_based_on_top_dimensional_cells196,9641
+Bitmap_cubical_complex_periodic_boundary_conditions_base<T>::Bitmap_cubical_complex_periodic_boundary_conditions_base(Bitmap_cubical_complex_periodic_boundary_conditions_base211,10365
+Bitmap_cubical_complex_periodic_boundary_conditions_base<T>::Bitmap_cubical_complex_periodic_boundary_conditions_base(Bitmap_cubical_complex_periodic_boundary_conditions_base219,10787
+Bitmap_cubical_complex_periodic_boundary_conditions_base<T>::Bitmap_cubical_complex_periodic_boundary_conditions_base(Bitmap_cubical_complex_periodic_boundary_conditions_base264,12363
+Bitmap_cubical_complex_periodic_boundary_conditions_base<T>::Bitmap_cubical_complex_periodic_boundary_conditions_base(Bitmap_cubical_complex_periodic_boundary_conditions_base271,12687
+Bitmap_cubical_complex_periodic_boundary_conditions_base<T>::Bitmap_cubical_complex_periodic_boundary_conditions_base(Bitmap_cubical_complex_periodic_boundary_conditions_base279,13245
+std::vector<std::size_t> Bitmap_cubical_complex_periodic_boundary_conditions_base<T>::get_boundary_of_a_cell(get_boundary_of_a_cell289,13828
+std::vector<std::size_t> Bitmap_cubical_complex_periodic_boundary_conditions_base<T>::get_coboundary_of_a_cell(get_coboundary_of_a_cell355,16762
+
+src/gudhi/allocator.h,270
+#define ALLOCATOR_H_24,953
+  typedef std::allocator_traits<Base> Base_traits;36,1201
+  template <class U> struct rebind 37,1252
+    typedef no_init_allocator<U,U38,1289
+    typedef no_init_allocator<U, typename Base_traits::template rebind_alloc<U>> other;38,1289
+
+src/gudhi/Bitmap_cubical_complex.h,3391
+#define BITMAP_CUBICAL_COMPLEX_H_24,967
+class Bitmap_cubical_complex 60,2075
+  typedef std::size_t Simplex_key;65,2258
+  typedef typename T::filtration_type Filtration_value;66,2293
+  typedef Simplex_key Simplex_handle;67,2349
+  Bitmap_cubical_complex(81,2831
+  Bitmap_cubical_complex(100,3710
+  Bitmap_cubical_complex(119,4836
+  virtual ~Bitmap_cubical_complex(136,5704
+  std::size_t num_simplices(145,5939
+  static Simplex_handle null_simplex(150,6104
+  inline std::size_t dimension(160,6338
+  inline unsigned dimension(165,6485
+  Filtration_value filtration(176,6809
+  static Simplex_key null_key(188,7231
+  Simplex_key key(198,7473
+  Simplex_handle simplex(211,7804
+  void assign_key(224,8126
+  typedef typename std::vector<Simplex_handle>::iterator Boundary_simplex_iterator;245,8783
+  typedef typename std::vector<Simplex_handle> Boundary_simplex_range;246,8867
+  class Filtration_simplex_iterator 256,9311
+    Filtration_simplex_iterator(260,9550
+    Filtration_simplex_iterator(262,9633
+    Filtration_simplex_iterator operator++(264,9694
+    Filtration_simplex_iterator operator++(272,9890
+    Filtration_simplex_iterator& operator=(operator=278,10035
+    bool operator==(operator==287,10305
+    bool operator!=(operator!=294,10544
+    Simplex_handle operator*(301,10766
+    Bitmap_cubical_complex<T>* b;311,11011
+    std::size_t position;312,11045
+  class Filtration_simplex_range 318,11180
+    typedef Filtration_simplex_iterator const_iterator;322,11373
+    typedef Filtration_simplex_iterator iterator;323,11429
+    Filtration_simplex_range(325,11480
+    Filtration_simplex_iterator begin(327,11550
+    Filtration_simplex_iterator end(334,11744
+    Bitmap_cubical_complex<T>* b;344,12021
+  Boundary_simplex_range boundary_simplex_range(354,12321
+  Filtration_simplex_range filtration_simplex_range(360,12594
+  std::pair<std::pair382,13675
+  std::pair<Simplex_handle, Simplex_handle> endpoints(382,13675
+  class Skeleton_simplex_iterator 401,14421
+    Skeleton_simplex_iterator(405,14658
+    Skeleton_simplex_iterator(417,15151
+    Skeleton_simplex_iterator operator++(419,15224
+    Skeleton_simplex_iterator operator++(432,15702
+    Skeleton_simplex_iterator& operator=(operator=438,15843
+    bool operator==(operator==448,16146
+    bool operator!=(operator!=455,16340
+    Simplex_handle operator*(462,16558
+    Bitmap_cubical_complex<T>* b;472,16766
+    std::size_t position;473,16800
+    unsigned dimension;474,16826
+  class Skeleton_simplex_range 480,16955
+    typedef Skeleton_simplex_iterator const_iterator;484,17146
+    typedef Skeleton_simplex_iterator iterator;485,17200
+    Skeleton_simplex_range(487,17249
+    Skeleton_simplex_iterator begin(489,17359
+    Skeleton_simplex_iterator end(496,17563
+    Bitmap_cubical_complex<T>* b;506,17830
+    unsigned dimension;507,17864
+  Skeleton_simplex_range skeleton_simplex_range(513,17989
+  std::vector<std::size_t> key_associated_to_simplex;523,18291
+  std::vector<std::size_t> simplex_associated_to_key;524,18345
+void Bitmap_cubical_complex<T>::initialize_simplex_associated_to_key(initialize_simplex_associated_to_key528,18452
+class is_before_in_filtration 548,19363
+  explicit is_before_in_filtration(550,19404
+  bool operator()(operator()552,19484
+    typedef typename T::filtration_type 555,19737
+  Bitmap_cubical_complex<T>* CC_;573,20400
+
+src/gudhi/common_persistence_representations.h,318
+#define COMMON_PERSISTENCE_REPRESENTATIONS_H_24,979
+double minus_length(51,1812
+double birth_plus_deaths(52,1892
+std::pair<double, double> compute_parameters_of_a_line(59,2129
+double find_zero_of_a_line_segment_between_those_two_points(70,2557
+bool compare_points_sorting(95,3754
+double function_value(116,4310
+
+src/gudhi/Points_off_io.h,481
+#define POINTS_OFF_IO_H_23,961
+class Points_off_visitor_reader 38,1252
+  std::vector<Point_d> point_cloud;40,1296
+  void init(53,1808
+  void point(79,2868
+  void maximal_face(92,3297
+  void done(95,3419
+  const std::vector<Point_d>& get_point_cloud(101,3508
+class Points_off_reader 134,4543
+  Points_off_reader(143,4835
+  bool is_valid(162,5433
+  const std::vector<Point_d>& get_point_cloud(170,5554
+  std::vector<Point_d> point_cloud;176,5677
+  bool valid_;178,5750
+
+src/gudhi/Tangential_complex.h,4374
+#define TANGENTIAL_COMPLEX_H_24,964
+namespace sps 76,2396
+namespace Gudhi 78,2439
+namespace tangential_complex 80,2458
+class Vertex_data 84,2517
+  Vertex_data(86,2546
+  operator std::size_t(size_t88,2641
+  operator std::size_t(size_t90,2686
+  std::size_t m_data;93,2747
+template <typename Kernel_,121,4118
+          typename DimensionTag,122,4170
+          typename Concurrency_tag 123,4227
+  typedef Kernel_ K;125,4352
+  typedef typename K::FT 126,4373
+  typedef typename K::Point_d 127,4402
+  typedef typename K::Weighted_point_d 128,4439
+  typedef typename K::Vector_d 129,4494
+  typedef typename CGAL::Default::Get<CGAL::Default::Get131,4534
+  typedef typename Triangulation::Geom_traits 141,5113
+  typedef typename Triangulation::Weighted_point 142,5170
+  typedef typename Tr_traits::Base::Point_d 143,5229
+  typedef typename Triangulation::Vertex_handle 144,5288
+  typedef typename Triangulation::Full_cell_handle 145,5354
+  typedef typename Tr_traits::Vector_d 146,5426
+  typedef tbb::mutex Mutex_for_perturb;149,5504
+  typedef Vector Translation_for_perturb;150,5544
+  typedef std::vector<Atomic_wrapper<FT> > Weights;151,5586
+  typedef Vector Translation_for_perturb;153,5644
+  typedef std::vector<FT> Weights;154,5686
+  typedef std::vector<Translation_for_perturb> Translations_for_perturb;156,5728
+  struct Tr_and_VH 160,5870
+    Tr_and_VH(162,5902
+    Tr_and_VH(164,5935
+    ~Tr_and_VH(166,5993
+    Triangulation &construct_triangulation(construct_triangulation168,6040
+    void destroy_triangulation(174,6176
+    Triangulation &tr(tr179,6256
+    Triangulation const &tr(tr181,6299
+    Tr_vertex_handle const &center_vertex(center_vertex183,6354
+    Tr_vertex_handle &center_vertex(center_vertex185,6433
+    Triangulation *m_tr;m_tr188,6512
+    Tr_vertex_handle m_center_vertex;189,6537
+  typedef Basis<K> Tangent_space_basis;193,6590
+  typedef Basis<K> Orthogonal_space_basis;194,6630
+  typedef std::vector<Tangent_space_basis> TS_container;195,6673
+  typedef std::vector<Orthogonal_space_basis> OS_container;196,6730
+  typedef std::vector<Point> Points;198,6791
+  typedef boost::container::flat_set<std::size_t> Simplex;200,6829
+  typedef std::set<Simplex> Simplex_set;201,6888
+  typedef sps::Kd_tree_search<K, Points> Points_ds;204,6940
+  typedef typename Points_ds::KNS_range 205,6992
+  typedef typename Points_ds::INS_range 206,7043
+  typedef std::vector<Tr_and_VH> Tr_container;208,7095
+  typedef std::vector<Vector> Vectors;209,7142
+  typedef boost::container::flat_set<std::size_t> Incident_simplex;213,7271
+  typedef std::vector<Incident_simplex> Star;214,7339
+  typedef std::vector<Star> Stars_container;215,7385
+  typedef internal::Simplicial_complex Simplicial_complex;227,7679
+  struct Fix_inconsistencies_info 372,13034
+  struct Num_inconsistencies 534,19877
+  class Compare_distance_to_ref_point 884,33217
+    Compare_distance_to_ref_point(886,33268
+    bool operator()(operator()888,33357
+    Point const &m_ref;m_ref894,33563
+    K const &m_k;m_k895,33587
+  class Compute_tangent_triangulation 900,33685
+    Tangential_complex &m_tc;m_tc901,33725
+    Compute_tangent_triangulation(905,33786
+    Compute_tangent_triangulation(908,33878
+    void operator()(operator()911,33993
+  class Refresh_tangent_triangulation 917,34214
+    Tangential_complex &m_tc;m_tc918,34254
+    Points_ds const &m_updated_pts_ds;m_updated_pts_ds919,34284
+    Refresh_tangent_triangulation(923,34354
+    Refresh_tangent_triangulation(927,34521
+    void operator()(operator()931,34684
+  class Try_to_solve_inconsistencies_in_a_local_triangulation 1536,61114
+    Tangential_complex &m_tc;m_tc1537,61178
+    double m_max_perturb;1538,61208
+    tbb::combinable<std::size_t> &m_num_inconsistencies;m_num_inconsistencies1539,61234
+    tbb::combinable<std::vector<std::size_t> > &m_updated_points;m_updated_points1540,61291
+    Try_to_solve_inconsistencies_in_a_local_triangulation(1544,61388
+    Try_to_solve_inconsistencies_in_a_local_triangulation(1553,61895
+    void operator()(operator()1561,62239
+      typedef std::vector<std::pair<Simplex, int> > Star_using_triangles;1726,68761
+    typedef Simplicial_complex::Simplex Simplex;1856,74273
+    typedef Simplicial_complex::Simplex_set Simplex_set;1857,74322
+      typedef std::vector<Simplex> Triangles;1886,75640
+
+src/gudhi/Cech_complex_blocker.h,207
+#define CECH_COMPLEX_BLOCKER_H_24,969
+class Cech_blocker 51,1769
+  bool operator()(operator()63,2335
+  Cech_blocker(80,2982
+  SimplicialComplexForCech* sc_ptr_;83,3102
+  Cech_complex* cc_ptr_;84,3139
+
+src/gudhi/Cech_complex.h,317
+#define CECH_COMPLEX_H_24,961
+class Cech_complex 56,2205
+  Cech_complex(83,3402
+  void create_complex(101,4322
+  Filtration_value max_radius(113,4930
+  const Point& get_point(118,5076
+  Proximity_graph cech_skeleton_graph_;121,5173
+  Filtration_value max_radius_;122,5213
+  Point_cloud point_cloud_;123,5245
+
+src/gudhi/PSSK.h,131
+#define PSSK_H_24,949
+class PSSK 46,1651
+  PSSK(48,1731
+  PSSK(50,1770
+  PSSK(57,2097
+void PSSK::construct(construct77,3142
+
+src/gudhi/Debug_utils.h,425
+#define DEBUG_UTILS_H_23,956
+  #define GUDHI_DEBUG29,1076
+  #define GUDHI_CHECK(35,1343
+  #define GUDHI_CHECK_code(36,1426
+  #define GUDHI_CHECK(38,1470
+  #define GUDHI_CHECK_code(39,1520
+#define PRINT(42,1561
+  #define DBG(46,1678
+  #define DBGMSG(47,1736
+  #define DBGVALUE(48,1803
+  #define DBGCONT(49,1879
+  #define DBG(51,2017
+  #define DBGMSG(52,2043
+  #define DBGVALUE(53,2075
+  #define DBGCONT(54,2106
+
+src/gudhi/read_persistence_from_file.h,70
+#define READ_PERSISTENCE_FROM_FILE_H_24,971
+namespace Gudhi 37,1226
+
+src/gudhi/Sparse_rips_complex.h,711
+#define SPARSE_RIPS_COMPLEX_H_24,957
+class Sparse_rips_complex 55,1877
+  typedef typename boost::adjacency_list<boost::adjacency_list58,2000
+      Graph;61,2279
+  typedef int Vertex_handle;63,2293
+ public:public65,2323
+  Sparse_rips_complex(74,2693
+  Sparse_rips_complex(94,3794
+  void create_complex(109,4591
+  struct Ker 120,5005
+    typedef std::size_t Point_d;121,5020
+    Ker(122,5080
+    typedef Distance Squared_distance_d;124,5162
+    Squared_distance_d& squared_distance_d_object(125,5203
+    Distance& dist;126,5278
+  template <typename PointRange,130,5343
+  template <typename PointRange, typename ParamRange,130,5343
+  void compute_sparse_graph(131,5416
+  Graph graph_;168,6782
+
+src/gudhi/Tangential_complex/config.h,141
+#define TANGENTIAL_COMPLEX_CONFIG_H_24,971
+#define GUDHI_TC_PERTURB_POSITION35,1356
+const std::size_t GUDHI_TC_BASE_VALUE_FOR_PCA 41,1573
+
+src/gudhi/Tangential_complex/utilities.h,1180
+#define TANGENTIAL_COMPLEX_UTILITIES_H_24,974
+struct Atomic_wrapper49,1518
+  typedef std::atomic<T> Base;51,1566
+  Atomic_wrapper(53,1598
+  Atomic_wrapper(55,1622
+  Atomic_wrapper(57,1666
+  Atomic_wrapper(59,1730
+  Atomic_wrapper &operator=(operator=61,1802
+  Atomic_wrapper &operator=(operator=66,1895
+  Atomic_wrapper &operator=(operator=71,2008
+typename K::Vector_d& normalize_vector(79,2169
+struct Basis 87,2461
+  typedef typename Kernel::FT FT;88,2476
+  typedef typename Kernel::Point_d Point;89,2510
+  typedef typename Kernel::Vector_d Vector;90,2552
+  typedef typename std::vector<Vector>::const_iterator const_iterator;91,2596
+  std::size_t m_origin;93,2668
+  std::vector<Vector> m_vectors;94,2692
+  std::size_t origin(96,2726
+  void set_origin(100,2783
+  const_iterator begin(104,2841
+  const_iterator end(108,2909
+  std::size_t size(112,2973
+  void push_back(124,3196
+  void reserve(128,3265
+  Basis(132,3334
+  Basis(134,3349
+  Basis(136,3401
+  int dimension(139,3515
+template <typename Kernel,146,3654
+std::ostream &export_point_set(export_point_set147,3703
+template <typename Elements_container,174,4595
+void combinations(175,4660
+
+src/gudhi/Tangential_complex/Simplicial_complex.h,1590
+#define TANGENTIAL_COMPLEX_SIMPLICIAL_COMPLEX_H_24,983
+class Simplicial_complex 50,1643
+  typedef boost::container::flat_set<std::size_t> Simplex;52,1679
+  typedef std::set<Simplex> Simplex_set;53,1738
+  bool add_simplex(59,2017
+  const Simplex_set &simplex_range(simplex_range94,3402
+  bool empty(98,3474
+  void clear(102,3526
+  template <typename Test,106,3571
+  void get_simplices_matching_test(107,3618
+  void collapse(120,4027
+    typedef Complex::iterator Simplex_iterator;128,4239
+    typedef std::vector<Simplex_iterator> Simplex_iterator_list;129,4287
+    typedef std::map<Simplex, Simplex_iterator_list> Cofaces_map;130,4352
+  void display_stats(204,7504
+  bool is_pure_pseudomanifold__do_not_check_if_stars_are_connected(229,8320
+    typedef Simplex K_1_face;235,8936
+    typedef std::map<K_1_face, std::size_t> Cofaces_map;236,8966
+  std::size_t num_K_simplices(307,11320
+  std::ptrdiff_t euler_characteristic(326,11904
+  bool is_pure_pseudomanifold(351,12625
+    typedef std::vector<std::vector<Complex::const_iterator> > Stars;376,14268
+          Dm1_faces_to_adj_D_faces;413,15742
+  typedef Simplex_set Complex;524,19962
+  typedef boost::adjacency_list<boost::vecS,boost::vecS527,20026
+  typedef boost::adjacency_list<boost::vecS, boost::vecS,527,20026
+  typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> Adj_graph;527,20026
+  typedef boost::graph_traits<Adj_graph>::vertex_descriptor Graph_vertex;529,20192
+  typedef boost::graph_traits<Adj_graph>::edge_descriptor Graph_edge;530,20266
+  Complex m_complex;532,20337
+
+src/gudhi/Internal_point.h,442
+#define INTERNAL_POINT_H_24,957
+struct Internal_point 34,1249
+  double vec[vec35,1273
+  int point_index;36,1290
+  Internal_point(38,1310
+  Internal_point(40,1334
+  double x(46,1442
+  double y(50,1489
+  double& x(54,1536
+  double& y(58,1578
+inline int null_point_index(71,1802
+struct Construct_coord_iterator 75,1850
+  typedef const double* result_type;76,1884
+  const double* operator(78,1922
+  const double* operator(82,2005
+
+src/gudhi/Persistent_cohomology/Multi_field.h,736
+#define PERSISTENT_COHOMOLOGY_MULTI_FIELD_H_24,980
+class Multi_field 43,1415
+  typedef mpz_class Element;45,1444
+  Multi_field(47,1474
+  void init(55,1679
+  const Element& additive_identity(106,3379
+  const Element& multiplicative_identity(110,3532
+  Element multiplicative_identity(114,3629
+  Element times(131,4171
+  Element plus_equal(135,4268
+  const Element& characteristic(140,4443
+  std::pair<std::pair145,4583
+  std::pair<Element, Element> inverse(145,4583
+  Element times_minus(158,5182
+  Element plus_times_equal(165,5529
+  Element prod_characteristics_;173,5835
+  std::vector<int> primes_;175,5987
+  std::vector<Element> Uvect_;176,6062
+  Element mult_id_all;177,6093
+  const Element add_id_all;178,6116
+
+src/gudhi/Persistent_cohomology/Field_Zp.h,520
+#define PERSISTENT_COHOMOLOGY_FIELD_ZP_H_24,977
+class Field_Zp 38,1270
+  typedef int Element;40,1296
+  Field_Zp(42,1320
+  void init(47,1377
+  Element plus_times_equal(62,1749
+  Element times(73,2063
+  Element plus_equal(77,2169
+  Element additive_identity(82,2355
+  Element multiplicative_identity(86,2492
+  std::pair<std::pair90,2624
+  std::pair<Element, Element> inverse(90,2624
+  Element times_minus(95,2852
+  int characteristic(102,3111
+  int Prime;107,3175
+  std::vector<Element> inverse_;109,3285
+
+src/gudhi/Persistent_cohomology/Persistent_cohomology_column.h,1127
+#define PERSISTENT_COHOMOLOGY_PERSISTENT_COHOMOLOGY_COLUMN_H_24,997
+> base_hook_cam_h;45,1570
+> base_hook_cam_v;49,1755
+class Persistent_cohomology_cell 56,1864
+ public:public58,1952
+  typedef Persistent_cohomology_column<SimplexKey,SimplexKey62,2105
+  typedef Persistent_cohomology_column<SimplexKey, ArithmeticElement> Column;62,2105
+  Persistent_cohomology_cell(64,2184
+  SimplexKey key_;71,2377
+  ArithmeticElement coefficient_;72,2396
+  Column * self_col_;73,2430
+template<typename SimplexKey,85,2707
+class Persistent_cohomology_column 86,2765
+  typedef Persistent_cohomology_cell<SimplexKey,SimplexKey91,2986
+  typedef Persistent_cohomology_cell<SimplexKey, ArithmeticElement> Cell;91,2986
+  typedef boost::intrusive::list<Cell,Cell92,3060
+      boost::intrusive::constant_time_size<boost::intrusive::constant_time_size93,3099
+      boost::intrusive::base_hook<base_hook_cam_v> > Col_type;94,3150
+  explicit Persistent_cohomology_column(97,3254
+  bool is_null(102,3406
+  SimplexKey class_key(108,3632
+  friend bool operator<(113,3749
+  Col_type col_;132,4374
+  SimplexKey class_key_;133,4391
+
+src/gudhi/Strong_witness_complex.h,1236
+#define STRONG_WITNESS_COMPLEX_H_24,974
+class Strong_witness_complex 49,1786
+  typedef typename Nearest_landmark_table_::value_type               Nearest_landmark_range;51,1827
+  typedef std::size_t                                                Witness_id;52,1920
+  typedef std::size_t                                                Landmark_id;53,2001
+  typedef std::pair<Landmark_id,Landmark_id54,2083
+  typedef std::pair<Landmark_id, double>                             Id_distance_pair;54,2083
+  typedef Active_witness<Id_distance_pair,Id_distance_pair55,2170
+  typedef Active_witness<Id_distance_pair, Nearest_landmark_range>   ActiveWitness;55,2170
+  typedef std::list< ActiveWitness >                                 ActiveWitnessList;56,2254
+  typedef std::vector< Landmark_id >                                 typeVectorVertex;57,2342
+  typedef std::vector<Nearest_landmark_range>                        Nearest_landmark_table_internal;58,2429
+  typedef Landmark_id Vertex_handle;59,2531
+  Nearest_landmark_table_internal              nearest_landmark_table_;62,2581
+  Strong_witness_complex(71,2821
+  Strong_witness_complex(82,3374
+  bool create_complex(96,4192
+  void add_all_faces_of_dimension(143,6309
+
+src/gudhi/Edge_contraction.h,35
+#define EDGE_CONTRACTION_H_24,962
+
+src/gudhi/sparsify_point_set.h,147
+#define SPARSIFY_POINT_SET_H_24,964
+  typedef typename Gudhi::spatial_searching::Kd_tree_search<Gudhi::spatial_searching::Kd_tree_search64,2548
+
+src/gudhi/Simplex_tree.h,3793
+#define SIMPLEX_TREE_H_24,959
+  typedef SimplexTreeOptions Options;74,2408
+  typedef typename Options::Indexing_tag 75,2446
+  typedef typename Options::Filtration_value 79,2601
+  typedef typename Options::Simplex_key 83,2747
+  typedef typename Options::Vertex_handle 87,2912
+  typedef Simplex_tree_node_explicit_storage<Simplex_tree> Node;90,3012
+  typedef typename boost::container::flat_map<boost::container::flat_map95,3425
+  typedef Simplex_tree_siblings<Simplex_tree, Dictionary> Siblings;99,3647
+  struct Key_simplex_base_real 101,3716
+    Key_simplex_base_real(102,3749
+    void assign_key(103,3791
+    Simplex_key key(104,3840
+    Simplex_key key_;106,3897
+  struct Key_simplex_base_dummy 108,3924
+    Key_simplex_base_dummy(109,3958
+  typedef typename std::conditional<std::conditional114,4095
+  struct Filtration_simplex_base_real 117,4229
+    Filtration_simplex_base_real(118,4269
+    void assign_filtration(119,4318
+    Filtration_value filtration(120,4380
+    Filtration_value filt_;122,4450
+  struct Filtration_simplex_base_dummy 124,4483
+    Filtration_simplex_base_dummy(125,4524
+    void assign_filtration(126,4563
+    Filtration_value filtration(127,4722
+  typedef typename std::conditional<std::conditional129,4781
+  typedef typename Dictionary::iterator 135,5065
+  typedef typename Dictionary::iterator 138,5132
+  typedef typename Dictionary_it::value_type 139,5187
+  struct return_first 141,5246
+    Vertex_handle operator()(operator()142,5270
+  typedef boost::transform_iterator<return_first, Dictionary_it> Complex_vertex_iterator;159,5848
+  typedef boost::iterator_range<Complex_vertex_iterator> Complex_vertex_range;161,6005
+  typedef Simplex_tree_simplex_vertex_iterator<Simplex_tree> Simplex_vertex_iterator;165,6182
+  typedef boost::iterator_range<Simplex_vertex_iterator> Simplex_vertex_range;167,6322
+  typedef std::vector<Simplex_handle> Cofaces_simplex_range;169,6454
+  typedef Simplex_tree_boundary_simplex_iterator<Simplex_tree> Boundary_simplex_iterator;173,6631
+  typedef boost::iterator_range<Boundary_simplex_iterator> Boundary_simplex_range;175,6792
+  typedef Simplex_tree_complex_simplex_iterator<Simplex_tree> Complex_simplex_iterator;179,6988
+  typedef boost::iterator_range<Complex_simplex_iterator> Complex_simplex_range;181,7144
+  typedef Simplex_tree_skeleton_simplex_iterator<Simplex_tree> Skeleton_simplex_iterator;186,7383
+  typedef boost::iterator_range<Skeleton_simplex_iterator> Skeleton_simplex_range;189,7586
+  typedef std::vector<Simplex_handle> Filtration_simplex_range;191,7764
+  typedef typename Filtration_simplex_range::const_iterator 195,7968
+  bool operator==(operator==355,14985
+  bool operator!=(operator!=363,15236
+  struct is_before_in_filtration 938,40289
+    explicit is_before_in_filtration(939,40324
+    bool operator()(operator()942,40403
+    Simplex_tree * st_;951,40814
+std::ostream& operator<<(1416,61384
+std::istream& operator>>(1428,61780
+  typedef Simplex_tree<T...> ST;1429,61851
+struct Simplex_tree_options_full_featured 1453,62611
+  typedef linear_indexing_tag Indexing_tag;1454,62655
+  typedef int Vertex_handle;1455,62699
+  typedef double Filtration_value;1456,62728
+  typedef std::uint32_t Simplex_key;1457,62763
+  static const bool store_key 1458,62800
+  static const bool store_filtration 1459,62838
+  static const bool contiguous_vertices 1460,62883
+struct Simplex_tree_options_fast_persistence 1469,63227
+  typedef linear_indexing_tag Indexing_tag;1470,63274
+  typedef int Vertex_handle;1471,63318
+  typedef float Filtration_value;1472,63347
+  typedef std::uint32_t Simplex_key;1473,63381
+  static const bool store_key 1474,63418
+  static const bool store_filtration 1475,63456
+  static const bool contiguous_vertices 1476,63501
+
+src/gudhi/Persistence_heat_maps.h,2679
+#define PERSISTENCE_HEAT_MAPS_H_24,966
+namespace Gudhi 41,1311
+class constant_scaling_function 115,3870
+  double operator()(operator()117,3913
+class distance_from_diagonal_scaling 125,4236
+  double operator()(operator()127,4284
+class squared_distance_from_diagonal_scaling 139,4892
+  double operator()(operator()141,4948
+class arc_tan_of_persistence_of_point 152,5489
+  double operator()(operator()154,5538
+class weight_by_setting_maximal_interval_to_have_length_one 166,6086
+  weight_by_setting_maximal_interval_to_have_length_one(168,6157
+  double operator()(operator()169,6263
+  double letngth_of_maximal_interval;174,6450
+template <typename Scalling_of_kernels 186,6897
+  bool operator==(operator==316,13544
+  bool operator!=(operator!=339,14426
+  friend Persistence_heat_maps operator+(393,16555
+  friend Persistence_heat_maps operator-(399,16850
+  friend Persistence_heat_maps operator*(405,17158
+  friend Persistence_heat_maps operator*(411,17401
+  Persistence_heat_maps operator*(417,17644
+  Persistence_heat_maps operator+=(operator+=421,17794
+  Persistence_heat_maps operator-=(operator-=428,17976
+  Persistence_heat_maps operator*=(operator*=435,18158
+  Persistence_heat_maps operator/=(operator/=442,18314
+void Persistence_heat_maps<Scalling_of_kernels>::construct(construct534,22197
+Persistence_heat_maps<Scalling_of_kernels>::Persistence_heat_maps(Persistence_heat_maps639,26397
+Persistence_heat_maps<Scalling_of_kernels>::Persistence_heat_maps(Persistence_heat_maps647,26830
+std::vector<std::vector<double> > Persistence_heat_maps<Scalling_of_kernels>::check_and_initialize_maps(check_and_initialize_maps662,27742
+void Persistence_heat_maps<Scalling_of_kernels>::compute_median(compute_median684,28849
+void Persistence_heat_maps<Scalling_of_kernels>::compute_mean(compute_mean704,29725
+void Persistence_heat_maps<Scalling_of_kernels>::compute_percentage_of_active(compute_percentage_of_active721,30382
+void Persistence_heat_maps<Scalling_of_kernels>::plot(plot744,31202
+void Persistence_heat_maps<Scalling_of_kernels>::print_to_file(print_to_file763,31909
+void Persistence_heat_maps<Scalling_of_kernels>::load_from_file(load_from_file779,32404
+std::vector<double> Persistence_heat_maps<Scalling_of_kernels>::vectorize(vectorize828,33663
+double Persistence_heat_maps<Scalling_of_kernels>::distance(distance848,34257
+double Persistence_heat_maps<Scalling_of_kernels>::project_to_R(project_to_R880,35662
+void Persistence_heat_maps<Scalling_of_kernels>::compute_average(compute_average891,36004
+double Persistence_heat_maps<Scalling_of_kernels>::compute_scalar_product(compute_scalar_product897,36208
+
+src/gudhi/Contraction/Edge_profile.h,1537
+#define CONTRACTION_EDGE_PROFILE_H_24,972
+template<typename GeometricSimplifiableComplex> class Edge_profile 32,1073
+  typedef GeometricSimplifiableComplex Complex;34,1151
+  typedef typename Complex::GT GT;35,1199
+  typedef typename GeometricSimplifiableComplex::Vertex_handle Vertex_handle;37,1235
+  typedef typename GeometricSimplifiableComplex::Root_vertex_handle Root_vertex_handle;38,1313
+  typedef typename GeometricSimplifiableComplex::Edge_handle Edge_handle;41,1403
+  typedef typename GeometricSimplifiableComplex::Graph_vertex Graph_vertex;42,1477
+  typedef typename GeometricSimplifiableComplex::Graph_edge Graph_edge;43,1553
+  typedef typename GeometricSimplifiableComplex::Point Point;44,1625
+  Edge_profile(46,1688
+  virtual ~Edge_profile(54,2133
+  GeometricSimplifiableComplex& complex(56,2164
+  Edge_handle edge_handle(60,2240
+  Graph_edge& edge(64,2306
+  Graph_vertex& v0(68,2375
+  Graph_vertex& v1(72,2443
+  Vertex_handle v0_handle(76,2511
+  Vertex_handle v1_handle(83,2719
+  const Point& p0(90,2928
+  const Point& p1(94,3001
+  friend std::ostream& operator<<(98,3074
+  GeometricSimplifiableComplex& complex_;103,3232
+  Edge_handle edge_handle_;105,3275
+  Vertex_handle v0_;107,3304
+  Vertex_handle v1_;109,3326
+template<typename EdgeProfile> class Edge_profile_factory 112,3351
+  typedef typename EdgeProfile::Edge_handle Edge_handle_;114,3420
+  typedef typename EdgeProfile::Complex Complex_;115,3478
+  virtual EdgeProfile make_profile(117,3529
+  virtual ~Edge_profile_factory(123,3725
+
+src/gudhi/Contraction/CGAL_queue/Modifiable_priority_queue.h,478
+#define CONTRACTION_CGAL_QUEUE_MODIFIABLE_PRIORITY_QUEUE_H_20,818
+#define CGAL_SURFACE_MESH_SIMPLIFICATION_USE_RELAXED_HEAP22,879
+  typedef Modifiable_priority_queue Self;35,1297
+  typedef IndexedType_ IndexedType;37,1340
+  typedef Compare_ Compare;38,1376
+  typedef ID_ ID;39,1404
+  typedef boost::relaxed_heap<IndexedType, Compare, ID> Heap;41,1423
+  typedef typename Heap::value_type 42,1485
+  typedef typename Heap::size_type 43,1533
+  typedef bool handle;45,1580
+
+src/gudhi/Contraction/policies/Dummy_valid_contraction.h,193
+#define CONTRACTION_POLICIES_DUMMY_VALID_CONTRACTION_H_24,992
+class Dummy_valid_contraction 36,1249
+  typedef typename EdgeProfile::Point Point;38,1337
+  bool operator()(operator()40,1383
+
+src/gudhi/Contraction/policies/Link_condition_valid_contraction.h,277
+#define CONTRACTION_POLICIES_LINK_CONDITION_VALID_CONTRACTION_H_24,1001
+class Link_condition_valid_contraction 39,1395
+  typedef typename EdgeProfile::Edge_handle Edge_handle;41,1492
+  typedef typename EdgeProfile::Point Point;42,1549
+  bool operator()(operator()45,1655
+
+src/gudhi/Contraction/policies/Cost_policy.h,283
+#define CONTRACTION_POLICIES_COST_POLICY_H_24,980
+class Cost_policy 37,1217
+  typedef typename EdgeProfile::Point Point;39,1246
+  typedef typename EdgeProfile::Graph_vertex Graph_vertex;40,1291
+  typedef boost::optional<double> Cost_type;42,1351
+  virtual ~Cost_policy(46,1509
+
+src/gudhi/Contraction/policies/First_vertex_placement.h,355
+#define CONTRACTION_POLICIES_FIRST_VERTEX_PLACEMENT_H_24,991
+class First_vertex_placement 36,1260
+  typedef typename EdgeProfile::Point Point;38,1339
+  typedef typename EdgeProfile::Edge_handle Edge_handle;39,1384
+  typedef typename Placement_policy<EdgeProfile>::Placement_type Placement_type;41,1442
+  Placement_type operator()(operator()43,1524
+
+src/gudhi/Contraction/policies/Valid_contraction_policy.h,334
+#define CONTRACTION_POLICIES_VALID_CONTRACTION_POLICY_H_24,993
+class Valid_contraction_policy 35,1220
+  typedef typename EdgeProfile::Point Point;37,1262
+  typedef typename EdgeProfile::Edge_handle Edge_handle;38,1307
+  typedef typename EdgeProfile::Graph_vertex Graph_vertex;39,1364
+  virtual ~Valid_contraction_policy(43,1531
+
+src/gudhi/Contraction/policies/Contraction_visitor.h,619
+#define CONTRACTION_POLICIES_CONTRACTION_VISITOR_H_24,988
+class Contraction_visitor 39,1312
+  typedef EdgeProfile Profile;42,1477
+  typedef double FT;43,1508
+  typedef typename Profile::Complex Complex;44,1529
+  typedef Complex ComplexType;45,1574
+  typedef typename ComplexType::Point Point;46,1605
+  virtual ~Contraction_visitor(48,1651
+  virtual void on_started(53,1764
+  virtual void on_stop_condition_reached(58,1875
+  virtual void on_collected(63,2047
+  virtual void on_selected(68,2252
+  virtual void on_contracting(73,2499
+  virtual void on_contracted(79,2772
+  virtual void on_non_valid(84,2994
+
+src/gudhi/Contraction/policies/Middle_placement.h,410
+#define CONTRACTION_POLICIES_MIDDLE_PLACEMENT_H_24,985
+class Middle_placement 33,1169
+  typedef typename EdgeProfile::Point Point;35,1242
+  typedef typename EdgeProfile::Edge_handle Edge_handle;36,1287
+  typedef typename EdgeProfile::Graph_vertex Graph_vertex;37,1344
+  typedef typename Placement_policy<EdgeProfile>::Placement_type Placement_type;39,1404
+  Placement_type operator()(operator()41,1486
+
+src/gudhi/Contraction/policies/Edge_length_cost.h,258
+#define CONTRACTION_POLICIES_EDGE_LENGTH_COST_H_24,985
+class Edge_length_cost 36,1244
+  typedef typename Cost_policy<EdgeProfile>::Cost_type Cost_type;38,1312
+  typedef typename EdgeProfile::Point Point;39,1378
+  Cost_type operator()(operator()41,1424
+
+src/gudhi/Contraction/policies/Placement_policy.h,235
+#define CONTRACTION_POLICIES_PLACEMENT_POLICY_H_24,985
+class Placement_policy 37,1262
+  typedef typename EdgeProfile::Point Point;39,1296
+  typedef boost::optional<Point> Placement_type;40,1341
+  virtual ~Placement_policy(44,1467
+
+src/gudhi/distance_functions.h,538
+#define DISTANCE_FUNCTIONS_H_24,967
+class Euclidean_distance 46,1502
+  operator()(operator()51,1742
+    typedef typename boost::range_value<boost::range_value54,1859
+  T operator() operator()66,2255
+class Minimal_enclosing_ball_radius 76,2623
+  operator()(operator()89,3103
+  template< typename Point_cloud,101,3550
+            typename Point_iterator 102,3584
+            typename Point 103,3679
+            typename Coordinate_iterator 104,3767
+            typename Coordinate 105,3861
+  operator()(operator()107,3972
+
+src/gudhi/choose_n_farthest_points.h,567
+#define CHOOSE_N_FARTHEST_POINTS_H_24,976
+enum : std::size_t 42,1259
+  random_starting_point 46,1395
+template < typename Kernel,74,3140
+typename Point_range,75,3168
+typename PointOutputIterator,76,3190
+typename DistanceOutputIterator 77,3220
+  std::size_t nb_points 84,3625
+  typename Kernel::Squared_distance_d sqdist 100,4045
+  std::size_t current_number_of_landmarks 102,4124
+  const double infty 103,4197
+  std::size_t curr_max_w 106,4397
+    std::size_t i 112,4692
+    double curr_max_dist 120,4944
+      if (dist_to_L[i] > curr_max_dist)122,5064
+
+src/gudhi/Persistence_intervals_with_distances.h,196
+#define PERSISTENCE_INTERVALS_WITH_DISTANCES_H_24,983
+class Persistence_intervals_with_distances 34,1182
+  using Persistence_intervals::Persistence_intervals;36,1267
+  double distance(48,1932
+
+src/gudhi/Skeleton_blocker/Skeleton_blocker_simple_traits.h,1394
+#define SKELETON_BLOCKER_SKELETON_BLOCKER_SIMPLE_TRAITS_H_24,993
+struct Skeleton_blocker_simple_traits 41,1390
+  struct Root_vertex_handle 50,1963
+    typedef int boost_vertex_handle;51,1993
+    explicit Root_vertex_handle(53,2031
+    boost_vertex_handle vertex;55,2119
+    friend std::ostream& operator<<(69,2486
+  struct Vertex_handle 76,2656
+    typedef int boost_vertex_handle;77,2681
+    explicit Vertex_handle(79,2719
+    operator int(operator int82,2803
+    boost_vertex_handle vertex;86,2877
+    bool operator==(operator==88,2910
+    bool operator!=(operator!=92,3016
+    bool operator<(96,3122
+    friend std::ostream& operator<<(100,3226
+  class Graph_vertex 106,3355
+    bool is_active_;107,3378
+    Root_vertex_handle id_;108,3399
+    virtual ~Graph_vertex(111,3439
+    void activate(113,3472
+    void deactivate(117,3526
+    bool is_active(121,3583
+    void set_id(125,3644
+    Root_vertex_handle get_id(129,3706
+    virtual std::string to_string(133,3771
+    friend std::ostream& operator<<(139,3894
+  class Graph_edge 145,4027
+    Root_vertex_handle a_;146,4048
+    Root_vertex_handle b_;147,4075
+    int index_;148,4102
+    Graph_edge(151,4130
+    int& index(156,4205
+    int index(160,4252
+    void setId(164,4304
+    Root_vertex_handle first(169,4400
+    Root_vertex_handle second(173,4463
+    friend std::ostream& operator<<(177,4527
+
+src/gudhi/Skeleton_blocker/Skeleton_blocker_link_superior.h,1189
+#define SKELETON_BLOCKER_SKELETON_BLOCKER_LINK_SUPERIOR_H_24,993
+class Skeleton_blocker_link_superior 39,1435
+  typedef typename ComplexType::Edge_handle Edge_handle;41,1527
+  typedef typename ComplexType::boost_vertex_handle boost_vertex_handle;43,1585
+  typedef typename ComplexType::Vertex_handle Vertex_handle;46,1668
+  typedef typename ComplexType::Root_vertex_handle Root_vertex_handle;47,1729
+  typedef typename ComplexType::Simplex Simplex;48,1800
+  typedef typename ComplexType::Root_simplex_handle Root_simplex_handle;49,1849
+  typedef typename ComplexType::BlockerMap BlockerMap;50,1922
+  typedef typename ComplexType::BlockerPair BlockerPair;51,1977
+  typedef typename ComplexType::BlockerMapIterator BlockerMapIterator;52,2034
+  typedef typename ComplexType::BlockerMapConstIterator BlockerMapConstIterator;53,2105
+  typedef typename ComplexType::Simplex::Simplex_vertex_const_iterator AddressSimplexConstIterator;54,2186
+  typedef typename ComplexType::Root_simplex_handle::Simplex_vertex_const_iterator IdSimplexConstIterator;55,2286
+  Skeleton_blocker_link_superior(57,2394
+  Skeleton_blocker_link_superior(60,2491
+  Skeleton_blocker_link_superior(65,2773
+
+src/gudhi/Skeleton_blocker/internal/Top_faces.h,83
+#define SKELETON_BLOCKER_INTERNAL_TOP_FACES_H_24,981
+void register_faces(59,1832
+
+src/gudhi/Skeleton_blocker/internal/Trie.h,1513
+#define SKELETON_BLOCKER_INTERNAL_TRIE_H_25,979
+struct Trie 37,1173
+  typedef SimplexHandle Simplex;38,1187
+  typedef typename SimplexHandle::Vertex_handle Vertex_handle;39,1220
+  Vertex_handle v;41,1284
+  std::vector<std::shared_ptr<Trie> > childs;42,1303
+  const Trie* parent_;45,1435
+  Trie(48,1468
+  Trie(50,1495
+  Trie(52,1545
+  bool operator==(operator==54,1614
+  void add_child(58,1691
+  typedef typename Simplex::Simplex_vertex_const_iterator Simplex_vertex_const_iterator;66,1863
+  Trie* make_trie(68,1953
+  void add_simplex_helper(82,2398
+  void maximal_faces_helper(99,2954
+  void add_simplex(110,3205
+  std::vector<Simplex> maximal_faces(116,3355
+  void add_vertices_up_to_the_root(125,3551
+  Simplex simplex(131,3702
+  bool is_leaf(137,3806
+  bool is_root(141,3863
+  const Trie* parent(145,3918
+  void remove_leaf(149,3968
+  bool contains(158,4148
+  Trie* go_bottom_left(179,4684
+  friend std::ostream& operator<<(186,4813
+struct Tries 196,5057
+  typedef typename SimplexHandle::Vertex_handle Vertex_handle;197,5072
+  typedef SimplexHandle Simplex;198,5135
+  typedef Trie<Simplex> STrie;200,5169
+  Tries(203,5249
+  ~Tries(213,5664
+  Simplex positive_neighbors(220,5801
+  bool contains(227,5968
+  friend std::ostream& operator<<(232,6095
+  std::vector<Simplex> next_dimension_simplices(240,6317
+  void init_next_dimension(252,6725
+  mutable std::deque<STrie*> to_see_;258,6839
+  mutable int current_dimension_ 259,6877
+  std::vector<STrie*> cofaces_;260,6915
+
+src/gudhi/Skeleton_blocker/Skeleton_blocker_sub_complex.h,1614
+#define SKELETON_BLOCKER_SKELETON_BLOCKER_SUB_COMPLEX_H_24,991
+class Skeleton_blocker_sub_complex 58,2178
+  typedef typename ComplexType::Graph Graph;62,2313
+  typedef typename ComplexType::Edge_handle Edge_handle;63,2358
+  typedef typename ComplexType::boost_vertex_handle boost_vertex_handle;65,2416
+  using ComplexType::add_vertex;68,2499
+  using ComplexType::add_edge_without_blockers;69,2532
+  using ComplexType::add_blocker;70,2580
+  typedef typename ComplexType::Vertex_handle Vertex_handle;72,2615
+  typedef typename ComplexType::Root_vertex_handle Root_vertex_handle;73,2676
+  typedef typename ComplexType::Simplex Simplex;74,2747
+  typedef typename ComplexType::Root_simplex_handle Root_simplex_handle;75,2796
+  typedef std::map<Root_vertex_handle,Root_vertex_handle82,3080
+  typedef std::map<Root_vertex_handle, Vertex_handle> IdAddressMap;82,3080
+  typedef typename IdAddressMap::value_type AddressPair;83,3148
+  typedef typename IdAddressMap::iterator IdAddressMapIterator;84,3205
+  typedef typename IdAddressMap::const_iterator IdAddressMapConstIterator;85,3269
+  std::map<std::map86,3344
+  std::map<Root_vertex_handle, Vertex_handle> adresses;86,3344
+  Vertex_handle add_vertex(96,3701
+  void add_edge_without_blockers(112,4244
+  void add_blocker(124,4666
+  void make_restricted_complex(135,4975
+  void clear(168,6212
+  boost::optional<Vertex_handle> get_address(177,6414
+  std::vector<boost::optional<Vertex_handle> > get_addresses(200,7139
+bool proper_face_in_union(217,7772
+bool proper_faces_in_union(246,9213
+  typedef typename ComplexType::Vertex_handle 250,9502
+
+src/gudhi/Skeleton_blocker/Skeleton_blocker_off_io.h,1247
+#define SKELETON_BLOCKER_SKELETON_BLOCKER_OFF_IO_H_24,986
+class Skeleton_blocker_off_flag_visitor_reader 40,1303
+  Complex& complex_;41,1352
+  typedef typename Complex::Vertex_handle Vertex_handle;42,1373
+  typedef typename Complex::Point Point;43,1430
+  const bool load_only_points_;45,1472
+  explicit Skeleton_blocker_off_flag_visitor_reader(48,1514
+  void init(52,1689
+  void point(57,1888
+  void maximal_face(61,2002
+  void done(70,2301
+class Skeleton_blocker_off_visitor_reader 77,2455
+  Complex& complex_;78,2499
+  typedef typename Complex::Vertex_handle Vertex_handle;79,2520
+  typedef typename Complex::Simplex Simplex;80,2577
+  typedef typename Complex::Point Point;81,2622
+  const bool load_only_points_;83,2664
+  std::vector<Point> points_;84,2696
+  std::vector<Simplex> maximal_faces_;85,2726
+  explicit Skeleton_blocker_off_visitor_reader(88,2775
+  void init(92,2945
+  void point(97,3095
+  void maximal_face(101,3203
+  void done(110,3417
+class Skeleton_blocker_off_reader 120,3739
+  Skeleton_blocker_off_reader(127,3958
+  bool is_valid(146,4719
+  bool valid_;151,4779
+class Skeleton_blocker_off_writer 155,4825
+  Skeleton_blocker_off_writer(162,5026
+    typedef typename Complex::Vertex_handle 163,5118
+
+src/gudhi/Skeleton_blocker/Skeleton_blocker_complex_visitor.h,786
+#define SKELETON_BLOCKER_SKELETON_BLOCKER_COMPLEX_VISITOR_H_24,995
+class Skeleton_blocker_complex_visitor 38,1339
+  virtual ~Skeleton_blocker_complex_visitor(40,1389
+class Dummy_complex_visitor 76,2643
+  void on_add_vertex(79,2740
+  void on_remove_vertex(81,2781
+  void on_add_edge_without_blockers(83,2825
+  void on_remove_edge(85,2900
+  void on_changed_edge(87,2961
+  void on_swaped_edge(89,3023
+  void on_add_blocker(91,3101
+  void on_delete_blocker(93,3176
+class Print_complex_visitor 102,3386
+  void on_add_vertex(105,3483
+  void on_remove_vertex(109,3581
+  void on_add_edge_without_blockers(113,3685
+  void on_remove_edge(117,3842
+  void on_changed_edge(121,3971
+  void on_swaped_edge(125,4102
+  void on_add_blocker(129,4260
+  void on_delete_blocker(133,4393
+
+src/gudhi/Skeleton_blocker/iterators/Skeleton_blockers_blockers_iterators.h,889
+#define SKELETON_BLOCKER_ITERATORS_SKELETON_BLOCKERS_BLOCKERS_ITERATORS_H_24,1009
+class Blocker_iterator_internal 39,1409
+  MapIteratorType current_position;46,1597
+  MapIteratorType end_of_map;47,1633
+  Blocker_iterator_internal(50,1673
+  Blocker_iterator_internal(52,1729
+  bool equal(55,1877
+  void increment(59,1998
+  ReturnType dereference(63,2049
+  void goto_next_blocker(73,2356
+  bool first_time_blocker_is_seen(79,2507
+template<typename MapIteratorType,90,2810
+class Blocker_iterator_around_vertex_internal 91,2866
+  MapIteratorType current_position_;98,3082
+  Blocker_iterator_around_vertex_internal(101,3129
+  Blocker_iterator_around_vertex_internal(103,3200
+  Blocker_iterator_around_vertex_internal& operator=(operator=106,3309
+  bool equal(111,3489
+  void increment(115,3626
+  ReturnType dereference(119,3677
+  MapIteratorType current_position(123,3757
+
+src/gudhi/Skeleton_blocker/iterators/Skeleton_blockers_iterators.h,74
+#define SKELETON_BLOCKER_ITERATORS_SKELETON_BLOCKERS_ITERATORS_H_24,1021
+
+src/gudhi/Skeleton_blocker/iterators/Skeleton_blockers_triangles_iterators.h,1795
+#define SKELETON_BLOCKER_ITERATORS_SKELETON_BLOCKERS_TRIANGLES_ITERATORS_H_24,1010
+class Triangle_around_vertex_iterator 39,1398
+  typedef typename LinkType::Vertex_handle Vertex_handle;47,1733
+  typedef typename LinkType::Root_vertex_handle Root_vertex_handle;48,1791
+  typedef typename LinkType::Simplex Simplex;49,1859
+  typedef typename Complex::Complex_edge_iterator Complex_edge_iterator_;50,1905
+  const Complex* complex_;52,1980
+  Vertex_handle v_;53,2007
+  std::shared_ptr<LinkType> link_;54,2027
+  Complex_edge_iterator_ current_edge_;55,2062
+  bool is_end_;56,2102
+  Triangle_around_vertex_iterator(59,2128
+  Triangle_around_vertex_iterator(67,2449
+  Triangle_around_vertex_iterator(73,2664
+  Triangle_around_vertex_iterator(76,2758
+  bool equal(87,3021
+  Simplex dereference(91,3212
+  void increment(97,3458
+  bool finished(102,3515
+class Triangle_iterator 114,3783
+  typedef typename SkeletonBlockerComplex::Vertex_handle Vertex_handle;121,4068
+  typedef typename SkeletonBlockerComplex::Root_vertex_handle Root_vertex_handle;122,4140
+  typedef typename SkeletonBlockerComplex::Simplex Simplex;123,4222
+  typedef typename SkeletonBlockerComplex::Superior_triangle_around_vertex_iterator STAVI;124,4282
+  typedef typename SkeletonBlockerComplex::Complex_vertex_iterator Complex_vertex_iterator;125,4373
+  const SkeletonBlockerComplex* complex_;127,4466
+  Complex_vertex_iterator current_vertex_;128,4508
+  STAVI current_triangle_;129,4551
+  bool is_end_;130,4578
+  Triangle_iterator(136,4666
+  void gotoFirstTriangle(147,5061
+  Triangle_iterator(158,5309
+  Triangle_iterator& operator=(operator=164,5571
+  bool equal(171,5765
+  Simplex dereference(180,6352
+  void goto_next_vertex(187,6531
+  void increment(203,6925
+  bool is_finished(215,7189
+
+src/gudhi/Skeleton_blocker/iterators/Skeleton_blockers_vertices_iterators.h,1423
+#define SKELETON_BLOCKER_ITERATORS_SKELETON_BLOCKERS_VERTICES_ITERATORS_H_24,1009
+class Vertex_iterator 40,1437
+  typedef typename SkeletonBlockerComplex::boost_vertex_iterator boost_vertex_iterator;46,1722
+  typedef typename SkeletonBlockerComplex::Vertex_handle Vertex_handle;47,1810
+  const SkeletonBlockerComplex* complex;49,1892
+  std::pair<std::pair50,1933
+  std::pair<boost_vertex_iterator, boost_vertex_iterator> vertexIterator;50,1933
+  Vertex_iterator(54,2018
+  Vertex_iterator(56,2059
+  Vertex_iterator(67,2320
+  void increment(73,2525
+  Vertex_handle dereference(77,2574
+  bool equal(81,2670
+  bool operator<(85,2805
+  bool finished(90,2923
+  void goto_next_valid(94,3012
+  bool is_active(101,3142
+class Neighbors_vertices_iterator 107,3294
+  typedef SkeletonBlockerComplex Complex;113,3603
+  typedef typename Complex::boost_adjacency_iterator boost_adjacency_iterator;114,3645
+  typedef typename Complex::Vertex_handle Vertex_handle;115,3724
+  typedef typename Complex::Edge_handle Edge_handle;116,3781
+  const Complex* complex;119,3845
+  Vertex_handle v;120,3871
+  boost_adjacency_iterator current_;122,3891
+  boost_adjacency_iterator end_;123,3928
+  Neighbors_vertices_iterator(126,3971
+  Neighbors_vertices_iterator(128,4024
+  Neighbors_vertices_iterator(137,4265
+  void increment(144,4482
+  Vertex_handle dereference(149,4552
+  bool equal(153,4634
+  void set_end(159,4862
+
+src/gudhi/Skeleton_blocker/iterators/Skeleton_blockers_edges_iterators.h,1286
+#define SKELETON_BLOCKER_ITERATORS_SKELETON_BLOCKERS_EDGES_ITERATORS_H_24,1006
+class Edge_around_vertex_iterator 36,1294
+  typedef SkeletonBlockerComplex Complex;41,1597
+  typedef typename Complex::boost_adjacency_iterator boost_adjacency_iterator;42,1639
+  typedef typename Complex::Vertex_handle Vertex_handle;43,1718
+  typedef typename Complex::Edge_handle Edge_handle;44,1775
+  const Complex* complex;47,1839
+  Vertex_handle v;48,1865
+  boost_adjacency_iterator current_;50,1885
+  boost_adjacency_iterator end_;51,1922
+  Edge_around_vertex_iterator(54,1965
+  Edge_around_vertex_iterator(56,2018
+  Edge_around_vertex_iterator(65,2259
+  bool equal(72,2476
+  void increment(76,2657
+  Edge_handle dereference(81,2727
+  void set_end(87,2888
+class Edge_iterator 97,3045
+  typedef SkeletonBlockerComplex Complex;104,3330
+  typedef typename Complex::boost_edge_iterator boost_edge_iterator;105,3372
+  typedef typename Complex::Edge_handle Edge_handle;106,3441
+  const Complex* complex;108,3495
+  std::pair<std::pair109,3521
+  std::pair<boost_edge_iterator, boost_edge_iterator> edge_iterator;109,3521
+  Edge_iterator(111,3591
+  Edge_iterator(113,3630
+  Edge_iterator(120,3819
+  bool equal(126,4020
+  void increment(130,4155
+  Edge_handle dereference(136,4273
+
+src/gudhi/Skeleton_blocker/iterators/Skeleton_blockers_simplices_iterators.h,3419
+#define SKELETON_BLOCKER_ITERATORS_SKELETON_BLOCKERS_SIMPLICES_ITERATORS_H_24,1010
+class Simplex_around_vertex_iterator 50,1857
+  typedef SkeletonBlockerComplex Complex;57,2154
+  typedef typename Complex::Vertex_handle Vertex_handle;58,2196
+  typedef typename Complex::Edge_handle Edge_handle;59,2253
+  typedef typename Complex::Simplex Simplex;60,2306
+  typedef typename Link::Vertex_handle Link_vertex_handle;63,2444
+  typedef typename Gudhi::skeleton_blocker::Trie<Simplex> Trie;65,2504
+  const Complex* complex;68,2579
+  Vertex_handle v;69,2605
+  std::shared_ptr<Link> link_v;70,2624
+  std::shared_ptr<Trie> trie;71,2656
+  std::list<Trie*> nodes_to_be_seen;73,2721
+  Simplex_around_vertex_iterator(76,2768
+  Simplex_around_vertex_iterator(78,2821
+  Simplex_around_vertex_iterator(88,3141
+      v(103,3569
+  void compute_trie_and_nodes_to_be_seen(108,3613
+  Trie* build_trie(122,4169
+  bool is_node_in_complex(136,4643
+  Vertex_handle parent_vertex(140,4705
+  friend std::ostream& operator<<(145,4860
+  bool equal(151,5097
+  void increment(172,5711
+  Simplex dereference(183,5944
+  Simplex get_trie_address(189,6103
+  void set_end(195,6231
+  bool is_end(199,6285
+class Simplex_iterator 205,6396
+  typedef Skeleton_blocker_link_superior<SkeletonBlockerComplex> Link;211,6615
+  typedef SkeletonBlockerComplex Complex;217,6797
+  typedef typename Complex::Vertex_handle Vertex_handle;218,6839
+  typedef typename Complex::Edge_handle Edge_handle;219,6896
+  typedef typename Complex::Simplex Simplex;220,6949
+  typedef typename Complex::Complex_vertex_iterator Complex_vertex_iterator;221,6994
+  typedef typename Link::Vertex_handle Link_vertex_handle;222,7071
+  const Complex* complex_;225,7141
+  Complex_vertex_iterator current_vertex_;226,7168
+  typedef Simplex_around_vertex_iterator<SkeletonBlockerComplex,SkeletonBlockerComplex228,7212
+  typedef Simplex_around_vertex_iterator<SkeletonBlockerComplex, Link> SAVI;228,7212
+  SAVI current_simplex_around_current_vertex_;229,7289
+  SAVI simplices_around_current_vertex_end_;230,7336
+  Simplex_iterator(233,7391
+  Simplex_iterator(235,7431
+  Simplex_iterator(245,7806
+  Simplex_iterator(251,7916
+  bool equal(269,8564
+  void increment(278,8917
+  void goto_next_vertex(288,9254
+  Simplex dereference(296,9513
+  void set_end(301,9625
+  bool is_end(305,9703
+template<typename SkeletonBlockerComplex,313,9877
+class Simplex_coboundary_iterator 314,9934
+  typedef SkeletonBlockerComplex Complex;318,10222
+  typedef typename Complex::Vertex_handle Vertex_handle;319,10264
+  typedef typename Complex::Edge_handle Edge_handle;320,10321
+  typedef typename Complex::Simplex Simplex;321,10374
+  typedef typename Complex::Complex_vertex_iterator Complex_vertex_iterator;322,10419
+  typedef typename Link::Vertex_handle Link_vertex_handle;325,10589
+  const Complex* complex;328,10659
+  const Simplex& sigma;329,10685
+  std::shared_ptr<Link> link;330,10709
+  Complex_vertex_iterator current_vertex;331,10739
+  Complex_vertex_iterator link_vertex_end;332,10781
+  Simplex_coboundary_iterator(335,10834
+  Simplex_coboundary_iterator(337,10884
+  Simplex_coboundary_iterator(347,11276
+  Simplex_coboundary_iterator(355,11560
+  Vertex_handle parent_vertex(363,11847
+  friend std::ostream& operator<<(368,12000
+  bool equal(373,12207
+  void increment(380,12474
+  Simplex dereference(384,12522
+  bool is_end(391,12661
+
+src/gudhi/Skeleton_blocker/Skeleton_blocker_simplex.h,1555
+#define SKELETON_BLOCKER_SKELETON_BLOCKER_SIMPLEX_H_24,987
+class Skeleton_blocker_simplex 50,1570
+  std::set<T> simplex_set;52,1613
+  typedef typename T::boost_vertex_handle boost_vertex_handle;55,1650
+  typedef T Vertex_handle;57,1714
+  typedef typename std::set<T>::const_iterator Simplex_vertex_const_iterator;59,1742
+  typedef typename std::set<T>::iterator Simplex_vertex_iterator;60,1820
+  void clear(66,1957
+  Skeleton_blocker_simplex(70,2004
+  explicit Skeleton_blocker_simplex(77,2196
+  void add_vertices(82,2311
+  void add_vertices(87,2404
+  void add_vertices(91,2455
+  explicit Skeleton_blocker_simplex(96,2550
+  void add_vertex(122,3284
+  void remove_vertex(129,3396
+  void intersection(136,3515
+  void difference(151,3952
+  void union_vertices(167,4351
+  typename std::set<T>::const_iterator begin(177,4690
+  typename std::set<T>::const_iterator end(181,4783
+  typename std::set<T>::const_reverse_iterator rbegin(185,4872
+  typename std::set<T>::const_reverse_iterator rend(189,4975
+  typename std::set<T>::iterator begin(193,5074
+  typename std::set<T>::iterator end(197,5154
+  int dimension(209,5326
+  bool empty(213,5394
+  T first_vertex(222,5582
+  T last_vertex(232,5786
+  bool contains(240,5945
+  bool contains_difference(248,6232
+  bool contains_difference(274,6886
+  bool contains_difference(299,7475
+  bool contains(321,7989
+  bool disjoint(325,8078
+  bool operator==(operator==336,8436
+  bool operator!=(operator!=340,8559
+  bool operator<(344,8682
+  friend std::ostream& operator<<(352,8964
+
+src/gudhi/Skeleton_blocker/Skeleton_blocker_simple_geometric_traits.h,798
+#define SKELETON_BLOCKER_SKELETON_BLOCKER_SIMPLE_GEOMETRIC_TRAITS_H_24,1003
+struct Skeleton_blocker_simple_geometric_traits 42,1477
+  typedef GeometryTrait GT;45,1576
+  typedef typename GT::Point Point;46,1604
+  typedef typename Skeleton_blocker_simple_traits::Root_vertex_handle Root_vertex_handle;47,1640
+  typedef typename Skeleton_blocker_simple_traits::Graph_vertex Simple_vertex;48,1730
+  class Simple_geometric_vertex 53,1864
+    Point point_;56,2025
+    Point& point(58,2044
+    const Point& point(62,2093
+  class Simple_geometric_edge 67,2159
+    int index_;69,2245
+    Simple_geometric_edge(71,2272
+    int& index(80,2558
+    int index(84,2605
+  typedef Simple_geometric_vertex Graph_vertex;89,2662
+  typedef Skeleton_blocker_simple_traits::Graph_edge Graph_edge;90,2710
+
+src/gudhi/Skeleton_blocker.h,60
+#define SKELETON_BLOCKER_H_24,962
+namespace skbl 246,9962
+
+src/gudhi/Clock.h,461
+#define CLOCK_H_24,953
+class Clock 32,1047
+  Clock(35,1105
+  void begin(41,1276
+  void end(47,1398
+  std::string message(52,1495
+  void print(57,1586
+  friend std::ostream& operator<<(61,1651
+  double num_seconds(72,2033
+  mutable std::chrono::time_point<std::chrono::system_clock> startTime,82,2374
+  mutable std::chrono::time_point<std::chrono::system_clock> startTime, endTime;82,2374
+  mutable bool end_called;83,2455
+  std::string msg;84,2482
+
+src/gudhi/Persistent_cohomology.h,3530
+#define PERSISTENT_COHOMOLOGY_H_24,968
+class Persistent_cohomology 64,2101
+  typedef FilteredComplex Complex_ds;66,2140
+  typedef typename Complex_ds::Simplex_key Simplex_key;68,2247
+  typedef typename Complex_ds::Simplex_handle Simplex_handle;69,2303
+  typedef typename Complex_ds::Filtration_value Filtration_value;70,2365
+  typedef typename CoefficientField::Element Arith_element;71,2431
+  typedef Persistent_cohomology_column<Simplex_key,Simplex_key74,2549
+  typedef Persistent_cohomology_column<Simplex_key, Arith_element> Column;74,2549
+  typedef typename Column::Cell Cell;76,2663
+  typedef boost::intrusive::list<Cell,Cell78,2824
+      boost::intrusive::constant_time_size<boost::intrusive::constant_time_size79,2863
+      boost::intrusive::base_hook<base_hook_cam_h> > Hcell;80,2914
+  typedef boost::intrusive::set<Column,Column82,2975
+      boost::intrusive::constant_time_size<false> > Cam;83,3015
+  typedef std::vector<std::pair<std::pair85,3146
+  typedef std::vector<std::pair<Simplex_key, Arith_element> > A_ds_type;85,3146
+  typedef std::tuple<Simplex_handle,Simplex_handle87,3313
+  typedef std::tuple<Simplex_handle, Simplex_handle,87,3313
+  typedef std::tuple<Simplex_handle, Simplex_handle, Arith_element> Persistent_interval;87,3313
+  explicit Persistent_cohomology(95,3697
+  Persistent_cohomology(131,5687
+  ~Persistent_cohomology(138,5851
+  struct length_interval 148,6140
+    length_interval(149,6167
+    bool operator()(operator()154,6298
+    void set_length(158,6441
+    Complex_ds * cpx_;162,6531
+    Filtration_value min_length_;163,6554
+  void init_coefficients(168,6653
+  void init_coefficients(172,6813
+  void compute_persistent_cohomology(184,7296
+  void update_cohomology_groups_edge(227,8926
+  void annotation_of_the_boundary(296,11513
+    typedef std::pair<Column *, int> annotation_t;302,11864
+  void update_cohomology_groups(360,14658
+  void create_cocycle(405,16645
+  void destroy_cocycle(431,17851
+  void plus_equal_column(507,21159
+  struct cmp_intervals_by_length 554,23037
+    explicit cmp_intervals_by_length(555,23072
+    bool operator()(operator()558,23152
+    Complex_ds * sc_;562,23404
+  void output_diagram(576,23841
+  void write_output_diagram(593,24718
+  std::vector<int> betti_numbers(614,25653
+  int betti_number(633,26315
+  std::vector<int> persistent_betti_numbers(653,27029
+  int persistent_betti_number(675,28296
+  const std::vector<Persistent_interval>& get_persistent_pairs(697,29145
+  std::vector<std::vector705,29487
+  intervals_in_dimension(706,29553
+  struct cocycle 721,30013
+    cocycle(722,30032
+    cocycle(726,30108
+    Hcell * row_;731,30238
+    Arith_element characteristics_;732,30321
+  Complex_ds * cpx_;736,30437
+  int dim_max_;737,30458
+  CoefficientField coeff_field_;738,30474
+  size_t num_simplices_;739,30507
+  std::vector<int> ds_rank_;745,30767
+  std::vector<Simplex_key> ds_parent_;746,30796
+  std::vector<Column *> ds_repr_;747,30835
+  boost::disjoint_sets<boost::disjoint_sets748,30869
+  boost::disjoint_sets<int *, Simplex_key *> dsets_;748,30869
+  Cam cam_;750,30970
+  std::map<std::map754,31214
+  std::map<Simplex_key, Simplex_key> zero_cocycles_;754,31214
+  std::map<std::map756,31288
+  std::map<Simplex_key, cocycle> transverse_idx_;756,31288
+  std::vector<Persistent_interval> persistent_pairs_;758,31368
+  length_interval interval_length_policy;759,31422
+  Simple_object_pool<Column> column_pool_;761,31465
+  Simple_object_pool<Cell> cell_pool_;762,31508
+
+src/gudhi/reader_utils.h,765
+#define READER_UTILS_H_24,987
+namespace Gudhi 41,1382
+template <typename Graph_t,95,2927
+template <typename Graph_t, typename Filtration_value,95,2927
+Graph_t read_graph(96,3006
+  typedef std::pair<Vertex_handle, Vertex_handle> Edge_t;105,3315
+template <typename Vertex_handle,169,4974
+bool read_simplex(170,5035
+template <typename Simplex_key,194,5884
+bool read_hasse_simplex(195,5943
+std::vector<std::vector<Filtration_value>> read_lower_triangular_matrix_from_csv_file(232,6712
+void read_persistence_intervals_and_dimension(307,9070
+inline std::map<int, std::vector<std::pair<double, double>>> read_persistence_intervals_grouped_by_dimension(337,10193
+inline std::vector<std::pair<double, double>> read_persistence_intervals_in_dimension(357,11158
+
+src/gudhi/Rips_complex.h,455
+#define RIPS_COMPLEX_H_24,991
+class Rips_complex 57,1839
+  typedef typename boost::adjacency_list 62,1966
+  , boost::property < edge_filtration_t, Filtration_value >> OneSkeletonGraph;64,2116
+  typedef int Vertex_handle;67,2206
+ public:public69,2236
+  Rips_complex(83,2867
+  Rips_complex(97,3462
+  void create_complex(113,4248
+ private:private123,4665
+  void compute_proximity_graph(136,5256
+  OneSkeletonGraph rips_skeleton_graph_;178,7354
+
+src/vptree.h,1185
+#define VPTREE_H43,1953
+class DataPoint47,1973
+    int _D;49,1991
+    int _ind;50,2003
+    double* _x;51,2017
+    DataPoint(54,2042
+    DataPoint(59,2120
+    DataPoint(65,2307
+    ~DataPoint(73,2657
+    DataPoint& operator= operator=74,2703
+    int index(84,3094
+    int dimensionality(85,3133
+    double x(86,3179
+double euclidean_distance(90,3228
+double cosine_distance(97,3451
+template<typename T,111,3881
+class VpTree112,3944
+    VpTree(117,3995
+    ~VpTree(120,4041
+    void create(125,4135
+    void search(132,4362
+    std::vector<T> _items;158,5179
+    double _tau;159,5206
+    struct Node162,5332
+        int index;164,5354
+        double threshold;165,5412
+        Node* left;166,5457
+        Node* right;167,5524
+        Node(169,5595
+        ~Node(172,5667
+    }* _root;176,5774
+    struct HeapItem 180,5838
+        HeapItem(181,5860
+        int index;183,5940
+        double dist;184,5959
+        bool operator<(185,5980
+    struct DistanceComparator191,6137
+        const T& item;193,6173
+        DistanceComparator(194,6196
+        bool operator()(operator()195,6254
+    Node* buildFromPoints(201,6430
+    void search(238,7755
+
+src/phat/helpers/dualize.h,0
+
+src/phat/compute_persistence_pairs.h,0
+
+src/get_rep_C.cpp,174
+using namespace Rcpp;4,57
+void print_vector(9,83
+std::vector<int> sym_diff(16,217
+SEXP get_rep_C(27,544
+std::vector<int> get_rep_int(64,1801
+SEXP get_rep_lazy(101,3091
+
+src/bicg.cpp,35
+RcppExport SEXP  bicgSparse(7,127
+
+src/createKNNgraph.cpp,948
+using namespace Rcpp;22,337
+using namespace std;23,359
+RcppExport SEXP createKNNgraph_cos(29,439
+RcppExport SEXP createKNNgraph_eu(71,1492
+  hash_func(117,2667
+  subsets(131,2983
+  boundaries(146,3333
+  faces(233,5586
+fVertex 302,7336
+    int ind_;304,7365
+    int dim_;305,7379
+    vector<double> loc_;306,7393
+    fVertex(309,7427
+    fVertex(319,7742
+    fVertex(326,7987
+    vector<double> location(333,8223
+    int dimension(340,8420
+    int index(341,8487
+    double location(342,8546
+  eucl_dist(347,8636
+fSimplex 358,8933
+    string name_;360,8964
+    int npt_;361,8982
+    vector<fVertex> vert_;362,9018
+    fSimplex(364,9101
+    fSimplex(373,9382
+    fVertex circumcenter(380,9655
+    double gabriel_value(425,11080
+    vector<int> indices(432,11307
+    int n(442,11478
+    int npt(443,11515
+    string name(444,11552
+    int index(445,11594
+    fVertex vertex(446,11652
+  filtration_values_C(451,11734
+
+src/remove_back.cpp,59
+using namespace Rcpp;2,18
+NumericVector remove_back(8,99
+
+src/utils.cpp,137
+using namespace Rcpp;14,475
+  reindex_cmplx(18,550
+  lowerbound_rb(31,856
+  onesimplex_hash(72,2236
+  path_1simplex_indices(93,2590
+
+src/cg.cpp,33
+RcppExport SEXP  cgSparse(7,121
+
+src/bh_test.cpp,74
+using namespace Rcpp;7,120
+int computeGCD(10,164
+int computeLCM(15,253
+
+src/build_boundary_C.cpp,115
+using namespace Rcpp;5,72
+std::vector< std::vector<int> > subsetsB 7,95
+RcppExport SEXP build_boundary_C 20,480
+
+src/random_walk_adj.cpp,235
+RcppExport SEXP  C_random_walk_adj(10,213
+RcppExport SEXP  C_random_walk_adj_N(32,880
+RcppExport SEXP  C_random_walk_adj_N_push(64,1865
+RcppExport SEXP  C_random_walk_adj_N_push_std(104,2925
+RcppExport SEXP C_random_walk(150,4166
+
+src/firstleft.cpp,34
+RcppExport SEXP  firstleft(8,123
+
+src/random_walk_adj_stf.cpp,90
+double stf(32,927
+ double saf(36,1017
+RcppExport SEXP  C_random_walk_adj_stf_N(42,1136
+
+src/RcppExports.cpp,1700
+using namespace Rcpp;8,198
+RcppExport SEXP _tviblindi_computeGCD(12,265
+RcppExport SEXP _tviblindi_computeLCM(24,663
+RcppExport SEXP _tviblindi_bicgSparse(36,1180
+RcppExport SEXP _tviblindi_build_boundary_C(50,1889
+RcppExport SEXP _tviblindi_cgSparse(62,2524
+RcppExport SEXP _tviblindi_connect_cliques(77,3326
+RcppExport SEXP _tviblindi_createKNNgraph_cos(88,3748
+RcppExport SEXP _tviblindi_createKNNgraph_eu(102,4354
+RcppExport SEXP _tviblindi_filtration_values_C(116,4948
+RcppExport SEXP _tviblindi_firstleft(128,5500
+RcppExport SEXP _tviblindi_get_rep_C(142,6191
+RcppExport SEXP _tviblindi_get_rep_lazy(154,6707
+RcppExport SEXP _tviblindi_jaccard_coeff(168,7344
+RcppExport SEXP _tviblindi_phatBoundary(179,7751
+RcppExport SEXP _tviblindi_C_random_walk_adj(191,8354
+RcppExport SEXP _tviblindi_C_random_walk_adj_N(204,9063
+RcppExport SEXP _tviblindi_C_random_walk_adj_N_push(218,9845
+RcppExport SEXP _tviblindi_C_random_walk_adj_N_push_std(231,10534
+RcppExport SEXP _tviblindi_C_random_walk(244,11203
+RcppExport SEXP _tviblindi_C_random_walk_adj_stf_N(257,11981
+RcppExport SEXP _tviblindi_C_random_walk_adj_u(274,13074
+RcppExport SEXP _tviblindi_relative_filtration(287,13762
+RcppExport SEXP _tviblindi_remove_back(300,14445
+RcppExport SEXP _tviblindi_rips(312,14990
+RcppExport SEXP _tviblindi_rips_coo(326,15727
+RcppExport SEXP _tviblindi_unique_simplex_inds(340,16459
+RcppExport SEXP _tviblindi_reindex_cmplx(352,17037
+RcppExport SEXP _tviblindi_lowerbound_rb(364,17548
+RcppExport SEXP _tviblindi_path_1simplex_indices(376,18190
+static const R_CallMethodDef CallEntries[CallEntries387,18655
+RcppExport void R_init_tviblindi(420,21034
+
+src/jaccard_coeff.cpp,63
+using namespace Rcpp;2,18
+NumericMatrix jaccard_coeff(16,549
+
+src/connect_cliques.cpp,65
+using namespace Rcpp;2,18
+RcppExport SEXP connect_cliques(5,61
+
+src/rips_example.cpp,189
+  class sparse_distance 43,1007
+    double operator()(operator()48,1165
+  class eu_distance 59,1425
+    double operator()(operator()64,1579
+SEXP rips(81,1866
+SEXP rips_coo(131,3497
+
+src/relative_filtration.cpp,182
+using namespace Rcpp;2,18
+  relative_filtration(6,81
+    typedef std::unordered_set<int>           index_map;13,244
+    typedef std::unordered_set<int>::iterator iterator14,301
+
+src/random_walk_adj_u.cpp,45
+RcppExport SEXP  C_random_walk_adj_u(10,214
+
+src/triangulation_union.cpp,224
+using namespace Rcpp;3,43
+  get_hash(6,78
+  unique_simplex_inds(23,475
+    typedef std::unordered_map<std::string, size_t> hash_table;40,898
+    typedef std::unordered_map<std::string, size_t>::iterator iterator41,962
+
+src/phat_boundary.cpp,32
+Rcpp::List phatBoundary(34,782
+
+src/gudhi/Miniball.hpp,1248
+#define MINIBALL_HPP_27,981
+  struct CoordAccessor 50,1472
+    typedef Pit_                                  Pit;51,1497
+    typedef Cit_                                  Cit;52,1552
+    inline  Cit operator(53,1607
+    typedef Pit_                                  Pit;59,1841
+    typedef Cit_*                                 Cit;60,1902
+  class Miniball 68,2104
+    typedef typename CoordAccessor::Pit                         Pit;72,2203
+    typedef typename CoordAccessor::Cit                         Cit;74,2348
+    typedef typename std::iterator_traits<Cit>::value_type      NT;76,2445
+    typedef typename std::list<Pit>::iterator                   Sit;78,2568
+    const int d;81,2661
+    Pit points_begin;82,2691
+    Pit points_end;83,2721
+    CoordAccessor coord_accessor;84,2751
+    double time;85,2787
+    const NT nt0;86,2806
+    std::list<Pit> L;89,2887
+    Sit support_end;90,2932
+    int fsize;91,2977
+    int ssize;92,3056
+    NT* current_c;95,3164
+    NT  current_sqr_r;96,3208
+    NT** c;97,3253
+    NT* sqr_r;98,3301
+    NT* q0;101,3359
+    NT* z;102,3371
+    NT* f;103,3382
+    NT** v;104,3393
+    NT** a;105,3405
+    typedef typename std::list<Pit>::const_iterator SupportPointIterator;109,3486
