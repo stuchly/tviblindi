@@ -4,7 +4,7 @@ Title: Tools for computational single-cell data analysis
 Version: 1.0
 Date: 2017-08-25
 Author: Jan Stuchly, David Novak
-Description: tviblindi puts ideas from graph theory and algebraic topology to use for single-cell data. This product includes software developed by the Delft University of Technology, GUDHI supported by an Advanced Investigator Grant of the European Research Council and hosted by INRIA and PHAT - Persistent Homology Algorithm Toolbox
+Description: tviblindi puts ideas from graph theory and algebraic topology to use for single-cell data. This product includes software developed by the Delft University of Technology (modified parts of bh tsne), GUDHI supported by an Advanced Investigator Grant of the European Research Council and hosted by INRIA and PHAT - Persistent Homology Algorithm Toolbox
 Maintainer: Jan Stuchly <jan.stuchly@lfmotol.cuni.cz>
 License: open
 Depends: R (>= 3.0.0), Matrix, igraph, RcppArmadillo, Rcpp, RcppEigen, TDA, BH, PRIMME
