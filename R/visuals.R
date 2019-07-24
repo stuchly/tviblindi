@@ -58,7 +58,7 @@
 #' @param pseudotime a pseudotime value vector, corresponding to vertices of \code{coordinates}.
 #' @param which.param name of the parameter (from \code{coordinates} column names) used for generating the plot.
 #' @param breaks if not null, this overrides \code{n.part} and \code{exp.part}: create pseudotime partitions by dividing the
-#'  \code{pseudotime} vector by its values (instead of including a fixed number of cells in each segment). \codes{breaks} can
+#'  \code{pseudotime} vector by its values (instead of including a fixed number of cells in each segment). \code{breaks} can
 #'  consist either of a single values (number of uniform partitions) or of a vector of breaks (cut-off values) between 0 and 1.
 #' @param n.part number of partitions per pseudotime. Used which \code{breaks} is null. A fixed number of cells, picked from a
 #'  series sorted by pseudotime values, is included in each partition.
@@ -276,7 +276,7 @@ pathways.visual.parameters.all_data <- function(
 #' @param labels cell population labels (eg. gates) corresponding to single events (to which \code{paths} refer).
 #' @param pseudotime a pseudotime value vector, corresponding to vertices of \code{coordinates}.
 #' @param breaks if not null, this overrides \code{n.part} and \code{exp.part}: create pseudotime partitions by dividing the
-#'  \code{pseudotime} vector by its values (instead of including a fixed number of cells in each segment). \codes{breaks} can
+#'  \code{pseudotime} vector by its values (instead of including a fixed number of cells in each segment). \code{breaks} can
 #'  consist either of a single values (number of uniform partitions) or of a vector of breaks (cut-off values) between 0 and 1.
 #' @param n.part number of partitions per pseudotime. Used which \code{breaks} is null. A fixed number of cells, picked from a
 #'  series sorted by pseudotime values, is included in each partition.

@@ -25,7 +25,7 @@ parameters (markers) and rows correspond to single events.}
 \item{which.param}{name of the parameter (from \code{coordinates} column names) used for generating the plot.}
 
 \item{breaks}{if not null, this overrides \code{n.part} and \code{exp.part}: create pseudotime partitions by dividing the
-\code{pseudotime} vector by its values (instead of including a fixed number of cells in each segment). \codes{breaks} can
+\code{pseudotime} vector by its values (instead of including a fixed number of cells in each segment). \code{breaks} can
 consist either of a single values (number of uniform partitions) or of a vector of breaks (cut-off values) between 0 and 1.}
 
 \item{n.part}{number of partitions per pseudotime. Used which \code{breaks} is null. A fixed number of cells, picked from a
