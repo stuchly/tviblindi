@@ -31,7 +31,6 @@ contract_walks <- function(walks, clusters) {
 }
 
 contract_walks1 <- function(walks, clusters,verbose=TRUE) {
-  contracted <- list()
   walks$v<-clusters[walks$v]
   return(remove_cycles(walks,verbose=verbose))
 }
