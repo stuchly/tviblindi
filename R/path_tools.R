@@ -96,7 +96,7 @@ contract_walks <- function(walks, clusters) {
   starts <- starts[-length(starts)]
   starts <- sapply(1:length(starts), function(i) sum(starts[1:i]))
 
-  list(v = unlist(contracted), starts = starts)
+  return(list(v = unlist(contracted), starts = starts))
 }
 
 contract_walks1 <- function(walks, clusters,verbose=TRUE) {

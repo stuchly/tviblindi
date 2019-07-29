@@ -129,8 +129,8 @@ remove_back <- function(triplet, time) {
     .Call('_tviblindi_remove_back', PACKAGE = 'tviblindi', triplet, time)
 }
 
-remove_cycles_int_list <- function(series_list, series_list_unique, verbose = TRUE) {
-    .Call('_tviblindi_remove_cycles_int_list', PACKAGE = 'tviblindi', series_list, series_list_unique, verbose)
+remove_cycles_int_list <- function(series_list, series_list_unique) {
+    .Call('_tviblindi_remove_cycles_int_list', PACKAGE = 'tviblindi', series_list, series_list_unique)
 }
 
 rips_from_spadj <- function(As, nbVertices, threshold, maxdimension = 1L) {
