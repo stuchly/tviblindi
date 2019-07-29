@@ -424,15 +424,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // remove_cycles_int_list
-std::vector< std::vector<int> > remove_cycles_int_list(std::vector< std::vector<int> > series_list, std::vector< std::vector<int> > series_list_unique, bool verbose);
-RcppExport SEXP _tviblindi_remove_cycles_int_list(SEXP series_listSEXP, SEXP series_list_uniqueSEXP, SEXP verboseSEXP) {
+std::vector< std::vector<int> > remove_cycles_int_list(std::vector< std::vector<int> > series_list, std::vector< std::vector<int> > series_list_unique);
+RcppExport SEXP _tviblindi_remove_cycles_int_list(SEXP series_listSEXP, SEXP series_list_uniqueSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector< std::vector<int> > >::type series_list(series_listSEXP);
     Rcpp::traits::input_parameter< std::vector< std::vector<int> > >::type series_list_unique(series_list_uniqueSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(remove_cycles_int_list(series_list, series_list_unique, verbose));
+    rcpp_result_gen = Rcpp::wrap(remove_cycles_int_list(series_list, series_list_unique));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -546,7 +545,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tviblindi_C_random_walk_adj_u", (DL_FUNC) &_tviblindi_C_random_walk_adj_u, 3},
     {"_tviblindi_relative_filtration", (DL_FUNC) &_tviblindi_relative_filtration, 3},
     {"_tviblindi_remove_back", (DL_FUNC) &_tviblindi_remove_back, 2},
-    {"_tviblindi_remove_cycles_int_list", (DL_FUNC) &_tviblindi_remove_cycles_int_list, 3},
+    {"_tviblindi_remove_cycles_int_list", (DL_FUNC) &_tviblindi_remove_cycles_int_list, 2},
     {"_tviblindi_rips_from_spadj", (DL_FUNC) &_tviblindi_rips_from_spadj, 4},
     {"_tviblindi_C_sigma", (DL_FUNC) &_tviblindi_C_sigma, 4},
     {"_tviblindi_unique_simplex_inds", (DL_FUNC) &_tviblindi_unique_simplex_inds, 2},
