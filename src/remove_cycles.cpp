@@ -25,6 +25,8 @@ namespace remove_cycles {
       const T placeholder,
       int series_number = -1
   ) {
+    T last_point = series.back();
+    
     std::unordered_map<T, std::tuple<int, int>> intervals;
     
     for (auto i = series_unique.begin(); i != series_unique.end(); ++i)
@@ -60,6 +62,11 @@ namespace remove_cycles {
     }
     
     series.erase(std::remove(series.begin(), series.end(), placeholder), series.end());
+    
+    if (series.back() != last_point)
+    {
+      series.push_back(last_point);
+    }
     
     return series;
   }
