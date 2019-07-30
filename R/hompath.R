@@ -440,8 +440,8 @@ graph_to_1simplices<-function(g){
 }
 
 sparseadj_to_1simplices<-function(g){
-    ## g<-as.matrix(summary(Matrix::triu(g)))
-    g<-as.matrix(summary(g))
+    g<-as.matrix(summary(Matrix::triu(g)))
+    ##g<-as.matrix(summary(g))
     colnames(g)<-NULL
     zero<-sort(unique(c(g[,1],g[,2])))
     gl<-split(g[,1:2], seq(nrow(g)))

@@ -19,8 +19,8 @@ symmetric_uniform_distance<-function(D){
 
     adj<-sparseMatrix(i=rep(1:N,each=K),j=as.numeric(t(D$IND)+1),x=exp(-as.numeric(t(D$DIST))))
     adj<-summary(Matrix::t(adj)+adj-Matrix::t(adj)*adj)
-    ## adj$x<-pmax(0,-log(adj$x)) ## solved
+    ##adj$x<-pmax(0,-log(adj$x)) ## solved
     adj$x<--log(adj$x)
-    adj<- summary(Matrix::tril(sparseMatrix(i=adj$i,j=adj$j,x=adj$x)))
+    ##adj<- summary(Matrix::tril(sparseMatrix(i=adj$i,j=adj$j,x=adj$x)))
     return(sparseMatrix(i=adj$i,j=adj$j,x=adj$x))
 }
