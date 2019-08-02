@@ -463,7 +463,7 @@ index_path<-function(walks,cmplx){
             ind<-hc[[keysv[j]]]
             out<-c(out,ind)
         }
-        outL[[i]]<-ss[out]
+        outL[[i]]<-ss[out] ##shouldn't be sorted?
 
     }
     return(outL)
@@ -730,6 +730,7 @@ triangulate_pathways<-function(walks,X,cmplx){
 #'
 #' @export
 pers_diagram<-function(dBr,plot=TRUE){
+
     ss<-which(dBr$values[dBr$low]!=dBr$values[dBr$nonzero_col])
     if (plot) plot(dBr$values[dBr$nonzero_col[ss]]~dBr$values[dBr$low[ss]],col=dBr$dim[ss]+1,pch=dBr$dim[ss]+1)
     return(list(inds=data.frame(dim=dBr$dim[ss],birth=dBr$low[ss],death=dBr$nonzero_col[ss]),vals=data.frame(dim=dBr$dim[ss],birth=dBr$values[dBr$low[ss]],death=dBr$values[dBr$nonzero_col[ss]])))
