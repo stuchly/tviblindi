@@ -133,26 +133,28 @@ SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool up
   
   
   std::vector<int> Ilow(BV.length(),-1); //1-simplex last (complex size safe)
-  
+  std::cout<<"hu1"<<std::endl;
   for(int ii = 0; ii < low.length(); ii++) {
     Ilow[low[ii]] = ii;                 // Ilow[i] ~ which non-zero column has entry 1 in given row
   }
-  
+  std::cout<<"hu2"<<std::endl;
   
   std::vector<int > repre;
   std::vector<int > Vl;
   
   std::sort(cycle.begin(), cycle.end());
-  
+  std::cout<<"hu2.1"<<std::endl;
   int ll = cycle.back();       // ll <- max(cycle)
-  
+  std::cout<<"hu2.2"<<std::endl;
   int rr;
   
   while(cycle.size() > 0) {                 // while(ll > -Inf) { ...while cycle is not empty
     R_CheckUserInterrupt();
+    std::cout<<"hu3.1"<<std::endl;
     rr = Ilow[ll];                            // rr <- Ilow[ll]
-    
+    std::cout<<"hu3.2"<<std::endl;
     if(rr < 0){
+      std::cout<<"hurr"<<std::endl;
       cycle.pop_back();
       Vl.push_back(ll);
       repre.push_back(-ll);
@@ -165,6 +167,7 @@ SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool up
       ll = cycle.back();                   // ll <- max(cycle)
     }
   }
+  std::cout<<"hu3"<<std::endl;
   
   if (Vl.size()>0){
     std::reverse(Vl.begin(),Vl.end());
