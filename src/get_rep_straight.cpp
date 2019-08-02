@@ -21,32 +21,32 @@ namespace straight {
   }
 
   std::vector<int> get_rep_int(std::vector<int> cycle, Rcpp::List boundary, std::vector<int> Ilow) {
-  IntegerVector low(boundary[2]);
-  IntegerVector nzc(boundary[1]);
+    IntegerVector low(boundary[2]);
+    IntegerVector nzc(boundary[1]);
 
-  Rcpp::List boundaryV = boundary[0];
+    Rcpp::List boundaryV = boundary[0];
 
-  std::vector<int> repre;
+    std::vector<int> repre;
 
-  std::sort(cycle.begin(), cycle.end());
+    std::sort(cycle.begin(), cycle.end());
 
-  int ll = cycle[cycle.size()-1];           // ll <- max(cycle)
+    int ll = cycle[cycle.size()-1];           // ll <- max(cycle)
 
-  int rr;
+    int rr;
  
-  while(cycle.size() > 0) {                 // while(ll > -Inf) { ...while cycle is not empty
-    rr = Ilow[ll];                            // rr <- Ilow[ll]
+    while(cycle.size() > 0) {                 // while(ll > -Inf) { ...while cycle is not empty
+      rr = Ilow[ll];                            // rr <- Ilow[ll]
     
-    // if(rr < 0)
-    //   return wrap("not a cycle?");    // if(rr == 0)  stop("not a cycle?")
+      // if(rr < 0)
+      //   return wrap("not a cycle?");    // if(rr == 0)  stop("not a cycle?")
   
-    cycle = sym_diff(boundaryV[rr], cycle);    // cycle <- symdiff(boundary[[rr]],cycle)
+      cycle = sym_diff(boundaryV[rr], cycle);    // cycle <- symdiff(boundary[[rr]],cycle)
   
-    repre.push_back(nzc[rr]);            // repre <- c(repre, nzc[rr]) ---bacha nzc[rr]!!!
-    ll = cycle[cycle.size()-1];                   // ll <- max(cycle)
-  }                                           // }
-  return repre;                         // repre
-}
+      repre.push_back(nzc[rr]);            // repre <- c(repre, nzc[rr]) ---bacha nzc[rr]!!!
+      ll = cycle[cycle.size()-1];                   // ll <- max(cycle)
+    }                                           // }
+    return repre;                         // repre
+  }
 }
 
 // // [[Rcpp::export]]
@@ -127,7 +127,9 @@ namespace straight {
 SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool update=false) {
   
   IntegerVector low(R[2]);
-  IntegerVector nzc(R[1]);
+  std::vector<int > nzc=R[1];
+  IntegerVector dims(R[3]);
+  std::vector<double > vals=R[4];
   Rcpp::List boundaryV = R[0];
   Rcpp::List BV=B[0];
   
@@ -152,7 +154,7 @@ SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool up
     R_CheckUserInterrupt();
     // std::cout<<"hu3.1"<<std::endl;
     rr = Ilow[ll];                            // rr <- Ilow[ll]
-    // std::cout<<rr<<std::endl;
+    //std::cout<<rr<<std::endl;
     if(rr < 0){
       // std::cout<<"hurr"<<std::endl;
       cycle.pop_back();
@@ -161,11 +163,11 @@ SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool up
       ll = cycle.back();
     }
     else
-    {
-      cycle = straight::sym_diff(boundaryV[rr], cycle);
-      repre.push_back(nzc[rr]);            // repre <- c(repre, nzc[rr]) !!!nzc[rr]
-      ll = cycle.back();                   // ll <- max(cycle)
-    }
+      {
+        cycle = straight::sym_diff(boundaryV[rr], cycle);
+        repre.push_back(nzc[rr]);            // repre <- c(repre, nzc[rr]) !!!nzc[rr]
+        ll = cycle.back();                   // ll <- max(cycle)
+      }
   }
   // std::cout<<"hu3"<<std::endl;
   
@@ -176,13 +178,17 @@ SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool up
     rr=boundaryV.length()-1;
     ll=Vl.back();
     Ilow[ll]=rr;
-    nzc.push_back(-ll); 
+    if (vals.back()<std::numeric_limits<double>::infinity()) nzc.push_back(BV.length()+1); else  nzc.push_back(nzc.back()+1); 
     low.push_back(ll);
+    dims.push_back(1);
+    vals.push_back(std::numeric_limits<double>::infinity());
     
     if (update) { //is this safe?? memory leak?
       R[0]=boundaryV;
       R[2]=low;
       R[1]=nzc;
+      R[3]=dims;
+      R[4]=vals;
     }
   }
   
@@ -191,11 +197,11 @@ SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool up
 
 // [[Rcpp::export]]
 SEXP
-  get_rep_straight_modified(
-    std::vector<int> cycle,
-    Rcpp::List R,
-    bool update=false
-) {
+get_rep_straight_modified(
+                          std::vector<int> cycle,
+                          Rcpp::List R,
+                          bool update=false
+                          ) {
   IntegerVector low(R[2]);
   IntegerVector nonzero_col(R[1]);
   Rcpp::List rb = R[0];
@@ -214,64 +220,64 @@ SEXP
   int cycle_which_max;
 
   while(cycle.size() > 0)
-  {
-    R_CheckUserInterrupt();
-    cycle_which_max = which_low[cycle_max];
-   
-    if(cycle_which_max < 0)
     {
-      cycle.pop_back();
-      Vl.push_back(cycle_max);
-      repre.push_back(-cycle_max);
-      cycle_max = cycle.back();
+      R_CheckUserInterrupt();
+      cycle_which_max = which_low[cycle_max];
+   
+      if(cycle_which_max < 0)
+        {
+          cycle.pop_back();
+          Vl.push_back(cycle_max);
+          repre.push_back(-cycle_max);
+          cycle_max = cycle.back();
+        }
+      else
+        {
+          cycle = straight::sym_diff(rb[cycle_which_max], cycle);
+          repre.push_back(nonzero_col[cycle_which_max]);
+          cycle_max = cycle.back();
+        }
     }
-    else
-      {
-        cycle = straight::sym_diff(rb[cycle_which_max], cycle);
-        repre.push_back(nonzero_col[cycle_which_max]);
-        cycle_max = cycle.back();
-      }
-  }
 
   if (Vl.size() > 0)
-  {
-    std::reverse(Vl.begin(),Vl.end());
-    rb.push_back(Vl);
-    cycle_which_max = rb.length()-1;
-    cycle_max=Vl.back();
-    which_low[cycle_max] = cycle_which_max;
-    nonzero_col.push_back(-cycle_max); 
-    low.push_back(cycle_max);
-   
-    if (update)
     {
-      R[0]=rb;
-      R[2]=low;
-      R[1]=nonzero_col;
+      std::reverse(Vl.begin(),Vl.end());
+      rb.push_back(Vl);
+      cycle_which_max = rb.length()-1;
+      cycle_max=Vl.back();
+      which_low[cycle_max] = cycle_which_max;
+      nonzero_col.push_back(-cycle_max); 
+      low.push_back(cycle_max);
+   
+      if (update)
+        {
+          R[0]=rb;
+          R[2]=low;
+          R[1]=nonzero_col;
+        }
     }
-  }
   
   return wrap(repre);
 }
 
 // [[Rcpp::export]]
 std::vector< std::vector<int> >
-  get_reps_straight_modified(
-    std::vector< std::vector<int> > cycles,
-    Rcpp::List                      R, // reduced boundary matrix
-    bool                            update = false
-  ) {
-    IntegerVector low(R[2]);
-    IntegerVector nonzero_col(R[1]);
-    Rcpp::List    rb = R[0];
+get_reps_straight_modified(
+                           std::vector< std::vector<int> > cycles,
+                           Rcpp::List                      R, // reduced boundary matrix
+                           bool                            update = false
+                           ) {
+  IntegerVector low(R[2]);
+  IntegerVector nonzero_col(R[1]);
+  Rcpp::List    rb = R[0];
     
-    std::vector<int> which_low(*std::max_element(low.begin(), low.end())+1, -1);
-    for(int i = 0; i < low.length(); i++)
-      which_low[low[i]] = i;
+  std::vector<int> which_low(*std::max_element(low.begin(), low.end())+1, -1);
+  for(int i = 0; i < low.length(); i++)
+    which_low[low[i]] = i;
     
-    std::vector< std::vector<int> > representations;
+  std::vector< std::vector<int> > representations;
     
-    for (size_t i = 0; i < cycles.size(); ++i)
+  for (size_t i = 0; i < cycles.size(); ++i)
     {
       std::vector<int> cycle = cycles[i];
       std::vector<int> repre;
@@ -284,49 +290,45 @@ std::vector< std::vector<int> >
       int cycle_which_max;
       
       while(cycle.size() > 0)
-      {
-        R_CheckUserInterrupt();
-        cycle_which_max = which_low[cycle_max];
+        {
+          R_CheckUserInterrupt();
+          cycle_which_max = which_low[cycle_max];
         
-        if(cycle_which_max < 0)
-        {
-          cycle.pop_back();
-          Vl.push_back(cycle_max);
-          repre.push_back(-cycle_max);
-          cycle_max = cycle.back();
+          if(cycle_which_max < 0)
+            {
+              cycle.pop_back();
+              Vl.push_back(cycle_max);
+              repre.push_back(-cycle_max);
+              cycle_max = cycle.back();
+            }
+          else
+            {
+              cycle = straight::sym_diff(rb[cycle_which_max], cycle);
+              repre.push_back(nonzero_col[cycle_which_max]);
+              cycle_max = cycle.back();
+            }
+          if (Vl.size() > 0)
+            {
+              std::reverse(Vl.begin(),Vl.end());
+              rb.push_back(Vl);
+              cycle_which_max = rb.length()-1;
+              cycle_max=Vl.back();
+              which_low[cycle_max] = cycle_which_max;
+              nonzero_col.push_back(-cycle_max); 
+              low.push_back(cycle_max);
+            }
         }
-        else
-        {
-          cycle = straight::sym_diff(rb[cycle_which_max], cycle);
-          repre.push_back(nonzero_col[cycle_which_max]);
-          cycle_max = cycle.back();
-        }
-        if (Vl.size() > 0)
-        {
-          std::reverse(Vl.begin(),Vl.end());
-          rb.push_back(Vl);
-          cycle_which_max = rb.length()-1;
-          cycle_max=Vl.back();
-          which_low[cycle_max] = cycle_which_max;
-          nonzero_col.push_back(-cycle_max); 
-          low.push_back(cycle_max);
-        }
-      }
       
       representations.push_back(repre);
       std::cout << ".";
     }
-    std::cout << std::endl;
+  std::cout << std::endl;
     
-    if (update)
+  if (update)
     {
       R[0]=rb;
       R[2]=low;
       R[1]=nonzero_col;
     }
-    return representations;
-  }
-
-
-
-
+  return representations;
+}

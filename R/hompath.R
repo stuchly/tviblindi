@@ -730,7 +730,12 @@ triangulate_pathways<-function(walks,X,cmplx){
 #'
 #' @export
 pers_diagram<-function(dBr,plot=TRUE){
-
+    ss<-which(dBr$nonzero_col<0)
+    ##print(length(ss))
+    ll<-length(dBr$values)
+    dBr$values<-c(dBr$values,rep(Inf,length(ss)))
+    dBr$dim<-c(dBr$dim,rep(1,length(ss)))
+    dBr$nonzero_col[ss]<-(ll+1):length(dBr$values)
     ss<-which(dBr$values[dBr$low]!=dBr$values[dBr$nonzero_col])
     if (plot) plot(dBr$values[dBr$nonzero_col[ss]]~dBr$values[dBr$low[ss]],col=dBr$dim[ss]+1,pch=dBr$dim[ss]+1)
     return(list(inds=data.frame(dim=dBr$dim[ss],birth=dBr$low[ss],death=dBr$nonzero_col[ss]),vals=data.frame(dim=dBr$dim[ss],birth=dBr$values[dBr$low[ss]],death=dBr$values[dBr$nonzero_col[ss]])))
