@@ -146,27 +146,29 @@ SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool up
   
   std::sort(cycle.begin(), cycle.end());
   // std::cout<<"hu2.1"<<std::endl;
-  int ll = cycle.back();       // ll <- max(cycle)
+  //int ll;
+  //ll = cycle.back();       // ll <- max(cycle)
   // std::cout<<"hu2.2"<<std::endl;
-  int rr;
+  //int rr;
   
   while(cycle.size() > 0) {                 // while(ll > -Inf) { ...while cycle is not empty
     R_CheckUserInterrupt();
+    int ll = cycle.back();       // ll <- max(cycle)
     // std::cout<<"hu3.1"<<std::endl;
-    rr = Ilow[ll];                            // rr <- Ilow[ll]
+    int rr = Ilow[ll];                            // rr <- Ilow[ll]
     //std::cout<<rr<<std::endl;
     if(rr < 0){
       // std::cout<<"hurr"<<std::endl;
       cycle.pop_back();
       Vl.push_back(ll);
       repre.push_back(-ll);
-      ll = cycle.back();
+      int ll = cycle.back();
     }
     else
       {
         cycle = straight::sym_diff(boundaryV[rr], cycle);
         repre.push_back(nzc[rr]);            // repre <- c(repre, nzc[rr]) !!!nzc[rr]
-        ll = cycle.back();                   // ll <- max(cycle)
+        //if (cycle.size()>0) ll = cycle.back();                   // ll <- max(cycle)
       }
   }
   // std::cout<<"hu3"<<std::endl;
@@ -175,8 +177,8 @@ SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool up
     std::reverse(Vl.begin(),Vl.end());
     //std::sort(Vl.begin(),Vl.end());
     boundaryV.push_back(Vl);
-    rr=boundaryV.length()-1;
-    ll=Vl.back();
+    int rr=boundaryV.length()-1;
+    int ll=Vl.back();
     Ilow[ll]=rr;
     if (vals.back()<std::numeric_limits<double>::infinity()) nzc.push_back(BV.length()+1); else  nzc.push_back(nzc.back()+1); 
     low.push_back(ll);

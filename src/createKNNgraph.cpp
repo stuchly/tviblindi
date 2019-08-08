@@ -62,7 +62,7 @@ RcppExport SEXP createKNNgraph_cos(SEXP X,SEXP D, SEXP K, SEXP N){
     }
   }
 
-
+  delete tree;
   return Rcpp::List::create(Named("IND",   _IND),Named("DIST", _DIST));
 
 }
@@ -103,7 +103,7 @@ RcppExport SEXP createKNNgraph_eu(SEXP X,SEXP D, SEXP K, SEXP N){
     }
   }
 
-
+  delete tree;
   return Rcpp::List::create(Named("IND",   _IND),Named("DIST", _DIST));
 
 }
