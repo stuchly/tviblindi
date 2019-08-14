@@ -272,6 +272,12 @@ knn.adj2spadjsim<-function(adj,kernel=c("Exp"),epsilon=NULL){
         adj[3,]<-as.numeric(t(t(mm)/mmm))
         adj[3,]<-exp(-adj[3,])
       }
+     if (kernel=="SEMr") {
+        mm<- matrix(adj[3,],nrow=N)
+        mmm<-apply(mm,MARGIN=1,max)
+        adj[3,]<-as.numeric(t(t(mm^2)/mmm))
+        adj[3,]<-exp(-adj[3,])
+      }
 
     if (kernel=="ExpSigma"){
          D<- matrix(adj[3,],nrow=N)

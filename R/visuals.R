@@ -13,7 +13,7 @@
 #     points(pts[, 1], pts[, 2], pch = 20, cex = 1.5, col = col[j])
 #   }
 # }
-# 
+#
 # plot.walks.list <- function(
 #   X = proj.C$layout,
 #   pathways = pathways,
@@ -28,7 +28,7 @@
 #     points(pts[, 1], pts[, 2], pch = 20, cex = 1.5, col = col[pathways$classes[[i]]])
 #   }
 # }
-# 
+#
 # plot.consensus_paths <- function(
 #   cons = consensus_paths,
 #   col = 1:length(cons),
@@ -88,30 +88,30 @@ pathways.visual.parameters.segments <- function(
   asinh.denominator = 5
 ) {
   require(ggplot2)
-  
+
   pseudotime <- pseudotime/max(pseudotime)
-  
+
   classes.inds <- classes %in% which.class
   params.inds <- colnames(coordinates) %in% which.param
-  
+
   coordinates <- coordinates[, params.inds]
-  
+
   if (!is.null(expression.transform)) {
     if (expression.transform == "asinh") {
       coordinates <- asinh(coordinates/asinh.denominator)
     }
   }
-  
+
   paths <- paths[classes.inds]
   progress <- lapply(paths, function(pts) {
     pseudotime[pts] # pseudotime progress per path
   })
-  
+
   pp <- unique(unlist(progress))
-  
+
   b <- NULL
   N <- NULL
-  
+
   if (is.null(breaks)) {
     p <- (seq(0, 1, 1/(n.part)))^exp.part
     b <- as.numeric(quantile(pp, p))
@@ -127,28 +127,28 @@ pathways.visual.parameters.segments <- function(
       N <- length(b) - 1
     }
   }
-  
+
   categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
-  
+
   stats <- lapply(1:N, function(i) {
     inds <- categs == i # pick points on paths by pseudotime increment
-    
+
     if (!any(inds)) {
       return(NULL)
     }
-    
+
     pts <- unlist(paths)[inds]
-    
+
     which.paths <- unlist(lapply(1:length(paths), function(j) {
       rep(j, length(paths[[j]]))
     }))[inds]
-    
+
     pts <- unlist(paths)[unlist(inds)]
-    
+
     means <- lapply(sort(unique(which.paths)), function(j) {
       mean(coordinates[pts[which.paths == j]])
     })
-    
+
     v <- cbind(rep(i, length(means)), sort(unique(which.paths)), unlist(means))
     if (is.null(dim(v))) {
       names(v) <- c("segment", "path", "expression")
@@ -159,12 +159,12 @@ pathways.visual.parameters.segments <- function(
     v
   })
   stats <- do.call(rbind, stats)
-  
+
   stats$path <- as.factor(stats$path)
   stats$segment <- as.numeric(stats$segment)
   stats$expression <- as.numeric(stats$expression)
-  
-  ggplot(data = stats, aes(x = segment, y = expression, group = path, color = path)) + 
+
+  ggplot(data = stats, aes(x = segment, y = expression, group = path, color = path)) +
     geom_line(linetype = "dashed") +
     geom_point() +
     ggtitle(paste(which.param, " expression per path of class ", which.class, ": means and standard deviations", sep = "")) +
@@ -177,8 +177,7 @@ pathways.visual.parameters.segments <- function(
                           "."
                    ), sep = ""),
              ""
-      ), sep = "")) +
-    theme_minimal()
+      ), sep = "")) + theme(legend.position="none")
 }
 
 #' Visualise pathways progression: single parameter using all pathway points
@@ -213,20 +212,20 @@ pathways.visual.parameters.all_data <- function(
   asinh.denominator = 5
 ) {
   require(ggplot2)
-  
+
   pseudotime <- pseudotime/max(pseudotime)
-  
+
   classes.inds <- classes %in% which.class
   params.inds <- colnames(coordinates) %in% which.param
-  
+
   coordinates <- coordinates[, params.inds]
-  
+
   if (!is.null(expression.transform)) {
     if (expression.transform == "asinh") {
       coordinates <- asinh(coordinates/asinh.denominator)
     }
   }
-  
+
   paths <- paths[classes.inds]
   progress <- lapply(paths, function(pts) {
     pseudotime[pts] # pseudotime progress per path
@@ -234,20 +233,20 @@ pathways.visual.parameters.all_data <- function(
   which.path <- lapply(1:length(progress), function(i) {
     rep(i, length(progress[[i]]))
   })
-  
+
   m <- max(unlist(progress))
   progress <- lapply(progress, function(p) {
     p <- p/m
   })
-  
+
   expression <- lapply(paths, function(p) {
     coordinates[p]
   })
-  
+
   d <- as.data.frame(cbind(unlist(which.path), unlist(progress), unlist(expression))); colnames(d) <- c("path", "pseudotime", "expression")
   d$path <- as.factor(d$path)
-  
-  g <- ggplot(data = d, aes(x = pseudotime, y = expression, group = path, color = path)) + 
+
+  g <- ggplot(data = d, aes(x = pseudotime, y = expression, group = path, color = path)) +
     geom_line() +
     ggtitle(paste(which.param, "expression per path of class ", which.class, ": individual events", sep = "")) +
     labs(subtitle = paste("Differential expression across pseudotime is shown, grouped by paths. ",
@@ -261,7 +260,7 @@ pathways.visual.parameters.all_data <- function(
                           )
     )) +
     theme_minimal()
-  
+
   g
 }
 #' Visualise pathways progression: cell population labels by segment
@@ -302,26 +301,26 @@ pathways.visual.labels.segments <- function(
   proportional = TRUE
 ) {
   require(ggplot2)
-  
+
   pseudotime <- pseudotime/max(pseudotime)
-  
+
   classes.inds <- classes %in% which.class
-  
+
   paths <- paths[classes.inds]
   progress <- lapply(paths, function(pts) {
     pseudotime[pts] # pseudotime progress per path
   })
-  
+
   gates <- lapply(paths, function(pts) {
     labels[pts]
   })
   gates.u <- unique(labels)
-  
+
   pp <- unique(unlist(progress))
-  
+
   b <- NULL
   N <- NULL
-  
+
   if (is.null(breaks)) {
     p <- (seq(0, 1, 1/(n.part)))^exp.part
     b <- as.numeric(quantile(pp, p))
@@ -337,51 +336,51 @@ pathways.visual.labels.segments <- function(
       N <- length(b) - 1
     }
   }
-  
+
   categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
-  
+
   stats <- lapply(1:N, function(i) {
-    
+
     inds <- categs == i # pick points on paths by pseudotime increment
-    
+
     if (!any(inds)) {
       return(NULL)
     }
-    
+
     g <- (as.data.frame(table(unlist(gates)[inds]))); colnames(g) <- c("label", "count")
     g <- cbind(i, g); colnames(g)[1] <- "segment"
-    
+
     missing <- gates.u[!gates.u %in% g$label]
     if (length(missing) > 0) {
       missing <- as.data.frame(do.call(rbind, lapply(missing, function(m) c(i, m, 0)))); colnames(missing) <- c("segment", "label", "count")
       g <- rbind(g, missing)
     }
-    
+
     g$segment <- as.numeric(g$segment)
     g$label <- as.factor(g$label)
     g$count <- as.numeric(g$count)
-    
+
     if (proportional) {
       g$count <- g$count / sum(g$count)
     }
-    
+
     g
   })
   stats <- do.call(rbind, stats)
-  
-  stats$label <- factor(stats$label, levels = sort(levels(l)))
-  
-  g <- ggplot(stats, aes(x = segment, y = count, fill = label)) + 
+
+  stats$label <- factor(stats$label, levels = sort(levels(as.factor(labels))))
+
+  g <- ggplot(stats, aes(x = segment, y = count, fill = label)) +
     geom_area(alpha = .9, colour = "black", size = .2) +
     labs(fill = "Labels", alpha = .9) +
     ggtitle(paste("Labels in path of class ", which.class, ": pseudotime segments", sep = "")) +
     labs(subtitle = paste("Differential representation of populations across pseudotime is shown."
     )) +
     theme_minimal()
-  
+
   if (proportional) {
     g <- g + ylab("representation")
   }
-  
+
   g
 }

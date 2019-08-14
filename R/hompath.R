@@ -1,5 +1,5 @@
 make_circle_n<-function(n,r=1,sd=0.1,shift=c(0,0)){
-    XX <- circleUnif(n,r)+cbind(rnorm(n,sd=sd),rnorm(n,sd=sd))
+    XX <- TDA::circleUnif(n,r)+cbind(rnorm(n,sd=sd),rnorm(n,sd=sd))
     XX<-t(t(XX)+shift)
 }
 
@@ -244,11 +244,11 @@ plot_2cmplx<-function (X, cmplx, col = NULL,add=FALSE)
   cc <- rep(1, length(cmplx))
   lty <- rep(2, length(cmplx))
   if (!is.null(col))
-    cc[col] <- 2
+    cc[col] <- 4
   if (!is.null(col))
     lty[col] <- 1
   for (i in 1:length(cmplx)) {
-    if (length(cmplx[[i]]) == 3 & cc[i] != 1) {
+      if (length(cmplx[[i]]) == 3 & cc[i] != 1) {
 
       lines(X[cmplx[[i]][1:2], ], col = cc[i], lwd = cc[i],
             lty = lty[i])
