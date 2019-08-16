@@ -1,3 +1,8 @@
+alpha_complex_filtration_values <- function(filtration, coordinates) {
+  filtration.u <- sort(unique(unlist(filtration)))
+  return(alpha_complex_filtration_values_C(filtration, coordinates, filtration.u))
+}
+
 #' Create k-skeleton of a simplicial complex
 #'
 #' Provided a simplicial complex filtration and corresponding point coordinates, \code{create_k_skeleton} generates a skeleton of the given complex in \code{k} dimensions.

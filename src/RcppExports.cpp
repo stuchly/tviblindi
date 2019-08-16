@@ -111,6 +111,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// boundaries
+std::vector< std::vector<int> > boundaries(List f, bool sort_input);
+RcppExport SEXP _tviblindi_boundaries(SEXP fSEXP, SEXP sort_inputSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< List >::type f(fSEXP);
+    Rcpp::traits::input_parameter< bool >::type sort_input(sort_inputSEXP);
+    rcpp_result_gen = Rcpp::wrap(boundaries(f, sort_input));
+    return rcpp_result_gen;
+END_RCPP
+}
 // faces
 std::vector< std::vector<int> > faces(List f, bool sort_input);
 RcppExport SEXP _tviblindi_faces(SEXP fSEXP, SEXP sort_inputSEXP) {
@@ -136,15 +148,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// alpha_complex_filtration_values
-SEXP alpha_complex_filtration_values(List f, NumericMatrix coord);
-RcppExport SEXP _tviblindi_alpha_complex_filtration_values(SEXP fSEXP, SEXP coordSEXP) {
+// alpha_complex_filtration_values_C
+SEXP alpha_complex_filtration_values_C(List f, NumericMatrix coord, std::vector<int> f_u);
+RcppExport SEXP _tviblindi_alpha_complex_filtration_values_C(SEXP fSEXP, SEXP coordSEXP, SEXP f_uSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type f(fSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type coord(coordSEXP);
-    rcpp_result_gen = Rcpp::wrap(alpha_complex_filtration_values(f, coord));
+    Rcpp::traits::input_parameter< std::vector<int> >::type f_u(f_uSEXP);
+    rcpp_result_gen = Rcpp::wrap(alpha_complex_filtration_values_C(f, coord, f_u));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -521,9 +534,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tviblindi_connect_cliques", (DL_FUNC) &_tviblindi_connect_cliques, 1},
     {"_tviblindi_createKNNgraph_cos", (DL_FUNC) &_tviblindi_createKNNgraph_cos, 4},
     {"_tviblindi_createKNNgraph_eu", (DL_FUNC) &_tviblindi_createKNNgraph_eu, 4},
+    {"_tviblindi_boundaries", (DL_FUNC) &_tviblindi_boundaries, 2},
     {"_tviblindi_faces", (DL_FUNC) &_tviblindi_faces, 2},
     {"_tviblindi_rips_complex_filtration_values", (DL_FUNC) &_tviblindi_rips_complex_filtration_values, 3},
-    {"_tviblindi_alpha_complex_filtration_values", (DL_FUNC) &_tviblindi_alpha_complex_filtration_values, 2},
+    {"_tviblindi_alpha_complex_filtration_values_C", (DL_FUNC) &_tviblindi_alpha_complex_filtration_values_C, 3},
     {"_tviblindi_firstleft", (DL_FUNC) &_tviblindi_firstleft, 4},
     {"_tviblindi_get_rep_C", (DL_FUNC) &_tviblindi_get_rep_C, 2},
     {"_tviblindi_get_rep_lazy", (DL_FUNC) &_tviblindi_get_rep_lazy, 4},
