@@ -33,6 +33,10 @@ createKNNgraph_eu <- function(X, D, K, N) {
     .Call('_tviblindi_createKNNgraph_eu', PACKAGE = 'tviblindi', X, D, K, N)
 }
 
+boundaries <- function(f, sort_input = TRUE) {
+    .Call('_tviblindi_boundaries', PACKAGE = 'tviblindi', f, sort_input)
+}
+
 faces <- function(f, sort_input = TRUE) {
     .Call('_tviblindi_faces', PACKAGE = 'tviblindi', f, sort_input)
 }
@@ -41,8 +45,8 @@ rips_complex_filtration_values <- function(f, coord, threshold) {
     .Call('_tviblindi_rips_complex_filtration_values', PACKAGE = 'tviblindi', f, coord, threshold)
 }
 
-alpha_complex_filtration_values <- function(f, coord) {
-    .Call('_tviblindi_alpha_complex_filtration_values', PACKAGE = 'tviblindi', f, coord)
+alpha_complex_filtration_values_C <- function(f, coord, f_u) {
+    .Call('_tviblindi_alpha_complex_filtration_values_C', PACKAGE = 'tviblindi', f, coord, f_u)
 }
 
 firstleft <- function(A, start, nb_iter = 100L, eps = 1e-6) {
