@@ -194,6 +194,7 @@ filter_values_f<-function(X,cmplx,K=30){
         } else if (length(cmplx[[i]])==3){
 
             out[i]<-max(out[cmplx[[i]]])+0.0000001
+            out[i]<-max(as.matrix(dist(X[cmplx[[i]],])))
         }
     }
     out
