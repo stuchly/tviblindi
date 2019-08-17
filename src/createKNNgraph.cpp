@@ -382,6 +382,61 @@ double
     return sqrt(dist);
   }
 
+std::vector<double> simplex_circumcenter(
+    std::vector< std::vector<double> > vert
+)
+{
+  const int N = vert.size();
+  const int dim = vert[0].size();
+  
+  arma::vec x(dim);
+  
+  std::vector< std::vector<double> > E; // E is a list of vectors from one vertex to all the others
+  std::vector<double> origin = vert[N - 1];
+  for (int i = 0; i < N - 1; ++i)
+  {
+    std::vector<double> target = vert[i];
+    E.push_back(vec_diff(origin, target));
+  }
+  
+  arma::mat A(N - 1, N - 1);
+  for (int i = 0; i < N - 1; ++i)
+  {
+    for (int j = 0; j < N - 1; ++j)
+    {
+      A(i, j) = 2 * vec_dot(E[i], E[j]);
+    }
+  }
+  
+  arma::vec b(N - 1);
+  for (int i = 0; i < N - 1; ++i)
+  {
+    b(i) = vec_dot(E[i], E[i]);
+  }
+  
+  x = arma::solve(A, b); // we solve for circumcenter as barycentric coordinates...
+                         // ...but the last coordinate is missing and must be filled in
+  
+  std::vector<double> w;
+  double last = 1;
+  for (int i = 0; i < x.size(); ++i)
+  {
+    w.push_back(x[i]);
+    last -= x[i];
+  }
+  w.push_back(last);  // w is now the complete vector of coords of the circumcenter (in barycentric coordinate system)
+  
+  std::vector<double> res(dim);
+  for (int i = 0; i < N; ++i)
+  {
+    for (int j = 0; j < dim; ++j)
+    {
+      res[j] += vert[i][j] * w[i]; // barycentric coordinates are used as weights to get coordinates in the original system
+    }
+  }
+  return res;
+}
+
 class
   fSimplex // a simplex object
   {
@@ -407,126 +462,40 @@ class
     }
     
     fVertex circumcenter()
-    { // calculate coordinates of the circumcenter of a simplex
+    { // get circumcenter of simplex
 
-      const int _dim = vert_[0].dimension(); // dimension of simplex
-      arma::vec _x(_dim); // _x is the answer vector of a system of linear equations
+      const int _dim = vert_[0].dimension();
+      std::vector<double> _x(_dim);
 
-      if (npt_ > 2) // if simplex is triangle, tetrahedron, etc...
-      { // ... compute coordinates of circumcenter by solving a linear system Ax = b
-        std::vector< std::vector<double> > L; // list of vertex coordinates
+      if (npt_ > 2)
+      {
+        std::vector< std::vector<double> > pts;
         for (int i = 0; i < npt_; ++i)
         {
-          std::vector<double> l = vert_[i].location();
-          L.push_back (l);
-        }
-
-        arma::mat A(npt_-1,_dim); // coefficient matrix
-        for (int pt = 0; pt < npt_-1; ++pt)
-        {
-          for (int dim = 0; dim < _dim; ++dim)
+          std::vector<double> pt;
+          for (int j = 0; j < _dim; ++j)
           {
-            A (pt, dim) = -2*L[0][dim] + 2*L[pt+1][dim];
+            pt.push_back(vert_[i].location(j));
           }
+          pts.push_back(pt);
         }
-
-        arma::vec b (npt_-1); // right-hand side vector
-        for (int pt = 0; pt < npt_-1; ++pt)
-        {
-          b (pt) = .0;
-          for (int dim = 0; dim < _dim; ++dim)
-          {
-            b (pt) += L[pt+1][dim]*L[pt+1][dim] - L[0][dim]*L[0][dim];
-          }
-        }
-        _x = arma::solve(A,b);
+        _x = simplex_circumcenter(pts);
       } else {
         if (npt_ == 2)
         {
           for (int i = 0; i < _dim; ++i)
           {
-            _x(i) = (vert_[0].location(i)/2)+(vert_[1].location(i)/2);
+            _x[i] = (vert_[0].location(i)/2)+(vert_[1].location(i)/2);
           }
         }
       }
       return fVertex(-1, _x);
     }
     
-    // fVertex circumcenter()
-    // { // calculate coordinates of the circumcenter of a simplex
-    // 
-    //   const int _dim = vert_[0].dimension(); // dimension of simplex
-    //   arma::vec _x(_dim); // _x is the answer vector of a system of linear equations
-    // 
-    //   if (npt_ > 2) // if simplex is triangle, tetrahedron, etc...
-    //   { // ...compute coordinates of circumcenter by solving a linear system Ax = b
-    //     
-    //     std::vector< std::vector<double> > E; // edges leading from a fixed vertex to all other vertices
-    //     std::vector<double> origin = vert_[npt_-1].location();
-    //     for (int i = 0; i < npt_-1; ++i)
-    //     {
-    //       std::vector<double> target = vert_[i].location();
-    //       E.push_back(vec_diff(origin, target));
-    //     }
-    //     
-    //     arma::mat A(npt_-1, npt_-1);
-    //     for (int i = 0; i < npt_-1; ++i)
-    //     {
-    //       for (int j = 0; j < npt_-1; ++j)
-    //       {
-    //         A(i, j) = 2*vec_dot(E[i], E[j]);
-    //       }
-    //     }
-    //     
-    //     arma::vec b(npt_-1);
-    //     for (int i = 0; i < npt_-1; ++i)
-    //     {
-    //       b(i) = vec_dot(E[i], E[i]);
-    //     }
-    //     
-    //     _x = arma::solve(A, b);
-    //     
-    //   } else { // else if simplex is a line, compute coordinates of midpoint
-    //     if (npt_ == 2)
-    //     {
-    //       for (int i = 0; i < _dim; ++i)
-    //       {
-    //         _x(i) = (vert_[0].location(i)/2)+(vert_[1].location(i)/2);
-    //       }
-    //     }
-    //   }
-    //   return fVertex(-1, _x);
-    // }
-    
     double gabriel_value(fVertex center)
     { // calculate alpha-complex filtration value of simplex, given that it is Gabriel
       
       double circumradius = eucl_dist(center, vert_[0]);
-      
-      // std::cout << "Circumradius: " << circumradius << std::endl;
-      
-      // std::cout << "Circumcentre coordinates: ";
-      // for (int i = 0; i < center.location().size(); ++i)
-      // {
-      //   std::cout << center.location()[i] << " ";
-      // }
-      // std::cout << std::endl;
-      // 
-      // std::cout << "Coordinates of one vertex of this simplex: ";
-      // for (int i = 0; i < vert_[0].location().size(); ++i)
-      // {
-      //   std::cout << vert_[0].location()[i] << " ";
-      // }
-      // std::cout << std::endl;
-      
-      
-      // std::cout << "Distances from circumcenter to simplex vertices:" << std::endl;
-      // for (int i = 0; i < npt_; ++i)
-      // {
-      //   std::cout << eucl_dist(center, vert_[i]) << " ";
-      // }
-      // std::cout << std::endl << std::endl;
-      // 
       return circumradius*circumradius;
     }
     
@@ -737,7 +706,7 @@ SEXP
 
             if (coface_ind.size() == 1 && coface_ind[0] == -1)
             {} else
-            {
+                {
               bool found = false;
 
               double new_val = std::numeric_limits<double>::max();
