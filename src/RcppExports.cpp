@@ -524,6 +524,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// witness_from_points
+SEXP witness_from_points(const Rcpp::NumericMatrix landmarksin, const Rcpp::NumericMatrix ws, double alpha2, unsigned int limd);
+RcppExport SEXP _tviblindi_witness_from_points(SEXP landmarksinSEXP, SEXP wsSEXP, SEXP alpha2SEXP, SEXP limdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type landmarksin(landmarksinSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type ws(wsSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha2(alpha2SEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type limd(limdSEXP);
+    rcpp_result_gen = Rcpp::wrap(witness_from_points(landmarksin, ws, alpha2, limd));
+    return rcpp_result_gen;
+END_RCPP
+}
+// witness_from_distances
+SEXP witness_from_distances(const Rcpp::List IND, const Rcpp::List DIST, double alpha2, unsigned int limd);
+RcppExport SEXP _tviblindi_witness_from_distances(SEXP INDSEXP, SEXP DISTSEXP, SEXP alpha2SEXP, SEXP limdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type IND(INDSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type DIST(DISTSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha2(alpha2SEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type limd(limdSEXP);
+    rcpp_result_gen = Rcpp::wrap(witness_from_distances(IND, DIST, alpha2, limd));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_tviblindi_computeGCD", (DL_FUNC) &_tviblindi_computeGCD, 2},
@@ -566,6 +594,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tviblindi_reindex_cmplx", (DL_FUNC) &_tviblindi_reindex_cmplx, 2},
     {"_tviblindi_lowerbound_rb", (DL_FUNC) &_tviblindi_lowerbound_rb, 2},
     {"_tviblindi_path_1simplex_indices", (DL_FUNC) &_tviblindi_path_1simplex_indices, 2},
+    {"_tviblindi_witness_from_points", (DL_FUNC) &_tviblindi_witness_from_points, 4},
+    {"_tviblindi_witness_from_distances", (DL_FUNC) &_tviblindi_witness_from_distances, 4},
     {NULL, NULL, 0}
 };
 

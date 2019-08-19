@@ -544,8 +544,8 @@ sparse.diffuse<- function(Asp, neigen=NULL, t=0, maxdim=50,method="arpack") {
 #' \code{eigenmult} are eigen-multipliers of the diffusion map.
 #'
 #' @export
-knn.diffuseX<-function(X,K=30,neigen=dim(X)[2],metric="euclid"){
-    sparse.diffuse(sparse.Laplacian.construct(knn.adj.construct(X,K,metric=metric)),neigen=neigen)
+knn.diffuseX<-function(X,K=30,neigen=dim(X)[2],metric="euclid",t=0){
+    sparse.diffuse(sparse.Laplacian.construct(knn.raw2adj(knn.adj.raw.parallel(X,K,metric=metric))),neigen=neigen,t=t)
 }
 
 #' Convert sparse similarity matrix to "triples" matrix of edges

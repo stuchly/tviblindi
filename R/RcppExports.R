@@ -161,3 +161,11 @@ path_1simplex_indices <- function(walks, cmplx) {
     .Call('_tviblindi_path_1simplex_indices', PACKAGE = 'tviblindi', walks, cmplx)
 }
 
+witness_from_points <- function(landmarksin, ws, alpha2, limd = 2L) {
+    .Call('_tviblindi_witness_from_points', PACKAGE = 'tviblindi', landmarksin, ws, alpha2, limd)
+}
+
+witness_from_distances <- function(IND, DIST, alpha2, limd = 2L) {
+    .Call('_tviblindi_witness_from_distances', PACKAGE = 'tviblindi', IND, DIST, alpha2, limd)
+}
+
