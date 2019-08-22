@@ -10,6 +10,9 @@
 // to construct a simplex_tree from alpha complex
 #include <gudhi/Simplex_tree.h>
 #include <gudhi/Euclidean_witness_complex.h>
+#include <gudhi/pick_n_random_points.h>
+#include <gudhi/choose_n_farthest_points.h>
+
 #include <CGAL/Epick_d.h>
 #include <iostream>
 #include <string>
@@ -41,7 +44,7 @@ using Witness_complexD = Gudhi::witness_complex::Witness_complex<Nearest_landmar
 
 // [[Rcpp::export]]
 
-SEXP witness_from_points(const Rcpp::NumericMatrix landmarksin, const Rcpp::NumericMatrix ws, double alpha2, unsigned int limd=2){
+SEXP witness_from_points(const Rcpp::NumericMatrix landmarksin, const Rcpp::NumericMatrix ws, double alpha2, unsigned int maxdimension=1){
   
   Vector_of_points ws_vector, landmarks_vector;
   const unsigned rowNum = landmarksin.nrow();
@@ -62,12 +65,12 @@ SEXP witness_from_points(const Rcpp::NumericMatrix landmarksin, const Rcpp::Nume
       pointD[colIdx] = ws[rowIdx + colIdx * wNum];
     }
     ws_vector.push_back(
-                               Point(pointD.size(), pointD.begin(), pointD.end()));
+                        Point(pointD.size(), pointD.begin(), pointD.end()));
   }
   
   Gudhi::Simplex_tree<> stree;
   Witness_complex witness_complex(landmarks_vector, ws_vector);
-  witness_complex.create_complex(stree,alpha2, limd);
+  witness_complex.create_complex(stree,alpha2, maxdimension+1);
   stree.initialize_filtration();
 
   std::vector<std::vector<int>> out;
@@ -92,8 +95,7 @@ SEXP witness_from_points(const Rcpp::NumericMatrix landmarksin, const Rcpp::Nume
 }
 
 // [[Rcpp::export]]
-
-SEXP witness_from_distances(const Rcpp::List IND, const Rcpp::List DIST,double alpha2, unsigned int limd=2){
+SEXP witness_from_distances(const Rcpp::List IND, const Rcpp::List DIST,double alpha2, unsigned int maxdimension=1){
   
   Vector_of_points ws_vector, landmarks_vector;
   const unsigned LN = IND.size();
@@ -104,7 +106,7 @@ SEXP witness_from_distances(const Rcpp::List IND, const Rcpp::List DIST,double a
     std::vector<double> iDIST=DIST[Idx];
     Nearest_landmark_range w0;
     for (unsigned Jdx = 0; Jdx <iIND.size() ; ++Jdx) {
-      w0.push_back(std::make_pair(iIND[Jdx],iDIST[Jdx]));
+      w0.push_back(std::make_pair(iIND[Jdx]-1,iDIST[Jdx]));
     }
     nlt.push_back(w0);
   }
@@ -112,7 +114,101 @@ SEXP witness_from_distances(const Rcpp::List IND, const Rcpp::List DIST,double a
   
   Gudhi::Simplex_tree<> stree;
   Witness_complexD witness_complex(nlt);
-  witness_complex.create_complex(stree,alpha2, limd);
+  witness_complex.create_complex(stree,alpha2, maxdimension+1);
+  // stree.initialize_filtration();
+
+  std::vector<std::vector<int>> out;
+  std::vector<double> out_values;
+
+  for (auto f_simplex : stree.filtration_simplex_range()) {
+   
+    std::vector<int> out_loc;
+    for (auto vertex : stree.simplex_vertex_range(f_simplex)) {
+     
+      out_loc.push_back(vertex+1); //R is 1-based
+     
+    }
+    out.push_back(out_loc);
+    out_values.push_back(stree.filtration(f_simplex));
+    
+  }
+
+   
+  return Rcpp::List::create(Rcpp::Named("cmplx", out), Rcpp::Named("values", out_values));
+  
+}
+
+
+// [[Rcpp::export]]
+SEXP witness_from_distances_cliques(const Rcpp::List IND, const Rcpp::List DIST,double alpha2, unsigned int maxdimension=1){
+  
+  Vector_of_points ws_vector, landmarks_vector;
+  const unsigned LN = IND.size();
+  Nearest_landmark_table nlt;  
+
+  for (unsigned Idx = 0; Idx < LN; ++Idx) {
+    std::vector<unsigned int> iIND=IND[Idx];
+    std::vector<double> iDIST=DIST[Idx];
+    Nearest_landmark_range w0;
+    for (unsigned Jdx = 0; Jdx <iIND.size() ; ++Jdx) {
+      w0.push_back(std::make_pair(iIND[Jdx]-1,iDIST[Jdx]));
+    }
+    nlt.push_back(w0);
+  }
+  
+  
+  Gudhi::Simplex_tree<> stree;
+  Witness_complexD witness_complex(nlt);
+  witness_complex.create_complex(stree,alpha2, 1);
+  stree.expansion(maxdimension+1);
+  // stree.initialize_filtration();
+
+  std::vector<std::vector<int>> out;
+  std::vector<double> out_values;
+
+  for (auto f_simplex : stree.filtration_simplex_range()) {
+   
+    std::vector<int> out_loc;
+    for (auto vertex : stree.simplex_vertex_range(f_simplex)) {
+     
+      out_loc.push_back(vertex+1); //R is 1-based
+     
+    }
+    out.push_back(out_loc);
+    out_values.push_back(stree.filtration(f_simplex));
+    
+  }
+
+   
+  return Rcpp::List::create(Rcpp::Named("cmplx", out), Rcpp::Named("values", out_values));
+  
+}
+
+// [[Rcpp::export]]
+
+SEXP witness_from_points_sample(const Rcpp::NumericMatrix ws, double alpha2, unsigned int nbL=100, unsigned int maxdimension=1){
+  
+  Vector_of_points ws_vector, landmarks_vector;
+  const unsigned colNum = ws.ncol();
+  const unsigned wNum = ws.nrow();
+  std::vector< double > pointD(colNum);
+  
+
+  for (unsigned rowIdx = 0; rowIdx < wNum; ++rowIdx) {
+    for (unsigned colIdx = 0; colIdx < colNum; ++colIdx) {
+      pointD[colIdx] = ws[rowIdx + colIdx * wNum];
+    }
+    ws_vector.push_back(
+                        Point(pointD.size(), pointD.begin(), pointD.end()));
+  }
+
+  Gudhi::subsampling::choose_n_farthest_points(Kernel(), ws_vector, nbL, Gudhi::subsampling::random_starting_point,
+                                               std::back_inserter(landmarks_vector));
+  
+  
+  Gudhi::Simplex_tree<> stree;
+  Witness_complex witness_complex(landmarks_vector, ws_vector);
+  witness_complex.create_complex(stree,alpha2, maxdimension+1);
   stree.initialize_filtration();
 
   std::vector<std::vector<int>> out;
