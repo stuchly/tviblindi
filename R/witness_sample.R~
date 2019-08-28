@@ -1,5 +1,0 @@
-witness_from_points_sample<-function(ws, alpha2, nbL = 100L, maxdimension = 1L) {
-    out<-.Call('_tviblindi_internal_witness_from_points_sample', PACKAGE = 'tviblindi', ws, alpha2, nbL, maxdimension)
-    out$landmarks<-do.call("rbind",out$landmarks)
-    out
-}
