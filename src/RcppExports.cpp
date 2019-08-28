@@ -552,6 +552,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// strong_witness_from_distances
+SEXP strong_witness_from_distances(const Rcpp::List IND, const Rcpp::List DIST, double alpha2, unsigned int maxdimension);
+RcppExport SEXP _tviblindi_strong_witness_from_distances(SEXP INDSEXP, SEXP DISTSEXP, SEXP alpha2SEXP, SEXP maxdimensionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type IND(INDSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type DIST(DISTSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha2(alpha2SEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type maxdimension(maxdimensionSEXP);
+    rcpp_result_gen = Rcpp::wrap(strong_witness_from_distances(IND, DIST, alpha2, maxdimension));
+    return rcpp_result_gen;
+END_RCPP
+}
 // witness_from_distances_cliques
 SEXP witness_from_distances_cliques(const Rcpp::List IND, const Rcpp::List DIST, double alpha2, unsigned int maxdimension);
 RcppExport SEXP _tviblindi_witness_from_distances_cliques(SEXP INDSEXP, SEXP DISTSEXP, SEXP alpha2SEXP, SEXP maxdimensionSEXP) {
@@ -566,17 +580,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// witness_from_points_sample
-SEXP witness_from_points_sample(const Rcpp::NumericMatrix ws, double alpha2, unsigned int nbL, unsigned int maxdimension);
-RcppExport SEXP _tviblindi_witness_from_points_sample(SEXP wsSEXP, SEXP alpha2SEXP, SEXP nbLSEXP, SEXP maxdimensionSEXP) {
+// strong_witness_from_distances_cliques
+SEXP strong_witness_from_distances_cliques(const Rcpp::List IND, const Rcpp::List DIST, double alpha2, unsigned int maxdimension);
+RcppExport SEXP _tviblindi_strong_witness_from_distances_cliques(SEXP INDSEXP, SEXP DISTSEXP, SEXP alpha2SEXP, SEXP maxdimensionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type IND(INDSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type DIST(DISTSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha2(alpha2SEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type maxdimension(maxdimensionSEXP);
+    rcpp_result_gen = Rcpp::wrap(strong_witness_from_distances_cliques(IND, DIST, alpha2, maxdimension));
+    return rcpp_result_gen;
+END_RCPP
+}
+// internal_sample_points
+SEXP internal_sample_points(const Rcpp::NumericMatrix ws, unsigned int nbL);
+RcppExport SEXP _tviblindi_internal_sample_points(SEXP wsSEXP, SEXP nbLSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type ws(wsSEXP);
-    Rcpp::traits::input_parameter< double >::type alpha2(alpha2SEXP);
     Rcpp::traits::input_parameter< unsigned int >::type nbL(nbLSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type maxdimension(maxdimensionSEXP);
-    rcpp_result_gen = Rcpp::wrap(witness_from_points_sample(ws, alpha2, nbL, maxdimension));
+    rcpp_result_gen = Rcpp::wrap(internal_sample_points(ws, nbL));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -624,8 +650,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tviblindi_path_1simplex_indices", (DL_FUNC) &_tviblindi_path_1simplex_indices, 2},
     {"_tviblindi_witness_from_points", (DL_FUNC) &_tviblindi_witness_from_points, 4},
     {"_tviblindi_witness_from_distances", (DL_FUNC) &_tviblindi_witness_from_distances, 4},
+    {"_tviblindi_strong_witness_from_distances", (DL_FUNC) &_tviblindi_strong_witness_from_distances, 4},
     {"_tviblindi_witness_from_distances_cliques", (DL_FUNC) &_tviblindi_witness_from_distances_cliques, 4},
-    {"_tviblindi_witness_from_points_sample", (DL_FUNC) &_tviblindi_witness_from_points_sample, 4},
+    {"_tviblindi_strong_witness_from_distances_cliques", (DL_FUNC) &_tviblindi_strong_witness_from_distances_cliques, 4},
+    {"_tviblindi_internal_sample_points", (DL_FUNC) &_tviblindi_internal_sample_points, 2},
     {NULL, NULL, 0}
 };
 

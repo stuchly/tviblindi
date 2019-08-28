@@ -169,11 +169,19 @@ witness_from_distances <- function(IND, DIST, alpha2, maxdimension = 1L) {
     .Call('_tviblindi_witness_from_distances', PACKAGE = 'tviblindi', IND, DIST, alpha2, maxdimension)
 }
 
+strong_witness_from_distances <- function(IND, DIST, alpha2, maxdimension = 1L) {
+    .Call('_tviblindi_strong_witness_from_distances', PACKAGE = 'tviblindi', IND, DIST, alpha2, maxdimension)
+}
+
 witness_from_distances_cliques <- function(IND, DIST, alpha2, maxdimension = 1L) {
     .Call('_tviblindi_witness_from_distances_cliques', PACKAGE = 'tviblindi', IND, DIST, alpha2, maxdimension)
 }
 
-witness_from_points_sample <- function(ws, alpha2, nbL = 100L, maxdimension = 1L) {
-    .Call('_tviblindi_witness_from_points_sample', PACKAGE = 'tviblindi', ws, alpha2, nbL, maxdimension)
+strong_witness_from_distances_cliques <- function(IND, DIST, alpha2, maxdimension = 1L) {
+    .Call('_tviblindi_strong_witness_from_distances_cliques', PACKAGE = 'tviblindi', IND, DIST, alpha2, maxdimension)
+}
+
+internal_sample_points <- function(ws, nbL = 100L) {
+    .Call('_tviblindi_internal_sample_points', PACKAGE = 'tviblindi', ws, nbL)
 }
 

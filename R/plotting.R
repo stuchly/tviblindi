@@ -16,8 +16,9 @@ plot_data_sets<-function(data,n_windows,pseudotime,paths,cls,clssel=unique(cls))
 sort_dots5<-function(pptag01, n_windows){
   probs<-(seq(0,1, 1/n_windows))^2
   probs<-probs/max(probs)
-  print(probs)
-  br <- as.numeric(quantile(pptag01,probs))
+
+  br <- unique(as.numeric(quantile(pptag01,probs)))
+
   sorted <- as.numeric(cut(pptag01, breaks= br,include.lowest = TRUE))
   return(sorted)
 
@@ -26,7 +27,8 @@ sort_dots5<-function(pptag01, n_windows){
 plot_data<-function (data, n_windows, pp, parameters, tit = NULL, plines = NULL,
                      gate = NULL, add = FALSE, lty = 1)
 {
-  palette(c("#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5", "#D9D9D9", "#BC80BD", "#CCEBC5"))
+    ## palette(c("#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5", "#D9D9D9", "#BC80BD", "#CCEBC5"))
+    palette(brewer.pal(n=length(parameters),name="Set2"))
   pptag01 <- pp/max(pp)
   sorted <- sort_dots5(pptag01, n_windows)
 
@@ -76,9 +78,9 @@ plot_data<-function (data, n_windows, pp, parameters, tit = NULL, plines = NULL,
         points(x[ii] + xv, y[ii] + yv, pch = pch[ss],
                cex = 0.5, col = pch[ss])
       }
-      print(levels(gate))
-      print(head(gate))
-      print(as.numeric(head(gate)))
+      ## print(levels(gate))
+      ## print(head(gate))
+      ## print(as.numeric(head(gate)))
       legend("bottomleft", legend = levels((gate)),
              pch = 1:length(levels((gate))),
              col = 1:length(levels((gate))),

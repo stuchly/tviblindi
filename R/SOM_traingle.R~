@@ -1,0 +1,1 @@
+traingulation<-function(clusters,xdim,ydim) create_k_skeleton(clusters,TDA::alphaComplexFiltration(expand.grid(seq_len(xdim), seq_len(ydim))))
