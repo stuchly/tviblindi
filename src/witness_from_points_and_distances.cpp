@@ -98,7 +98,7 @@ SEXP witness_from_distances(const Rcpp::List IND, const Rcpp::List DIST,double a
   Gudhi::Simplex_tree<> stree;
   Witness_complexD witness_complex(nlt);
   witness_complex.create_complex(stree,alpha2, maxdimension+1);
-  // stree.initialize_filtration();
+   stree.initialize_filtration();
 
   std::vector<std::vector<int>> out;
   std::vector<double> out_values;
@@ -142,7 +142,7 @@ SEXP strong_witness_from_distances(const Rcpp::List IND, const Rcpp::List DIST,d
   Gudhi::Simplex_tree<> stree;
   Strong_witness_complexD witness_complex(nlt);
   witness_complex.create_complex(stree,alpha2, maxdimension+1);
-  // stree.initialize_filtration();
+  stree.initialize_filtration();
 
   std::vector<std::vector<int>> out;
   std::vector<double> out_values;
@@ -187,7 +187,7 @@ SEXP witness_from_distances_cliques(const Rcpp::List IND, const Rcpp::List DIST,
   Witness_complexD witness_complex(nlt);
   witness_complex.create_complex(stree,alpha2, 1);
   stree.expansion(maxdimension+1);
-  // stree.initialize_filtration();
+  stree.initialize_filtration();
 
   std::vector<std::vector<int>> out;
   std::vector<double> out_values;
@@ -231,8 +231,14 @@ SEXP strong_witness_from_distances_cliques(const Rcpp::List IND, const Rcpp::Lis
   Gudhi::Simplex_tree<> stree;
   Strong_witness_complexD witness_complex(nlt);
   witness_complex.create_complex(stree,alpha2, 1);
+  std::cout << "The complex contains " << stree.num_simplices() << " simplices \n";
+  std::cout << "   and has dimension " << stree.dimension() << " \n";
+  
   stree.expansion(maxdimension+1);
-  // stree.initialize_filtration();
+
+  std::cout << "The complex contains " << stree.num_simplices() << " simplices \n";
+  std::cout << "   and has dimension " << stree.dimension() << " \n";
+  stree.initialize_filtration();
 
   std::vector<std::vector<int>> out;
   std::vector<double> out_values;

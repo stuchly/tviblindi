@@ -28,7 +28,7 @@ plot_data<-function (data, n_windows, pp, parameters, tit = NULL, plines = NULL,
                      gate = NULL, add = FALSE, lty = 1)
 {
     ## palette(c("#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5", "#D9D9D9", "#BC80BD", "#CCEBC5"))
-    palette(brewer.pal(n=length(parameters),name="Set2"))
+    palette(brewer.pal(n=length(parameters),name="Set3"))
   pptag01 <- pp/max(pp)
   sorted <- sort_dots5(pptag01, n_windows)
 
@@ -97,8 +97,8 @@ plot_data<-function (data, n_windows, pp, parameters, tit = NULL, plines = NULL,
   colp <- c("green", "green", "blue", "blue", "red", "red")
   if (!is.null(plines))
     for (i in 1:length(plines)) abline(v = pptag01[plines[i]],
-                                       lty = 2, col = colp[i], lwd = 0.5)
-  legend("topleft", legend = legendP, pch = 15, col = CC, cex = 0.5)
+                                       lty = 2, col = colp[i], lwd = 1)
+  legend("topright", legend = legendP, pch = 15, col = CC, cex = 0.75)
   return(sorted)
 }
 

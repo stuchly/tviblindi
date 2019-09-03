@@ -57,7 +57,7 @@ sample_walks<-function(g,n=10) random_walk_adj_N(g,1,1000,n)
 #'
 #' @export
 plot_walks<-function(XX,walks,sel=1:length(walks$starts),col=1:length(walks$starts),Xmap=NULL,...) {
-    plot(XX)
+    plot(XX,...)
     j<-0
     if (is.null(Xmap)) for (i in sel) { j<-j+1; lines(XX[select_paths_points(walks,i),],lty=1,col=col[j],...) } else for (i in sel) { j<-j+1; lines(XX[Xmap[select_paths_points(walks,i)],],lty=1,col=col[j],...) }
 }
@@ -730,14 +730,10 @@ triangulate_pathways<-function(walks,X,cmplx){
 #' Analogically, \code{vals} describes homology classes by dimension, filtration value corresponding to birth and filtration value corresponding to death.
 #'
 #' @export
-pers_diagram<-function(dBr,plot=TRUE){
-    ##ss<-which(dBr$nonzero_col<0)
-    ##print(length(ss))
-    ## ll<-length(dBr$values)
-    ## dBr$values<-c(dBr$values,rep(Inf,length(ss)))
-    ## dBr$dim<-c(dBr$dim,rep(1,length(ss)))
-    ## dBr$nonzero_col[ss]<-(ll+1):length(dBr$values)
-    ss<-which(dBr$values[dBr$low]!=dBr$values[dBr$nonzero_col])
+pers_diagram<-function(dBr,plot=TRUE,repre=NULL){
+    if (!is.null(repre)) repre<-unique(unlist(repre)) else repre<-dBr$nonzero_col
+
+    ss<-which((dBr$values[dBr$low]!=dBr$values[dBr$nonzero_col]) & (dBr$nonzero_col %in% repre))
     if (plot) plot(dBr$values[dBr$nonzero_col[ss]]~dBr$values[dBr$low[ss]],col=dBr$dim[ss]+1,pch=dBr$dim[ss]+1)
     return(list(inds=data.frame(dim=dBr$dim[ss],birth=dBr$low[ss],death=dBr$nonzero_col[ss]),vals=data.frame(dim=dBr$dim[ss],birth=dBr$values[dBr$low[ss]],death=dBr$values[dBr$nonzero_col[ss]])))
 }
