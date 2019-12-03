@@ -269,6 +269,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// interpolate_trajectories
+std::vector< std::vector<double> > interpolate_trajectories(std::vector< std::vector<double> > pts, double coef);
+RcppExport SEXP _tviblindi_interpolate_trajectories(SEXP ptsSEXP, SEXP coefSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector< std::vector<double> > >::type pts(ptsSEXP);
+    Rcpp::traits::input_parameter< double >::type coef(coefSEXP);
+    rcpp_result_gen = Rcpp::wrap(interpolate_trajectories(pts, coef));
+    return rcpp_result_gen;
+END_RCPP
+}
 // jaccard_coeff
 NumericMatrix jaccard_coeff(const NumericMatrix idx);
 RcppExport SEXP _tviblindi_jaccard_coeff(SEXP idxSEXP) {
@@ -628,6 +640,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tviblindi_get_rep_straight", (DL_FUNC) &_tviblindi_get_rep_straight, 4},
     {"_tviblindi_get_rep_straight_modified", (DL_FUNC) &_tviblindi_get_rep_straight_modified, 3},
     {"_tviblindi_get_reps_straight_modified", (DL_FUNC) &_tviblindi_get_reps_straight_modified, 3},
+    {"_tviblindi_interpolate_trajectories", (DL_FUNC) &_tviblindi_interpolate_trajectories, 2},
     {"_tviblindi_jaccard_coeff", (DL_FUNC) &_tviblindi_jaccard_coeff, 1},
     {"_tviblindi_openmp_knn_C", (DL_FUNC) &_tviblindi_openmp_knn_C, 3},
     {"_tviblindi_hello", (DL_FUNC) &_tviblindi_hello, 0},

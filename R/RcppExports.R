@@ -81,6 +81,10 @@ get_reps_straight_modified <- function(cycles, R, update = FALSE) {
     .Call('_tviblindi_get_reps_straight_modified', PACKAGE = 'tviblindi', cycles, R, update)
 }
 
+interpolate_trajectories <- function(pts, coef = 200) {
+    .Call('_tviblindi_interpolate_trajectories', PACKAGE = 'tviblindi', pts, coef)
+}
+
 jaccard_coeff <- function(idx) {
     .Call('_tviblindi_jaccard_coeff', PACKAGE = 'tviblindi', idx)
 }

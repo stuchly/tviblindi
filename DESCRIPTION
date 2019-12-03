@@ -7,7 +7,7 @@ Author: Jan Stuchly, David Novak
 Description: tviblindi puts ideas from graph theory and algebraic topology to use for single-cell data. This product includes software developed by the Delft University of Technology (modified parts of bh tsne), GUDHI supported by an Advanced Investigator Grant of the European Research Council and hosted by INRIA and PHAT - Persistent Homology Algorithm Toolbox
 Maintainer: Jan Stuchly <jan.stuchly@lfmotol.cuni.cz>
 License: open
-Depends: R (>= 3.0.0), Matrix, igraph, RcppArmadillo, Rcpp, RcppEigen, BH, FlowSOM
+Depends: R (>= 3.0.0), Matrix, igraph, RcppArmadillo, Rcpp, RcppEigen, BH, FlowSOM, shiny, shinyFiles, tidyverse, ggdendro, dendextend, scales, scattermore
 Suggests: TDA, PRIMME, flowCore
 Imports: Rcpp (>= 0.12.12), RcppEigen (>= 0.3.3.3.0)
 LinkingTo: RcppArmadillo, Rcpp, RcppEigen, BH

@@ -6,7 +6,8 @@
 \usage{
 pathways.visual.parameters.segments(paths, classes, which.class,
   coordinates, pseudotime, which.param, breaks = NULL, n.part = 10,
-  exp.part = 1, expression.transform = NULL, asinh.denominator = 5)
+  exp.part = 1, expression.transform = NULL, asinh.denominator = 5,
+  show_legend = FALSE)
 }
 \arguments{
 \item{paths}{a list of pathways. This corresponds to the \code{walks} slot of a pathways list object, as generated
@@ -41,6 +42,8 @@ Defaults to null (no transformation).}
 
 \item{asinh.denominator}{if \code{expression.transform} is \code{"asinh"}, which factor \code{F} to use in \code{coordinates <- asinh(coordinates/F)}.
 \code{F = 5} recommended for CyTOF data, approximately \code{F = 120} for flow data.}
+
+\item{show_legend}{Boolean; determines whether a legend should be included in the plot.}
 }
 \value{
 \code{pathways.visual.parameters.segments} returns a \code{ggplot} object.
