@@ -1,6 +1,3 @@
-library(shiny)
-library(shinyWidgets)
-
 shiny_ui <- fluidPage(
   tags$style(HTML("#app_title{font-family: monospace; font-weight: bold}")),
   tags$style(type = "text/css", ".irs-slider {width: 15px; height: 30px; top: 22px;};"),
