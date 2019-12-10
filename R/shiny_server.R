@@ -220,7 +220,9 @@ shiny_server <- function(  input,
             R$dendro.selection_idcs  <- as.vector(unlist(R$dendro.classes[pts]))
             R$dendro.selection       <- as.numeric(unlist(R$dendro.classes[pts]))
 
-            cat(R$dendro.selection_nodes, sep = "\n")
+            sizes <- sapply(R$dendro.classes[pts], length)
+            #cat(R$dendro.selection_nodes, sep = "\n")
+            cat(sizes, sep = ", ")
         }
     })
 
@@ -404,24 +406,28 @@ shiny_server <- function(  input,
     observeEvent(input$expression_zap.A, {
         if (length(R$markers.selected.A) == 1) {
             pts             <- brushedPoints(R$expression.stats.A, input$expression_brush.A, xvar = "segment", yvar = "expression")
-            junk            <- R$marked_idcs.A[unique(pts$walk)]
-            R$junk.A        <- unique(c(R$junk.A, junk))
-            nonjunk         <- !R$marked_idcs.A %in% junk
-            R$marked.A      <- R$marked.A[nonjunk]
-            R$marked_idcs.A <- R$marked_idcs.A[nonjunk]
-            session$resetBrush("expression_brush.A")
+            if (nrow(pts) < length(R$marked.A)) {
+                junk            <- R$marked_idcs.A[unique(pts$walk)]
+                R$junk.A        <- unique(c(R$junk.A, junk))
+                nonjunk         <- !R$marked_idcs.A %in% junk
+                R$marked.A      <- R$marked.A[nonjunk]
+                R$marked_idcs.A <- R$marked_idcs.A[nonjunk]
+                session$resetBrush("expression_brush.A")
+            }
         }
     })
 
     observeEvent(input$expression_zap.B, {
         if (length(R$markers.selected.B) == 1) {
             pts             <- brushedPoints(R$expression.stats.B, input$expression_brush.B, xvar = "segment", yvar = "expression")
-            junk            <- R$marked_idcs.B[unique(pts$walk)]
-            R$junk.B        <- unique(c(R$junk.B, junk))
-            nonjunk         <- !R$marked_idcs.B %in% junk
-            R$marked.B      <- R$marked.B[nonjunk]
-            R$marked_idcs.B <- R$marked_idcs.B[nonjunk]
-            session$resetBrush("expression_brush.B")
+            if (nrow(pts) < length(R$marked.A)) {
+                junk            <- R$marked_idcs.B[unique(pts$walk)]
+                R$junk.B        <- unique(c(R$junk.B, junk))
+                nonjunk         <- !R$marked_idcs.B %in% junk
+                R$marked.B      <- R$marked.B[nonjunk]
+                R$marked_idcs.B <- R$marked_idcs.B[nonjunk]
+                session$resetBrush("expression_brush.B")
+            }
         }
     })
 
@@ -429,10 +435,11 @@ shiny_server <- function(  input,
 
     observeEvent(R$marked.A, {
         R$junk.A <- R$junk.A[!R$junk.A %in% R$marked_idcs.A]
+        
         len <- length(R$junk.A)
-        if (len > 0) {
-            output$marked_A_deleted_info <- renderPrint({ cat("(", length(R$junk.A), " zapped)", sep = "")})
-        }
+        z <- if (len > 0) { paste0(" (", len, " zapped)") } else { "" }
+        output$marked_A_counts_info <- renderPrint({ cat("N = ", length(R$marked.A), z, sep = "")})
+
         if (length(R$marked_idcs.A) > 250) {
             output$marked_A_info <- renderPrint({ cat(paste(R$marked_idcs.A[1:250], sep = ", "), paste0("...and ", length(R$marked_idcs.A) - 250, " more"), sep = "\n") })
         } else if (length(R$marked_idcs.A) > 0) {
@@ -444,10 +451,11 @@ shiny_server <- function(  input,
 
     observeEvent(R$marked.B, {
         R$junk.B <- R$junk.B[!R$junk.B %in% R$marked_idcs.B]
+        
         len <- length(R$junk.B)
-        if (len > 0) {
-            output$marked_B_deleted_info <- renderPrint({ cat("(", length(R$junk.B), " zapped)", sep = "")})
-        }
+        z <- if (len > 0) { paste0(" (", len, " zapped)") } else { "" }
+        output$marked_B_counts_info <- renderPrint({ cat("N = ", length(R$marked.B), z, sep = "")})
+
         if (length(R$marked_idcs.B) > 250) {
             output$marked_B_info <- renderPrint({ cat(paste(R$marked_idcs.B[1:250], sep = ", "), paste0("...and ", length(R$marked_idcs.B) - 250, " more"), sep = "\n") })
         } else if (length(R$marked_idcs.B) > 0) {

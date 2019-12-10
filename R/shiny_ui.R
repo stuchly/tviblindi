@@ -134,7 +134,7 @@ shiny_ui <- fluidPage(
               ## Selected pathways log
               fluidRow(
                   width = 12,
-                  h4("Selected dendrogram nodes"),
+                  h4("Selected dendrogram nodes by counts"),
                   verbatimTextOutput("dendro_brush_info", placeholder = TRUE)
               ),
               
@@ -153,7 +153,7 @@ shiny_ui <- fluidPage(
                   ),
                   
                   column(width = 6,
-                         textOutput("marked_A_deleted_info")
+                         textOutput("marked_A_counts_info")
                   ),
                   
                   br(), br(),
@@ -173,7 +173,7 @@ shiny_ui <- fluidPage(
                   ),
                   
                   column(width = 6,
-                         textOutput("marked_B_deleted_info")
+                         textOutput("marked_B_counts_info")
                   ),
                   
                   br(), br(),
