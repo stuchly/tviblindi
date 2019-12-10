@@ -9,7 +9,6 @@
 #' @param filtration Filtration on all points in *coords*.
 #' @param layout 2D projection matrix.
 #' @param walks_raw Walks object as output of function *randow_walk_...*.
-#' @param term Terminal node indices per walk.
 #' @param b Boundary matrix of *filtration*.
 #' @param rb Reduced boundary matrix of *filtration*.
 launch_shiny <- function(input_fcs_path,
@@ -36,7 +35,6 @@ launch_shiny <- function(input_fcs_path,
   server_env$filtration      <- filtration;      cat("Loaded filtration\n")
   server_env$layout          <- layout;          cat("Loaded 2D layout\n")
   server_env$walks_raw       <- walks_raw;       cat("Loaded random walks\n")
-  server_env$term            <- term;            cat("Loaded terminal nodes\n")
   server_env$b               <- b;               cat("Loaded boundary matrix\n")
   server_env$rb              <- rb;              cat("Loaded reduced boundary matrix\n")
   

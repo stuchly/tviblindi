@@ -54,6 +54,8 @@ shiny_server <- function(  input,
     layout.df        <- data.frame(layout)
     colnames(layout.df) <- c("X", "Y")
 
+    term <- c(walks_raw$v[walks_raw$starts[-1] - 1], tail(walks_raw$v, 1))
+    
     ## Interactive persistence diagram
     output$pers_plot <- renderPlot({
         if (!is.null(R$pers)) {
@@ -254,11 +256,11 @@ shiny_server <- function(  input,
 
     ## Button: pin marked pathways for addition to output .fcs file
     observeEvent(input$dendro_btn_append.A, {
-        R$to_append <- sort(unique(unlist(c(R$marked.A, R$to_append))))
+        R$to_append <- sort(unique(R$marked.A))
     })
 
     observeEvent(input$dendro_btn_append.B, {
-        R$to_append <- sort(unique(unlist(c(R$marked.B, R$to_append))))
+        R$to_append <- sort(unique(R$marked.B))
     })
 
     observeEvent(R$to_append, {
@@ -295,9 +297,20 @@ shiny_server <- function(  input,
                 layout.df$Y, colname = "dimension_reduction_2"
             )
         }
-        if (!is.null(pseudotime) && !is.null(R$random_walks) && (!is.null(R$to_append))) showModal(save_modal())
+        if (!is.null(pseudotime) && !is.null(R$random_walks)) showModal(save_modal())
     })
 
+    observeEvent(input$dendro_btn_erase_pinned, {
+        R$output_ff <- fcs.add_col(
+            fcs.add_col(
+                input_ff, layout.df$X, colname = "dimension_reduction_1"
+            ),
+            layout.df$Y, colname = "dimension_reduction_2"
+        )
+        R$save_count <- 0
+        R$to_append <- NULL
+    })
+    
     ## Dialog: save output .fcs file
     save_modal <- function(failed = FALSE) {
         modalDialog(

@@ -121,7 +121,7 @@ shiny_ui <- fluidPage(
                      
                      ## Button: open dialog for saving output .fcs file
                      actionButton("dendro_btn_save", "", icon = icon("glyphicon glyphicon-floppy-disk", lib = "glyphicon")),     
-                     
+                     actionButton("dendro_btn_erase_pinned", "", icon = icon("glyphicon glyphicon-floppy-remove", lib = "glyphicon"))
               ),
               column(width = 6,
                      style = "text-align:right; padding-right:5px; margin-top: 15px;",
