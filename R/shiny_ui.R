@@ -105,22 +105,32 @@ shiny_ui <- fluidPage(
                           min = 0, max = 100,
                           value = 10.0, step = 1),
               
-              ## Button switch: pathway category (A vs. B)
-              radioGroupButtons("dendro_btn_categ", label = NULL, choiceValues = c("A", "B"), choiceNames = c("A", "B"),
-                                selected = "A", status = "default", size = "sm",
-                                direction = "horizontal", justified = TRUE, individual = FALSE),
-              
-              ## Button: mark selected pathways
-              actionButton("dendro_btn_add", "", icon = icon("glyphicon glyphicon-plus", lib = "glyphicon")),
-                
-              ## Button: clear marked pathways
-              actionButton("dendro_btn_clear", "", icon = icon("glyphicon glyphicon-fire", lib = "glyphicon")),
-              
-              HTML("&nbsp;&nbsp;&nbsp;&nbsp;"),
-              
-              ## Button: open dialog for saving output .fcs file
-              actionButton("dendro_btn_save", "", icon = icon("glyphicon glyphicon-floppy-disk", lib = "glyphicon")),
-              
+             ## Button switch: pathway category (A vs. B)
+             radioGroupButtons("dendro_btn_categ", label = NULL, choiceValues = c("A", "B"), choiceNames = c("A", "B"),
+                               selected = "A", status = "default", size = "sm",
+                               direction = "horizontal", justified = TRUE, individual = FALSE),
+             
+              column(width = 6,
+                     ## Button: mark selected pathways
+                     actionButton("dendro_btn_add", "", icon = icon("glyphicon glyphicon-plus", lib = "glyphicon")),
+                     
+                     ## Button: clear marked pathways
+                     actionButton("dendro_btn_clear", "", icon = icon("glyphicon glyphicon-fire", lib = "glyphicon")),
+                     
+                     HTML("&nbsp;&nbsp;&nbsp;&nbsp;"),
+                     
+                     ## Button: open dialog for saving output .fcs file
+                     actionButton("dendro_btn_save", "", icon = icon("glyphicon glyphicon-floppy-disk", lib = "glyphicon")),     
+                     
+              ),
+              column(width = 6,
+                     style = "text-align:right; padding-right:5px; margin-top: 15px;",
+                     textOutput("save_count_info")
+              ),
+
+             br(),
+             br(),
+             
               ## Selected pathways log
               fluidRow(
                   width = 12,
@@ -140,9 +150,6 @@ shiny_ui <- fluidPage(
                   column(width = 6,
                          ## Button: pin marked pathways for addition to output .fcs file
                          actionButton("dendro_btn_append.A", "", icon = icon("glyphicon glyphicon-pushpin", lib = "glyphicon")),
-                         
-                         ## Button: unpin all pinned pathways
-                         actionButton("dendro_btn_unappend.A", "", icon = icon("glyphicon glyphicon-scissors", lib = "glyphicon")),
                   ),
                   
                   column(width = 6,
@@ -163,9 +170,6 @@ shiny_ui <- fluidPage(
                   column(width = 6,
                          ## Button: pin marked pathways for addition to output .fcs file
                          actionButton("dendro_btn_append.B", "", icon = icon("glyphicon glyphicon-pushpin", lib = "glyphicon")),
-                         
-                         ## Button: unpin all pinned pathways
-                         actionButton("dendro_btn_unappend.B", "", icon = icon("glyphicon glyphicon-scissors", lib = "glyphicon")),
                   ),
                   
                   column(width = 6,
@@ -176,13 +180,6 @@ shiny_ui <- fluidPage(
                   
                   textOutput("marked_B_info")
                 )
-              ),
-              
-              ## Pinned pathways log
-              fluidRow(
-                  width = 12,
-                  h4("Pathways pinned for adding to .fcs file"),
-                  textOutput("dendro_append_info")
               ),
               
               br(), br(), br()

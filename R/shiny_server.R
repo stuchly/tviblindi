@@ -32,6 +32,9 @@ shiny_server <- function(  input,
     R$pathways_categ         <- "A"
     R$lazy_plotting          <- TRUE
 
+    R$output_ff              <- NULL
+    R$save_count             <- 0
+    
     R$random_walks           <- NULL
 
     R$to_append              <- NULL
@@ -251,40 +254,48 @@ shiny_server <- function(  input,
 
     ## Button: pin marked pathways for addition to output .fcs file
     observeEvent(input$dendro_btn_append.A, {
-        R$to_append.A <- R$marked.A
-        R$to_append <- sort(unique(unlist(c(R$to_append.A, R$to_append.B))))
+        R$to_append <- sort(unique(unlist(c(R$marked.A, R$to_append))))
     })
 
     observeEvent(input$dendro_btn_append.B, {
-        R$to_append.B <- R$marked.B
-        R$to_append <- sort(unique(unlist(c(R$to_append.A, R$to_append.B))))
-    })
-
-    observeEvent(input$dendro_btn_unappend.A, {
-        R$to_append.A <- NULL
-        R$to_append <- R$to_append.B
-    })
-
-    observeEvent(input$dendro_btn_unappend.B, {
-        R$to_append.B <- NULL
-        R$to_append <- R$to_append.A
+        R$to_append <- sort(unique(unlist(c(R$marked.B, R$to_append))))
     })
 
     observeEvent(R$to_append, {
-        len <- length(R$to_append)
-        if (is.null(len)) len <- 0
-        if (len > 250) {
-            output$dendro_append_info <- renderPrint({ cat(paste(R$to_append[1:250], sep = ", "), paste0("...and ", len - 250, " more"), "\n\n", sep = "\n") })
-        } else if (len > 0) {
-            output$dendro_append_info <- renderPrint({ cat(R$to_append, sep = ", ") })
-        } else {
-            output$dendro_append_info <- renderPrint({ cat("(none)\n\n") })
+        if (is.null(R$output_ff)) {
+            R$output_ff <- fcs.add_col(
+                fcs.add_col(
+                    input_ff, layout.df$X, colname = "dimension_reduction_1"
+                ),
+                layout.df$Y, colname = "dimension_reduction_2"
+            )
         }
+        R$save_count <- R$save_count + 1
+        w <- list()
+        w$v      <- unlist(R$random_walks)
+        w$starts <- c(1, cumsum(sapply(R$random_walks, length)) + 1)
+        R$output_ff <- addPathInfot2Fcs(R$output_ff,
+                                        pseudotime,
+                                        w,
+                                        R$to_append,
+                                        ID = R$save_count)
     })
-
+    
+    observeEvent(R$save_count, {
+        output$save_count_info <- renderPrint(cat(paste0(R$save_count, " ", if (R$save_count == 1) { "batch" } else { "batches" }, " pinned")))
+    })
+    
     ## Button: open dialog for saving output .fcs file
     observeEvent(input$dendro_btn_save, {
-        if (!is.null(input_ff) && !is.null(pseudotime) && !is.null(R$random_walks) && (!is.null(R$to_append))) showModal(save_modal())
+        if (is.null(R$output_ff)) {
+            R$output_ff <- fcs.add_col(
+                fcs.add_col(
+                    input_ff, layout.df$X, colname = "dimension_reduction_1"
+                ),
+                layout.df$Y, colname = "dimension_reduction_2"
+            )
+        }
+        if (!is.null(pseudotime) && !is.null(R$random_walks) && (!is.null(R$to_append))) showModal(save_modal())
     })
 
     ## Dialog: save output .fcs file
@@ -304,11 +315,7 @@ shiny_server <- function(  input,
     ## Button: okay saving output .fcs file
     observeEvent(input$save_ok, {
         if (input$output_fcs_name != "") {
-            output_FCS <- addPathInfot2Fcs(input_ff,
-                                           pseudotime,
-                                           R$random_walks,
-                                           R$to_append)
-            flowCore::write.FCS(output_FCS, input$output_fcs_name)
+            flowCore::write.FCS(R$output_ff, input$output_fcs_name)
             removeModal()
         } else {
             showModal(save_modal(failed = TRUE))
@@ -445,6 +452,56 @@ shiny_server <- function(  input,
     dupes  <- which(duplicated(hashes))
     if (length(dupes) > 0) return(df[-dupes, ])
     df
+}
+
+fcs.add_col <- function(ff, new_col, colname = "label") {
+    
+    efcs <- ff@exprs
+    
+    N <- nrow(efcs)
+    len <- length(new_col)
+    
+    if (N != len)  stop(paste0("Number of rows of expression matrix is ", N, ", whereas length of new column is ", len, "."))
+    
+    params <- ff@parameters
+    pd     <- pData(params)
+    cols   <- as.vector(pd$name)
+    idcs   <- match(cols, pd$name)
+    
+    if (any(is.na(idcs))) stop("Invalid column specifier")
+    
+    channel_number     <- ncol(ff) + 1
+    channel_id         <- paste0("$P", channel_number)
+    channel_name       <- colname
+    channel_range      <- max(new_col) + 1
+    channel_min        <- min(0, min(new_col) - 1)
+    plist              <- matrix(c(channel_name, channel_name, channel_range,
+                                   channel_min, channel_range - 1))
+    rownames(plist)    <- c("name", "desc", "range", "minRange", "maxRange")
+    colnames(plist)    <- c(channel_id)
+    pd                 <- rbind(pd, t(plist))
+    pData(params)      <- pd
+    channel_names      <- colnames(efcs)
+    efcs.mod           <- cbind(efcs, new_col)
+    colnames(efcs.mod) <- c(channel_names, colname)
+    
+    ff.mod             <- flowFrame(efcs.mod, params, description = description(ff))
+    
+    keyval                                      <- list()
+    keyval[[paste0("$P", channel_number, "B")]] <- "32"
+    keyval[[paste0("$P", channel_number, "R")]] <- toString(channel_range)
+    keyval[[paste0("$P", channel_number, "E")]] <- "0,0"
+    keyval[[paste0("$P", channel_number, "N")]] <- channel_name
+    keyval[[paste0("$P", channel_number, "S")]] <- channel_name
+    keyword(ff.mod)                             <- keyval
+    
+    flowCoreP_Rmax <- paste0("flowCore_$P", channel_number, "Rmax")
+    flowCoreP_Rmin <- paste0("flowCore_$P", channel_number, "Rmin")
+    
+    description(ff.mod)[flowCoreP_Rmax] <- max(20000, description(ff.mod)$`flowCore_$P1Rmax`)
+    description(ff.mod)[flowCoreP_Rmin] <- 0
+    
+    return(ff.mod)
 }
 
 #### Pathway dendrogram
