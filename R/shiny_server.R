@@ -1,6 +1,7 @@
 shiny_server <- function(  input,
                            output,
                            session  ) {
+    
     R                        <- reactiveValues()
     R$pers                   <- NULL
     R$repre                  <- NULL
@@ -48,7 +49,7 @@ shiny_server <- function(  input,
     R$expression.stats.B     <- NULL
     R$markers.brushed.A      <- NULL
     R$markers.brushed.B      <- NULL
-
+    
     layout[, 1]      <- layout[, 1] - min(layout[, 1]); layout[, 1] <- layout[, 1] / max(layout[, 1])
     layout[, 2]      <- layout[, 2] - min(layout[, 2]); layout[, 2] <- layout[, 2] / max(layout[, 2])
     layout.df        <- data.frame(layout)
@@ -282,7 +283,8 @@ shiny_server <- function(  input,
                                         pseudotime,
                                         w,
                                         R$to_append,
-                                        ID = R$save_count)
+                                        ID = R$save_count,
+                                        event_sel = event_sel)
     })
     
     observeEvent(R$save_count, {
