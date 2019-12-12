@@ -37,7 +37,7 @@ launch_shiny <- function(input_fcs_path,
   server_env$walks_raw       <- walks_raw;       cat("Loaded random walks\n")
   server_env$b               <- b;               cat("Loaded boundary matrix\n")
   server_env$rb              <- rb;              cat("Loaded reduced boundary matrix\n")
-  server_env$walks_sel       <- event_sel;       cat("Loaded events selection\n")
+  server_env$event_sel       <- event_sel;       cat("Loaded events selection\n")
   
   app <- shiny::shinyApp(shiny_ui, shiny_server)
   shiny::runApp(app)
