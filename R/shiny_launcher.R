@@ -11,6 +11,7 @@
 #' @param walks_raw Walks object as output of function *randow_walk_...*.
 #' @param b Boundary matrix of *filtration*.
 #' @param rb Reduced boundary matrix of *filtration*.
+#' @example #launch_shiny("data/input.FCS", readRDS("data/origin.RDS"), readRDS("data/pseudotime.RDS"), readRDS("data/coords.RDS"), readRDS("data/coords_clusters.RDS"), readRDS("data/clusters.RDS"), readRDS("data/filtration.RDS"), readRDS("data/layout.RDS"), readRDS("data/walks_raw.RDS"), readRDS("data/b.RDS"), readRDS("data/rb.RDS"), 1:1000)
 launch_shiny <- function(input_fcs_path,
                          origin,
                          pseudotime,

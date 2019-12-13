@@ -268,11 +268,19 @@ shiny_server <- function(  input,
 
     observeEvent(R$to_append, {
         if (is.null(R$output_ff)) {
+            if (is.null(event_sel)) {
+                layoutX <- layout.df$X * 100
+                layoutY <- layout.df$Y * 100
+            } else {
+                layoutX <- layoutY <- rep(-1000, nrow(input_ff))
+                layoutX[event_sel] <- layout.df$X
+                layoutY[event_sel] <- layout.df$Y
+            }
             R$output_ff <- fcs.add_col(
                 fcs.add_col(
-                    input_ff, layout.df$X, colname = "dimension_reduction_1"
+                    input_ff, layoutX, colname = "dimension_reduction_1"
                 ),
-                layout.df$Y, colname = "dimension_reduction_2"
+                layoutY, colname = "dimension_reduction_2"
             )
         }
         R$save_count <- R$save_count + 1
