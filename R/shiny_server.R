@@ -304,9 +304,9 @@ shiny_server <- function(  input,
         if (is.null(R$output_ff)) {
             R$output_ff <- fcs.add_col(
                 fcs.add_col(
-                    input_ff, layout.df$X, colname = "dimension_reduction_1"
+                    input_ff, layout.df$X * 100, colname = "dimension_reduction_1"
                 ),
-                layout.df$Y, colname = "dimension_reduction_2"
+                layout.df$Y * 100, colname = "dimension_reduction_2"
             )
         }
         if (!is.null(pseudotime) && !is.null(R$random_walks)) showModal(save_modal())
@@ -379,8 +379,18 @@ shiny_server <- function(  input,
     })
 
     ## Marker selectors
-    observeEvent(input$marker_selector.A, { R$markers.selected.A <- input$marker_selector.A })
-    observeEvent(input$marker_selector.B, { R$markers.selected.B <- input$marker_selector.B })
+    observeEvent(input$marker_selector.A, {
+        R$markers.selected.A <- input$marker_selector.A
+        if (is.null(R$markers.selected.B)) {
+            updateSelectInput(session, "marker_selector.B", selected = input$marker_selector.A)
+        }
+    })
+    observeEvent(input$marker_selector.B, { 
+        R$markers.selected.B <- input$marker_selector.B
+        if (is.null(R$markers.selected.A)) {
+            updateSelectInput(session, "marker_selector.A", selected = input$marker_selector.B)
+        }    
+    })
 
     ## Segmentation inputs
     observeEvent(input$n_segments.A, { if (input$n_segments.A > 3 && input$n_segments.A < 1000) R$markers.n_segments.A <- as.integer(input$n_segments.A) })
@@ -430,7 +440,7 @@ shiny_server <- function(  input,
     observeEvent(input$expression_zap.B, {
         if (length(R$markers.selected.B) == 1) {
             pts             <- brushedPoints(R$expression.stats.B, input$expression_brush.B, xvar = "segment", yvar = "expression")
-            if (nrow(pts) < length(R$marked.A)) {
+            if (nrow(pts) < length(R$marked.B)) {
                 junk            <- R$marked_idcs.B[unique(pts$walk)]
                 R$junk.B        <- unique(c(R$junk.B, junk))
                 nonjunk         <- !R$marked_idcs.B %in% junk

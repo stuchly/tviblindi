@@ -120,8 +120,8 @@ shiny_ui <- fluidPage(
                      HTML("&nbsp;&nbsp;&nbsp;&nbsp;"),
                      
                      ## Button: open dialog for saving output .fcs file
-                     actionButton("dendro_btn_save", "", icon = icon("glyphicon glyphicon-floppy-disk", lib = "glyphicon")),     
-                     actionButton("dendro_btn_erase_pinned", "", icon = icon("glyphicon glyphicon-floppy-remove", lib = "glyphicon"))
+                     actionButton("dendro_btn_save", "", icon = icon("glyphicon glyphicon-save", lib = "glyphicon")),     
+                     actionButton("dendro_btn_erase_pinned", "", icon = icon("glyphicon glyphicon-trash", lib = "glyphicon"))
               ),
               column(width = 6,
                      style = "text-align:right; padding-right:5px; margin-top: 15px;",
@@ -216,7 +216,7 @@ shiny_ui <- fluidPage(
                   column(width = 2,
                          style = "padding-left:2px;",
                          ## Segment number selector
-                         numericInput("n_segments.A", label = "Segs", min = 3, max = 1000, value = 10)
+                         numericInput("n_segments.A", label = "Segs", min = 3, max = 1000, value = 20)
                   ),
                   column(width = 2,
                          style = "padding-left:2px; margin-top: 26px;",
@@ -248,7 +248,7 @@ shiny_ui <- fluidPage(
                   column(width = 2,
                          style = "padding-left:2px;",
                          ## Segment number selector
-                         numericInput("n_segments.B", label = "Segs", min = 3, max = 1000, value = 10)
+                         numericInput("n_segments.B", label = "Segs", min = 3, max = 1000, value = 20)
                   ),
                   column(width = 2,
                          style = "padding-left:2px; margin-top: 26px;",
