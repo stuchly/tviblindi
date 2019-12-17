@@ -2,6 +2,8 @@ shiny_server <- function(  input,
                            output,
                            session  ) {
     
+    print(getwd())
+    
     R                        <- reactiveValues()
     R$pers                   <- NULL
     R$repre                  <- NULL
