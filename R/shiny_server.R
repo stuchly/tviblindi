@@ -4,6 +4,20 @@ shiny_server <- function(  input,
     
     print(getwd())
     
+    shiny_inputs_dir <- "tviblindi_tmp"
+    input_fcs_path   <- readRDS(file.path(shiny_inputs_dir, "input_fcs_path.RDS"))
+    origin           <- readRDS(file.path(shiny_inputs_dir, "origin.RDS"))
+    pseudotime       <- readRDS(file.path(shiny_inputs_dir, "pseudotime.RDS"))
+    coords           <- readRDS(file.path(shiny_inputs_dir, "coords.RDS"))
+    coords_clusters  <- readRDS(file.path(shiny_inputs_dir, "coords_clusters.RDS"))
+    clusters         <- readRDS(file.path(shiny_inputs_dir, "clusters.RDS"))
+    filtration       <- readRDS(file.path(shiny_inputs_dir, "filtration.RDS"))
+    layout           <- readRDS(file.path(shiny_inputs_dir, "layout.RDS"))
+    walks_raw        <- readRDS(file.path(shiny_inputs_dir, "walks_raw.RDS"))
+    b                <- readRDS(file.path(shiny_inputs_dir, "b.RDS"))
+    rb               <- readRDS(file.path(shiny_inputs_dir, "rb.RDS"))
+    event_sel        <- readRDS(file.path(shiny_inputs_dir, "event_sel.RDS"))
+    
     R                        <- reactiveValues()
     R$pers                   <- NULL
     R$repre                  <- NULL
