@@ -444,10 +444,20 @@ shiny_server <- function(  input,
             pts             <- brushedPoints(R$expression.stats.A, input$expression_brush.A, xvar = "segment", yvar = "expression")
             if (nrow(pts) < length(R$marked.A)) {
                 junk            <- R$marked_idcs.A[unique(pts$walk)]
+                
+                message("LABELLED FOR ZAPPING: ")
+                print(junk)
+                
                 R$junk.A        <- unique(c(R$junk.A, junk))
                 nonjunk         <- !R$marked_idcs.A %in% junk
                 R$marked.A      <- R$marked.A[nonjunk]
                 R$marked_idcs.A <- R$marked_idcs.A[nonjunk]
+                
+                message("INDICES OF MARKED WALKS IN A: ")
+                print(R$marked.A)
+                message("INDICES OF MARKED WALKS IN B: ")
+                print(R$marked.B)
+                
                 session$resetBrush("expression_brush.A")
             }
         }
@@ -458,10 +468,20 @@ shiny_server <- function(  input,
             pts             <- brushedPoints(R$expression.stats.B, input$expression_brush.B, xvar = "segment", yvar = "expression")
             if (nrow(pts) < length(R$marked.B)) {
                 junk            <- R$marked_idcs.B[unique(pts$walk)]
+                
+                message("LABELLED FOR ZAPPING: ")
+                print(junk)
+                
                 R$junk.B        <- unique(c(R$junk.B, junk))
                 nonjunk         <- !R$marked_idcs.B %in% junk
                 R$marked.B      <- R$marked.B[nonjunk]
                 R$marked_idcs.B <- R$marked_idcs.B[nonjunk]
+                
+                message("INDICES OF MARKED WALKS IN A: ")
+                print(R$marked.A)
+                message("INDICES OF MARKED WALKS IN B: ")
+                print(R$marked.B)
+                
                 session$resetBrush("expression_brush.B")
             }
         }
@@ -806,7 +826,9 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
         sel2 <- tmp
         cols <- cols[c(2, 1)]
     }
-    a.idcs <- (1:length(walks))[-c(walk_idcs.A, walk_idcs.B)]
+    i <- c(walk_idcs.A, walk_idcs.B)
+    a.idcs <- if (is.null(i)) { (1:length(walks)) } else { (1:length(walks))[-i] }
+    
     rest   <- if (length(a.idcs) > 0) { walks[a.idcs] } else { NULL }
 
     for (i in rest) {
