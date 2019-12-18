@@ -442,24 +442,13 @@ shiny_server <- function(  input,
     observeEvent(input$expression_zap.A, {
         if (length(R$markers.selected.A) == 1) {
             pts             <- brushedPoints(R$expression.stats.A, input$expression_brush.A, xvar = "segment", yvar = "expression")
-            message("PTS")
             print(pts)
             if (nrow(pts) < length(R$marked.A)) {
-                junk            <- R$marked_idcs.A[unique(pts$walk)]
-                
-                message("LABELLED FOR ZAPPING: ")
-                print(junk)
-                
+                junk            <- R$marked_idcs.A[R$marked_idcs.A %in% unique(pts$walk)]
                 R$junk.A        <- unique(c(R$junk.A, junk))
                 nonjunk         <- !R$marked_idcs.A %in% junk
                 R$marked.A      <- R$marked.A[nonjunk]
                 R$marked_idcs.A <- R$marked_idcs.A[nonjunk]
-                
-                message("INDICES OF MARKED WALKS IN A: ")
-                print(R$marked.A)
-                message("INDICES OF MARKED WALKS IN B: ")
-                print(R$marked.B)
-                
                 session$resetBrush("expression_brush.A")
             }
         }
@@ -467,23 +456,13 @@ shiny_server <- function(  input,
 
     observeEvent(input$expression_zap.B, {
         if (length(R$markers.selected.B) == 1) {
-            pts             <- brushedPoints(R$expression.stats.B, input$expression_brush.B, xvar = "segment", yvar = "expression")
+            print(pts)
             if (nrow(pts) < length(R$marked.B)) {
-                junk            <- R$marked_idcs.B[unique(pts$walk)]
-                
-                message("LABELLED FOR ZAPPING: ")
-                print(junk)
-                
+                junk            <- R$marked_idcs.B[R$marked_idcs.B %in% unique(pts$walk)]
                 R$junk.B        <- unique(c(R$junk.B, junk))
                 nonjunk         <- !R$marked_idcs.B %in% junk
                 R$marked.B      <- R$marked.B[nonjunk]
                 R$marked_idcs.B <- R$marked_idcs.B[nonjunk]
-                
-                message("INDICES OF MARKED WALKS IN A: ")
-                print(R$marked.A)
-                message("INDICES OF MARKED WALKS IN B: ")
-                print(R$marked.B)
-                
                 session$resetBrush("expression_brush.B")
             }
         }
