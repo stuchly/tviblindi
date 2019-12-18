@@ -442,6 +442,8 @@ shiny_server <- function(  input,
     observeEvent(input$expression_zap.A, {
         if (length(R$markers.selected.A) == 1) {
             pts             <- brushedPoints(R$expression.stats.A, input$expression_brush.A, xvar = "segment", yvar = "expression")
+            message("PTS")
+            print(pts)
             if (nrow(pts) < length(R$marked.A)) {
                 junk            <- R$marked_idcs.A[unique(pts$walk)]
                 
