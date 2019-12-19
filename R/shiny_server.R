@@ -2,7 +2,7 @@ shiny_server <- function(  input,
                            output,
                            session  ) {
     
-    print(getwd())
+    message(paste0('Running tviblindi Shiny UI, working directory is ', getwd()))
     
     shiny_inputs_dir <- "tviblindi_tmp"
     input_fcs_path   <- readRDS(file.path(shiny_inputs_dir, "input_fcs_path.RDS"))
@@ -1145,7 +1145,7 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
 }
 
 .plot_placeholder <- function() {
-    j   <- jpeg::readJPEG("./data/tree.jpg", native = TRUE)
+    j   <- jpeg::readJPEG(system.file("tree.jpg", package = "tviblindi"), native = TRUE)
     plot(0:1, 0:1, type = "n", ann = FALSE, axes = FALSE)
     rasterImage(j, 0, 0, 1, 1)
 }
