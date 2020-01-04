@@ -2,7 +2,9 @@ shiny_server <- function(  input,
                            output,
                            session  ) {
 
-    print(getwd())
+
+    message(paste0('Running tviblindi Shiny UI, working directory is ', getwd()))
+
 
     shiny_inputs_dir <- "tviblindi_tmp"
     input_fcs_path   <- readRDS(file.path(shiny_inputs_dir, "input_fcs_path.RDS"))
@@ -452,14 +454,17 @@ shiny_server <- function(  input,
 
     observeEvent(input$expression_zap.A, {
         if (length(R$markers.selected.A) == 1) {
-            pts             <- brushedPoints(R$expression.stats.A, input$expression_brush.A, xvar = "segment", yvar = "expression")
-            print(pts)
+            pts             <- brushedPoints(R$expression.stats.A,
+                                             input$expression_brush.A,
+                                             xvar = "segment", yvar = "expression")
+
             if (nrow(pts) < length(R$marked.A)) {
-                junk            <- R$marked_idcs.A[R$marked_idcs.A %in% unique(pts$walk)]
-                R$junk.A        <- unique(c(R$junk.A, junk))
+                junk            <- R$marked_idcs.A[unique(pts$walk)]
+
+                R$junk.A        <- na.omit(unique(c(R$junk.A, junk)))
                 nonjunk         <- !R$marked_idcs.A %in% junk
-                R$marked.A      <- R$marked.A[nonjunk]
-                R$marked_idcs.A <- R$marked_idcs.A[nonjunk]
+                R$marked.A      <- na.omit(R$marked.A[nonjunk])
+                R$marked_idcs.A <- na.omit(R$marked_idcs.A[nonjunk])
                 session$resetBrush("expression_brush.A")
             }
         }
@@ -467,13 +472,17 @@ shiny_server <- function(  input,
 
     observeEvent(input$expression_zap.B, {
         if (length(R$markers.selected.B) == 1) {
-            print(pts)
+            pts             <- brushedPoints(R$expression.stats.B,
+                                             input$expression_brush.B,
+                                             xvar = "segment", yvar = "expression")
+
             if (nrow(pts) < length(R$marked.B)) {
-                junk            <- R$marked_idcs.B[R$marked_idcs.B %in% unique(pts$walk)]
-                R$junk.B        <- unique(c(R$junk.B, junk))
+                junk            <- R$marked_idcs.B[unique(pts$walk)]
+
+                R$junk.B        <- na.omit(unique(c(R$junk.B, junk)))
                 nonjunk         <- !R$marked_idcs.B %in% junk
-                R$marked.B      <- R$marked.B[nonjunk]
-                R$marked_idcs.B <- R$marked_idcs.B[nonjunk]
+                R$marked.B      <- na.omit(R$marked.B[nonjunk])
+                R$marked_idcs.B <- na.omit(R$marked_idcs.B[nonjunk])
                 session$resetBrush("expression_brush.B")
             }
         }
@@ -1164,7 +1173,7 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
 }
 
 .plot_placeholder <- function() {
-    j   <- jpeg::readJPEG("./data/tree.jpg", native = TRUE)
+    j   <- jpeg::readJPEG(system.file("tree.jpg", package = "tviblindi"), native = TRUE)
     plot(0:1, 0:1, type = "n", ann = FALSE, axes = FALSE)
     rasterImage(j, 0, 0, 1, 1)
 }
