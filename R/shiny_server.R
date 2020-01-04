@@ -1,11 +1,9 @@
 shiny_server <- function(  input,
                            output,
                            session  ) {
-
-
+    
     message(paste0('Running tviblindi Shiny UI, working directory is ', getwd()))
-
-
+    
     shiny_inputs_dir <- "tviblindi_tmp"
     input_fcs_path   <- readRDS(file.path(shiny_inputs_dir, "input_fcs_path.RDS"))
     origin           <- readRDS(file.path(shiny_inputs_dir, "origin.RDS"))
@@ -19,7 +17,7 @@ shiny_server <- function(  input,
     b                <- readRDS(file.path(shiny_inputs_dir, "b.RDS"))
     rb               <- readRDS(file.path(shiny_inputs_dir, "rb.RDS"))
     event_sel        <- readRDS(file.path(shiny_inputs_dir, "event_sel.RDS"))
-
+    
     R                        <- reactiveValues()
     R$pers                   <- NULL
     R$repre                  <- NULL
@@ -53,7 +51,7 @@ shiny_server <- function(  input,
 
     R$output_ff              <- NULL
     R$save_count             <- 0
-
+    
     R$random_walks           <- NULL
 
     R$to_append              <- NULL
@@ -67,17 +65,14 @@ shiny_server <- function(  input,
     R$expression.stats.B     <- NULL
     R$markers.brushed.A      <- NULL
     R$markers.brushed.B      <- NULL
-    R$pseudotime                <-pseudotime
-    ## R$term                         <-term
-    R$walks_raw                 <-walks_raw
-
+    
     layout[, 1]      <- layout[, 1] - min(layout[, 1]); layout[, 1] <- layout[, 1] / max(layout[, 1])
     layout[, 2]      <- layout[, 2] - min(layout[, 2]); layout[, 2] <- layout[, 2] / max(layout[, 2])
     layout.df        <- data.frame(layout)
     colnames(layout.df) <- c("X", "Y")
 
     term <- c(walks_raw$v[walks_raw$starts[-1] - 1], tail(walks_raw$v, 1))
-    R$term                         <-term
+    
     ## Interactive persistence diagram
     output$pers_plot <- renderPlot({
         if (!is.null(R$pers)) {
@@ -91,18 +86,18 @@ shiny_server <- function(  input,
 
     output$term_plot <- renderPlot({
         par(mar = c(0, 0, 0, 0))
-        psc <- as.numeric(as.factor(R$pseudotime$res))
+        psc <- as.numeric(as.factor(pseudotime$res))
         psc <- psc / max(psc)
         psc <- psc * 10000 + 1
         col <- greenred(10500)
         plot(layout, col = alpha(col[psc], 0.05), axes = FALSE, xlab = "", ylab = "", pch = 20, cex = .3)
         #points(layout[origin, ], col = alpha("purple", 0.75), cex = 1,  pch = 8)
-        points(layout[unique(R$term), ], col = alpha("purple", 0.75), cex = 3, pch = 20)
+        points(layout[unique(term), ], col = alpha("purple", 0.75), cex = 3, pch = 20)
     })
 
     output$term_brush_info <- renderPrint({
-        R$term.selection <- as.numeric(rownames(brushedPoints(layout.df[unique(R$term), ], input$term_brush, xvar = "X", yvar = "Y")))
-        out <- sapply(R$term.selection, function(s) paste0(s, " (", sum(R$term == s), " pathways)"))
+        R$term.selection <- as.numeric(rownames(brushedPoints(layout.df[unique(term), ], input$term_brush, xvar = "X", yvar = "Y")))
+        out <- sapply(R$term.selection, function(s) paste0(s, " (", sum(term == s), " pathways)"))
         cat(out, sep = "\n")
     })
 
@@ -119,10 +114,10 @@ shiny_server <- function(  input,
     })
 
     observeEvent(input$term_btn_update, {
-        updated <- .update_walks(walks_raw        = R$walks_raw,
+        updated <- .update_walks(walks_raw        = walks_raw,
                                  pseudotime       = pseudotime,
                                  tt               = R$term.marked, # selected terminal nodes
-                                 termini_per_path =R$term,
+                                 termini_per_path = term,
                                  coords.clusters  = coords_clusters,
                                  clusters         = clusters,
                                  filtration       = filtration,
@@ -147,14 +142,6 @@ shiny_server <- function(  input,
         R$marked.B <- NULL
         R$pers.selection <- NULL
     })
-
-    ##Button reset origin etc
-    observeEvent(input$term_btn_reset,{
-        reseted<-.reset_stuff(tt=R$term.marked)
-        R$pseudotime<-reseted$pseudotime
-        R$term<-reseted$term
-        R$walks_raw<-reseted$walks
-        })
 
     ## Selected homology classes log
     output$pers_brush_info <- renderPrint({
@@ -323,11 +310,11 @@ shiny_server <- function(  input,
                                         ID = R$save_count,
                                         event_sel = event_sel)
     })
-
+    
     observeEvent(R$save_count, {
         output$save_count_info <- renderPrint(cat(paste0(R$save_count, " ", if (R$save_count == 1) { "batch" } else { "batches" }, " pinned")))
     })
-
+    
     ## Button: open dialog for saving output .fcs file
     observeEvent(input$dendro_btn_save, {
         if (is.null(R$output_ff)) {
@@ -351,7 +338,7 @@ shiny_server <- function(  input,
         R$save_count <- 0
         R$to_append <- NULL
     })
-
+    
     ## Dialog: save output .fcs file
     save_modal <- function(failed = FALSE) {
         modalDialog(
@@ -414,11 +401,11 @@ shiny_server <- function(  input,
             updateSelectInput(session, "marker_selector.B", selected = input$marker_selector.A)
         }
     })
-    observeEvent(input$marker_selector.B, {
+    observeEvent(input$marker_selector.B, { 
         R$markers.selected.B <- input$marker_selector.B
         if (is.null(R$markers.selected.A)) {
             updateSelectInput(session, "marker_selector.A", selected = input$marker_selector.B)
-        }
+        }    
     })
 
     ## Segmentation inputs
@@ -457,10 +444,10 @@ shiny_server <- function(  input,
             pts             <- brushedPoints(R$expression.stats.A,
                                              input$expression_brush.A,
                                              xvar = "segment", yvar = "expression")
-
+            
             if (nrow(pts) < length(R$marked.A)) {
                 junk            <- R$marked_idcs.A[unique(pts$walk)]
-
+                
                 R$junk.A        <- na.omit(unique(c(R$junk.A, junk)))
                 nonjunk         <- !R$marked_idcs.A %in% junk
                 R$marked.A      <- na.omit(R$marked.A[nonjunk])
@@ -475,10 +462,10 @@ shiny_server <- function(  input,
             pts             <- brushedPoints(R$expression.stats.B,
                                              input$expression_brush.B,
                                              xvar = "segment", yvar = "expression")
-
+            
             if (nrow(pts) < length(R$marked.B)) {
                 junk            <- R$marked_idcs.B[unique(pts$walk)]
-
+                
                 R$junk.B        <- na.omit(unique(c(R$junk.B, junk)))
                 nonjunk         <- !R$marked_idcs.B %in% junk
                 R$marked.B      <- na.omit(R$marked.B[nonjunk])
@@ -492,7 +479,7 @@ shiny_server <- function(  input,
 
     observeEvent(R$marked.A, {
         R$junk.A <- R$junk.A[!R$junk.A %in% R$marked_idcs.A]
-
+        
         len <- length(R$junk.A)
         z <- if (len > 0) { paste0(" (", len, " zapped)") } else { "" }
         output$marked_A_counts_info <- renderPrint({ cat("N = ", length(R$marked.A), z, sep = "")})
@@ -508,7 +495,7 @@ shiny_server <- function(  input,
 
     observeEvent(R$marked.B, {
         R$junk.B <- R$junk.B[!R$junk.B %in% R$marked_idcs.B]
-
+        
         len <- length(R$junk.B)
         z <- if (len > 0) { paste0(" (", len, " zapped)") } else { "" }
         output$marked_B_counts_info <- renderPrint({ cat("N = ", length(R$marked.B), z, sep = "")})
@@ -533,21 +520,21 @@ shiny_server <- function(  input,
 }
 
 fcs.add_col <- function(ff, new_col, colname = "label") {
-
+    
     efcs <- ff@exprs
-
+    
     N <- nrow(efcs)
     len <- length(new_col)
-
+    
     if (N != len)  stop(paste0("Number of rows of expression matrix is ", N, ", whereas length of new column is ", len, "."))
-
+    
     params <- ff@parameters
     pd     <- pData(params)
     cols   <- as.vector(pd$name)
     idcs   <- match(cols, pd$name)
-
+    
     if (any(is.na(idcs))) stop("Invalid column specifier")
-
+    
     channel_number     <- ncol(ff) + 1
     channel_id         <- paste0("$P", channel_number)
     channel_name       <- colname
@@ -562,9 +549,9 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
     channel_names      <- colnames(efcs)
     efcs.mod           <- cbind(efcs, new_col)
     colnames(efcs.mod) <- c(channel_names, colname)
-
+    
     ff.mod             <- flowFrame(efcs.mod, params, description = description(ff))
-
+    
     keyval                                      <- list()
     keyval[[paste0("$P", channel_number, "B")]] <- "32"
     keyval[[paste0("$P", channel_number, "R")]] <- toString(channel_range)
@@ -572,13 +559,13 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
     keyval[[paste0("$P", channel_number, "N")]] <- channel_name
     keyval[[paste0("$P", channel_number, "S")]] <- channel_name
     keyword(ff.mod)                             <- keyval
-
+    
     flowCoreP_Rmax <- paste0("flowCore_$P", channel_number, "Rmax")
     flowCoreP_Rmin <- paste0("flowCore_$P", channel_number, "Rmin")
-
+    
     description(ff.mod)[flowCoreP_Rmax] <- max(20000, description(ff.mod)$`flowCore_$P1Rmax`)
     description(ff.mod)[flowCoreP_Rmin] <- 0
-
+    
     return(ff.mod)
 }
 
@@ -829,7 +816,7 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
     }
     i <- c(walk_idcs.A, walk_idcs.B)
     a.idcs <- if (is.null(i)) { (1:length(walks)) } else { (1:length(walks))[-i] }
-
+    
     rest   <- if (length(a.idcs) > 0) { walks[a.idcs] } else { NULL }
 
     for (i in rest) {
@@ -1095,21 +1082,6 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
 
     list(plot  = g,
          stats = stats)
-}
-
-##function to recompute pseudotime&simulate paths
-.reset_stuff<-function(tt){
-    tt<-tt[which.max(pseudotime$res[tt])]
-
-    pseudotime      <- assign_distance(sim, tt,weights = dsym)
-    cat("Pseudotime error:", pseudotime$error, "\n")
-    oriented.sparseMatrix <- orient.sim.matrix(sim, pseudotime, breaks = 100, base = 1.5)
-
-    ## Simulate random walks
-    walks          <- random_walk_adj_N_push(oriented.sparseMatrix, tt, 1000)
-    term <- c(walks$v[walks$starts[-1] - 1], tail(walks$v, 1))
-    return(list(pseudotime=pseudotime,walks = walks, term = term))
-
 }
 
 .update_walks <- function(walks_raw, pseudotime, tt, termini_per_path, coords.clusters, clusters, filtration, b, rb) {
