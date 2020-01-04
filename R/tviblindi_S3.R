@@ -31,6 +31,11 @@ set_origin<-function(x,...){
 
 set_origin.tviblindi<-function(x,label){
     stopifnot(length(label)==1)
+    if (is.integer(label)){
+        x$origin<-label
+        return(invisible(x))
+    }
+    stopifnot(is.character(label))
     stems<-which(x$labels==label)
     x$origin <- stems[which.min(rowSums(t(t(x$data[stems,]) - colMeans(x$data[stems, ]))^2))]
     return(invisible(x))
