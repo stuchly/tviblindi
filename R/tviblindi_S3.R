@@ -25,11 +25,11 @@ new_tviblindi<-function(data,labels,keep.intermediate=FALSE){
     structure(out,class="tviblindi")
 }
 
-set_origin<-function(x,...){
-    UseMethod("set_origin",x)
+Set_origin<-function(x,...){
+    UseMethod("Set_origin",x)
 }
 
-set_origin.tviblindi<-function(x,label){
+Set_origin.tviblindi<-function(x,label){
     stopifnot(length(label)==1)
     if (is.integer(label)){
         x$origin<-label
@@ -65,11 +65,11 @@ Denoise.tviblindi<-function(x,K=30,iter=1){
     return(invisible(x))
 }
 
-som<-function(x,...){
-    UseMethod("som",x)
+Som<-function(x,...){
+    UseMethod("Som",x)
 }
 
-som.tviblindi<-function(x,xdim=25,ydim=25){
+Som.tviblindi<-function(x,xdim=25,ydim=25){
     if (is.null(x$denoised)) {
         warning("Using original data!")
         x$denoised<-x$data
@@ -82,11 +82,11 @@ som.tviblindi<-function(x,xdim=25,ydim=25){
     return(invisible(x))
 }
 
-filtration<-function(x,...){
-    UseMethod("filtration",x)
+Filtration<-function(x,...){
+    UseMethod("Filtration",x)
 }
 
-filtration.tviblindi<-function(x,method="witness",K=30,alpha2=10){
+Filtration.tviblindi<-function(x,method="witness",K=30,alpha2=10){
     if (method!="witness") stop("Not yet implemented")
     stopifnot(!is.null(x$codes))
     xy <- FNN::get.knnx(x$codes, x$denoised, k = K)
@@ -97,22 +97,22 @@ filtration.tviblindi<-function(x,method="witness",K=30,alpha2=10){
     return(invisible(x))
 }
 
-boundary<-function(x,...){
-    UseMethod("boundary",x)
+Boundary<-function(x,...){
+    UseMethod("Boundary",x)
 }
 
-boundary.tviblindi<-function(x){
+Boundary.tviblindi<-function(x){
     stopifnot(!is.null(x$filtration))
     x$boundary<-build_boundaryC(x$filtration)
     x$reduced_boundary<-reduce_boundary(x$boundary)
     return(invisible(x))
 }
 
-walks<-function(x,...){
-    UseMethod("walks",x)
+Walks<-function(x,...){
+    UseMethod("Walks",x)
 }
 
-walks.tviblindi<-function(x,K=30,N=1000,breaks=100,base=1.5){
+Walks.tviblindi<-function(x,K=30,N=1000,breaks=100,base=1.5){
     stopifnot(!is.null(x$origin))
     if (K>dim(x$KNN$IND)[2]){
         K<-min(K,dim(x$KNN)[2])
