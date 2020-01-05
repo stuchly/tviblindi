@@ -93,7 +93,7 @@ Filtration.tviblindi<-function(x,method="witness",K=30,alpha2=10){
     Ilist           <- split(xy$nn.index, seq(nrow(xy$nn.index)))
     Dlist           <- split(xy$nn.dist, seq(nrow(xy$nn.index)))
     x$filtration           <- witness_from_distances_cliques(Ilist, Dlist, alpha2 = alpha2, maxdimension = 1)
-    x$filtration           <- create_k_skeleton(coordinates = x$codes, filtration = filt1, k = 2)
+    x$filtration           <- create_k_skeleton(coordinates = x$codes, filtration = x$filtration, k = 2)
     return(invisible(x))
 }
 
