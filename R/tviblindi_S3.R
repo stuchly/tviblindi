@@ -22,6 +22,7 @@ new_tviblindi<-function(data,labels,keep.intermediate=FALSE){
     out$dsim<-NULL
     out$clusters<-NULL
     out$codes<-NULL
+    out$layout<-NULL
     structure(out,class="tviblindi")
 }
 
@@ -140,6 +141,15 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5){
 
     ## Simulate random walks
     x$walks           <- random_walk_adj_N_push(oriented.sparseMatrix, x$origin, N)
+    return(invisible(x))
+}
+
+DimRed<-function(x,...){
+    UseMethod("DimRed",x)
+}
+
+DimRed.tviblindi<-function(x,layout){##for consistency only for now
+    tv1$laoyout<-layout
     return(invisible(x))
 }
 
