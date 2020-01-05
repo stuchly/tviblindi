@@ -122,7 +122,7 @@ Pseudotime.tviblindi<-function(x,K=30){
     d  <- knn.raw2adj(d)
     x$dsym <- knn.spadj2sym(knn.adj2spadj(d))
     x$sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = "Exp"))
-    pseudotime  <- assign_distance(x$sim, x$origin,weights = x$dsym)
+    x$pseudotime  <- assign_distance(x$sim, x$origin,weights = x$dsym)
     cat("Pseudotime error:", pseudotime$error, "\n")
 
 }
