@@ -94,19 +94,21 @@ Filtration.tviblindi<-function(x,method="witness",K=30,alpha2=10){
     Dlist           <- split(xy$nn.dist, seq(nrow(xy$nn.index)))
     x$filtration           <- witness_from_distances_cliques(Ilist, Dlist, alpha2 = alpha2, maxdimension = 1)
     x$filtration           <- create_k_skeleton(coordinates = x$codes, filtration = x$filtration, k = 2)
-    return(invisible(x))
-}
-
-Boundary<-function(x,...){
-    UseMethod("Boundary",x)
-}
-
-Boundary.tviblindi<-function(x){
-    stopifnot(!is.null(x$filtration))
     x$boundary<-build_boundaryC(x$filtration)
     x$reduced_boundary<-reduce_boundary(x$boundary)
     return(invisible(x))
 }
+
+## Boundary<-function(x,...){
+##     UseMethod("Boundary",x)
+## }
+
+## Boundary.tviblindi<-function(x){
+##     stopifnot(!is.null(x$filtration))
+##     x$boundary<-build_boundaryC(x$filtration)
+##     x$reduced_boundary<-reduce_boundary(x$boundary)
+##     return(invisible(x))
+## }
 
 Pseudotime<-function(x,...){
     UseMethod("Pseudotime",x)
