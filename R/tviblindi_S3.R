@@ -50,13 +50,14 @@ KNN.tviblindi<-function(x,K=100){
     return(invisible(x))
 }
 
-denoise<-function(x,...){
-    UseMethod("denoise",x)
+Denoise<-function(x,...){
+    UseMethod("Denoise",x)
 }
 
-denoise.tviblindi<-function(x,K=30,iter=1){
+Denoise.tviblindi<-function(x,K=30,iter=1){
     stopifnot(!is.null(x$KNN))
-    if (K>dim(x$KNN)[2]){
+
+    if (K>dim(x$KNN$IND)[2]){
         K<-min(K,dim(x$KNN)[2])
         warning("K > dim(KNN)[2]; K<-min(K,dim(x$KNN)[2])")
     }
@@ -113,7 +114,7 @@ walks<-function(x,...){
 
 walks.tviblindi<-function(x,K=30,N=1000,breaks=100,base=1.5){
     stopifnot(!is.null(x$origin))
-    if (K>dim(x$KNN)[2]){
+    if (K>dim(x$KNN$IND)[2]){
         K<-min(K,dim(x$KNN)[2])
         warning("K > dim(KNN)[2]; K<-min(K,dim(x$KNN)[2])")
     }
