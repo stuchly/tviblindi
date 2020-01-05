@@ -112,7 +112,7 @@ Walks<-function(x,...){
     UseMethod("Walks",x)
 }
 
-Walks.tviblindi<-function(x,K=30,N=100,breaks=100,base=1.5){
+Walks.tviblindi<-function(x,K=30,N=1000,breaks=100,base=1.5){
     stopifnot(!is.null(x$origin))
     if (K>dim(x$KNN$IND)[2]){
         K<-min(K,dim(x$KNN)[2])
