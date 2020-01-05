@@ -108,11 +108,11 @@ Boundary.tviblindi<-function(x){
     return(invisible(x))
 }
 
-Walks<-function(x,...){
-    UseMethod("Walks",x)
+Pseudotime<-function(x,...){
+    UseMethod("Pseudotime",x)
 }
 
-Walks.tviblindi<-function(x,K=30,N=1000,breaks=100,base=1.5){
+Pseudotime.tviblindi<-function(x,K=30){
     stopifnot(!is.null(x$origin))
     if (K>dim(x$KNN$IND)[2]){
         K<-min(K,dim(x$KNN)[2])
@@ -124,6 +124,16 @@ Walks.tviblindi<-function(x,K=30,N=1000,breaks=100,base=1.5){
     x$sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = "Exp"))
     pseudotime  <- assign_distance(x$sim, x$origin,weights = x$dsym)
     cat("Pseudotime error:", pseudotime$error, "\n")
+
+}
+
+
+Walks<-function(x,...){
+    UseMethod("Walks",x)
+}
+
+Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5){
+
     oriented.sparseMatrix <- orient.sim.matrix(x$sim, x$pseudotime, breaks = breaks, base = base)
 
     ## Simulate random walks
