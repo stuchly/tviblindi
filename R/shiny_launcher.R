@@ -84,9 +84,7 @@ launch_shiny_old <- function(input_fcs_path,
 
 launch_shiny <- function(input_fcs_path,
                          tviblindi_s3_name,
-                         event_sel = NULL,
-                         export = TRUE,
-                         overwrite = FALSE) {
+                         event_sel = NULL) {
   
   tmp_folder <- 'tviblindi_tmp'
   suppressWarnings(dir.create(tmp_folder))
