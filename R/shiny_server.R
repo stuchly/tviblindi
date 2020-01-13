@@ -11,16 +11,17 @@ shiny_server <- function(  input,
     message(paste0('Running tviblindi Shiny UI, working directory is ', getwd()))
     
     tv_name <- readRDS(file.path(shiny_inputs_dir, 'tv.RDS'))
+    tv <- get(tv_name, parent.env(environment()))
     
-    pseudotime       <- get(tv_name, parent.env(environment()))$pseudotime
-    coords           <- get(tv_name, parent.env(environment()))$data
-    coords_clusters  <- get(tv_name, parent.env(environment()))$codes
-    clusters         <- get(tv_name, parent.env(environment()))$clusters
-    filtration       <- get(tv_name, parent.env(environment()))$filtration
-    layout           <- get(tv_name, parent.env(environment()))$layout
-    walks_raw        <- get(tv_name, parent.env(environment()))$walks
-    b                <- get(tv_name, parent.env(environment()))$boundary
-    rb               <- get(tv_name, parent.env(environment()))$reduced_boundary
+    pseudotime       <- tv$pseudotime
+    coords           <- tv$data
+    coords_clusters  <- tv$codes
+    clusters         <- tv$clusters
+    filtration       <- tv$filtration
+    layout           <- tv$layout
+    walks_raw        <- tv$walks
+    b                <- tv$boundary
+    rb               <- tv$reduced_boundary
     
     event_sel        <- readRDS(file.path(shiny_inputs_dir, 'event_sel.RDS'))
     
