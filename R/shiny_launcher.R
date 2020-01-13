@@ -19,32 +19,25 @@ launch_shiny_old <- function(input_fcs_path,
       readline()
     }
     
+    tv                  <- list()
+    tv$origin           <- origin
+    tv$pseudotime       <- pseudotime
+    tv$data             <- coords
+    tv$codes            <- coords_clusters
+    tv$clusters         <- clusters
+    tv$filtration       <- filtration
+    tv$layout           <- layout
+    tv$walks            <- walks_raw
+    tv$boundary         <- b
+    tv$reduced_boundary <- rb
+    tv$event_sel        <- event_sel
+    
+    
     dir.create(shiny_inputs_dir)
-    message("Exporting objects for Shiny")
-    message("-> path to analysed FCS file")
-    saveRDS(input_fcs_path, file.path(shiny_inputs_dir, "input_fcs_path.RDS"))
-    message("-> cell of origin index")
-    saveRDS(origin, file.path(shiny_inputs_dir, "origin.RDS"))
-    message("-> pseudotime values")
-    saveRDS(pseudotime, file.path(shiny_inputs_dir, "pseudotime.RDS"))
-    message("-> expression matrix")
-    saveRDS(coords, file.path(shiny_inputs_dir, "coords.RDS"))
-    message("-> clustered expression matrix")
-    saveRDS(coords_clusters, file.path(shiny_inputs_dir, "coords_clusters.RDS"))
-    message("-> cluster definitions")
-    saveRDS(clusters, file.path(shiny_inputs_dir, "clusters.RDS"))
-    message("-> filtration")
-    saveRDS(filtration, file.path(shiny_inputs_dir, "filtration.RDS"))
-    message("-> 2-dimensional layout")
-    saveRDS(layout, file.path(shiny_inputs_dir, "layout.RDS"))
-    message("-> simulated random walks")
-    saveRDS(walks_raw, file.path(shiny_inputs_dir, "walks_raw.RDS"))
-    message("-> boundary matrix")
-    saveRDS(b, file.path(shiny_inputs_dir, "b.RDS"))
-    message("-> reduced boundary matrix")
-    saveRDS(rb, file.path(shiny_inputs_dir, "rb.RDS"))
-    message("-> indices of events selected for analysis")
-    saveRDS(event_sel, file.path(shiny_inputs_dir, "event_sel.RDS"))
+    message("Exporting analysis object for Shiny")
+    saveRDS(tv, file.path(shiny_inputs_dir, 'tv.RDS'))
+    saveRDS(input_fcs_path, file.path(shiny_inputs_dir, 'input_fcs_path.RDS'))
+    
   }
   
   app <- shiny::shinyApp(shiny_ui, shiny_server)
@@ -55,7 +48,7 @@ launch_shiny <- function(input_fcs_path,
                          tviblindi_s3,
                          event_sel = NULL,
                          export = TRUE,
-                         overwrite = TRUE) {
+                         overwrite = FALSE) {
   
   tmp_folder <- 'tviblindi_tmp'
   tv_path    <- file.path(tmp_folder, 'tv.RDS')
