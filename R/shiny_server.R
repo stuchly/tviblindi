@@ -5,24 +5,24 @@ shiny_server <- function(  input,
     shiny_inputs_dir <- "tviblindi_tmp"
     
     cancel.onSessionEnded <- session$onSessionEnded(function() {
-        message(paste0('Session ended. Reload your analysis from ', file.path(shiny_inputs_dir, 'tv.RDS')))
+        message(paste0('tviblindi Shiny session ended'))
     })
     
     message(paste0('Running tviblindi Shiny UI, working directory is ', getwd()))
     
-    input_fcs_path   <- readRDS(file.path(shiny_inputs_dir, 'input_fcs_path.RDS'))
-    tv               <- readRDS(file.path(shiny_inputs_dir, 'tv.RDS'))
+    tv_name <- readRDS(file.path(shiny_inputs_dir, 'tv.RDS'))
     
-    pseudotime       <- tv$pseudotime
-    coords           <- tv$data
-    coords_clusters  <- tv$codes
-    clusters         <- tv$clusters
-    filtration       <- tv$filtration
-    layout           <- tv$layout
-    walks_raw        <- tv$walks
-    b                <- tv$boundary
-    rb               <- tv$reduced_boundary
-    event_sel        <- tv$event_sel
+    pseudotime       <- get(tv_name, parent.env(environment()))$pseudotime
+    coords           <- get(tv_name, parent.env(environment()))$data
+    coords_clusters  <- get(tv_name, parent.env(environment()))$codes
+    clusters         <- get(tv_name, parent.env(environment()))$clusters
+    filtration       <- get(tv_name, parent.env(environment()))$filtration
+    layout           <- get(tv_name, parent.env(environment()))$layout
+    walks_raw        <- get(tv_name, parent.env(environment()))$walks
+    b                <- get(tv_name, parent.env(environment()))$boundary
+    rb               <- get(tv_name, parent.env(environment()))$reduced_boundary
+    
+    event_sel        <- readRDS(file.path(shiny_inputs_dir, 'event_sel.RDS'))
     
     R                        <- reactiveValues()
     R$pers                   <- NULL
@@ -36,7 +36,7 @@ shiny_server <- function(  input,
     R$markers.scale_exp.A    <- NULL
     R$markers.n_segments.B   <- NULL
     R$markers.scale_exp.B    <- NULL
-    input_ff                 <- flowCore::read.FCS(input_fcs_path)
+    input_ff                 <- flowCore::read.FCS(readRDS(file.path(shiny_inputs_dir, 'input_fcs_path.RDS')))
     R$dendro                 <- NA
     R$dendro_ready           <- FALSE
     R$dendro_data            <- NULL
