@@ -2,21 +2,27 @@ shiny_server <- function(  input,
                            output,
                            session  ) {
     
+    shiny_inputs_dir <- "tviblindi_tmp"
+    
+    cancel.onSessionEnded <- session$onSessionEnded(function() {
+        message(paste0('Session ended. Reload your analysis from ', file.path(shiny_inputs_dir, 'tv.RDS')))
+    })
+    
     message(paste0('Running tviblindi Shiny UI, working directory is ', getwd()))
     
-    shiny_inputs_dir <- "tviblindi_tmp"
-    input_fcs_path   <- readRDS(file.path(shiny_inputs_dir, "input_fcs_path.RDS"))
-    origin           <- readRDS(file.path(shiny_inputs_dir, "origin.RDS"))
-    pseudotime       <- readRDS(file.path(shiny_inputs_dir, "pseudotime.RDS"))
-    coords           <- readRDS(file.path(shiny_inputs_dir, "coords.RDS"))
-    coords_clusters  <- readRDS(file.path(shiny_inputs_dir, "coords_clusters.RDS"))
-    clusters         <- readRDS(file.path(shiny_inputs_dir, "clusters.RDS"))
-    filtration       <- readRDS(file.path(shiny_inputs_dir, "filtration.RDS"))
-    layout           <- readRDS(file.path(shiny_inputs_dir, "layout.RDS"))
-    walks_raw        <- readRDS(file.path(shiny_inputs_dir, "walks_raw.RDS"))
-    b                <- readRDS(file.path(shiny_inputs_dir, "b.RDS"))
-    rb               <- readRDS(file.path(shiny_inputs_dir, "rb.RDS"))
-    event_sel        <- readRDS(file.path(shiny_inputs_dir, "event_sel.RDS"))
+    input_fcs_path   <- readRDS(file.path(shiny_inputs_dir, 'input_fcs_path.RDS'))
+    tv               <- readRDS(file.path(shiny_inputs_dir, 'tv.RDS'))
+    
+    pseudotime       <- tv$pseudotime
+    coords           <- tv$data
+    coords_clusters  <- tv$codes
+    clusters         <- tv$clusters
+    filtration       <- tv$filtration
+    layout           <- tv$layout
+    walks_raw        <- tv$walks
+    b                <- tv$boundary
+    rb               <- tv$reduced_boundary
+    event_sel        <- tv$event_sel
     
     R                        <- reactiveValues()
     R$pers                   <- NULL
@@ -318,23 +324,41 @@ shiny_server <- function(  input,
     ## Button: open dialog for saving output .fcs file
     observeEvent(input$dendro_btn_save, {
         if (is.null(R$output_ff)) {
+            if (is.null(event_sel)) {
+                layoutX <- layout.df$X * 100
+                layoutY <- layout.df$Y * 100
+            } else {
+                layoutX <- layoutY <- rep(-1000, nrow(input_ff))
+                layoutX[event_sel] <- layout.df$X
+                layoutY[event_sel] <- layout.df$Y
+            }
             R$output_ff <- fcs.add_col(
                 fcs.add_col(
-                    input_ff, layout.df$X * 100, colname = "dimension_reduction_1"
+                    input_ff, layoutX, colname = "dimension_reduction_1"
                 ),
-                layout.df$Y * 100, colname = "dimension_reduction_2"
+                layoutY, colname = "dimension_reduction_2"
             )
         }
         if (!is.null(pseudotime) && !is.null(R$random_walks)) showModal(save_modal())
     })
 
     observeEvent(input$dendro_btn_erase_pinned, {
-        R$output_ff <- fcs.add_col(
-            fcs.add_col(
-                input_ff, layout.df$X, colname = "dimension_reduction_1"
-            ),
-            layout.df$Y, colname = "dimension_reduction_2"
-        )
+        if (is.null(R$output_ff)) {
+            if (is.null(event_sel)) {
+                layoutX <- layout.df$X * 100
+                layoutY <- layout.df$Y * 100
+            } else {
+                layoutX <- layoutY <- rep(-1000, nrow(input_ff))
+                layoutX[event_sel] <- layout.df$X
+                layoutY[event_sel] <- layout.df$Y
+            }
+            R$output_ff <- fcs.add_col(
+                fcs.add_col(
+                    input_ff, layoutX, colname = "dimension_reduction_1"
+                ),
+                layoutY, colname = "dimension_reduction_2"
+            )
+        }
         R$save_count <- 0
         R$to_append <- NULL
     })
