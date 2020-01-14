@@ -13,19 +13,12 @@ shiny_server <- function(  input,
     tv_name <- readRDS(file.path(shiny_inputs_dir, 'tv.RDS'))
     tv <- get(tv_name, parent.env(environment()))
     
-    pseudotime       <- tv$pseudotime
-    coords           <- tv$data
-    coords_clusters  <- tv$codes
-    clusters         <- tv$clusters
-    filtration       <- tv$filtration
     layout           <- tv$layout
-    walks_raw        <- tv$walks
-    b                <- tv$boundary
-    rb               <- tv$reduced_boundary
     
     event_sel        <- readRDS(file.path(shiny_inputs_dir, 'event_sel.RDS'))
     
     R                        <- reactiveValues()
+    R$pseudotime             <- tv$pseudotime
     R$pers                   <- NULL
     R$repre                  <- NULL
     R$repre.reduced          <- NULL # only include some homology classes
@@ -64,7 +57,7 @@ shiny_server <- function(  input,
     R$to_append              <- NULL
     R$to_append.A            <- NULL
     R$to_append.B            <- NULL
-    markers                  <- colnames(coords)
+    markers                  <- colnames(tv$data)
     R$flip_colours           <- FALSE
     R$markers.selected.A     <- NULL
     R$markers.selected.B     <- NULL
@@ -78,7 +71,7 @@ shiny_server <- function(  input,
     layout.df        <- data.frame(layout)
     colnames(layout.df) <- c("X", "Y")
 
-    term <- c(walks_raw$v[walks_raw$starts[-1] - 1], tail(walks_raw$v, 1))
+    term <- c(tv$walks$v[tv$walks$starts[-1] - 1], tail(tv$walks$v, 1))
     
     ## Interactive persistence diagram
     output$pers_plot <- renderPlot({
@@ -93,7 +86,7 @@ shiny_server <- function(  input,
 
     output$term_plot <- renderPlot({
         par(mar = c(0, 0, 0, 0))
-        psc <- as.numeric(as.factor(pseudotime$res))
+        psc <- as.numeric(as.factor(R$pseudotime$res))
         psc <- psc / max(psc)
         psc <- psc * 10000 + 1
         col <- greenred(10500)
@@ -121,15 +114,15 @@ shiny_server <- function(  input,
     })
 
     observeEvent(input$term_btn_update, {
-        updated <- .update_walks(walks_raw        = walks_raw,
-                                 pseudotime       = pseudotime,
+        updated <- .update_walks(walks_raw        = tv$walks,
+                                 pseudotime       = R$pseudotime,
                                  tt               = R$term.marked, # selected terminal nodes
                                  termini_per_path = term,
-                                 coords.clusters  = coords_clusters,
-                                 clusters         = clusters,
-                                 filtration       = filtration,
-                                 b                = b,
-                                 rb               = rb)
+                                 coords.clusters  = tv$codes,
+                                 clusters         = tv$clusters,
+                                 filtration       = tv$filtration,
+                                 b                = tv$boundary,
+                                 rb               = tv$reduced_boundary)
         R$random_walks <- updated$walks
         R$repre        <- updated$repre
         R$pers         <- updated$pers
@@ -311,7 +304,7 @@ shiny_server <- function(  input,
         w$v      <- unlist(R$random_walks)
         w$starts <- c(1, cumsum(sapply(R$random_walks, length)) + 1)
         R$output_ff <- addPathInfot2Fcs(R$output_ff,
-                                        pseudotime,
+                                        R$pseudotime,
                                         w,
                                         R$to_append,
                                         ID = R$save_count,
@@ -340,7 +333,7 @@ shiny_server <- function(  input,
                 layoutY, colname = "dimension_reduction_2"
             )
         }
-        if (!is.null(pseudotime) && !is.null(R$random_walks)) showModal(save_modal())
+        if (!is.null(R$pseudotime) && !is.null(R$random_walks)) showModal(save_modal())
     })
 
     observeEvent(input$dendro_btn_erase_pinned, {
@@ -444,7 +437,7 @@ shiny_server <- function(  input,
     ## Marker expression plots
     output$expression_plot.A <- renderPlot({
         if (!is.null(R$marked.A) && !is.null(R$markers.selected.A)) {
-            p                    <- .plot_expression(R$random_walks, R$marked.A, coords, pseudotime,
+            p                    <- .plot_expression(R$random_walks, R$marked.A, tv$coords, R$pseudotime,
                                                      markers = R$markers.selected.A,
                                                      n.part = R$markers.n_segments.A,
                                                      exp.part = R$markers.scale_exp.A)
@@ -454,7 +447,7 @@ shiny_server <- function(  input,
     })
     output$expression_plot.B <- renderPlot({
         if (!is.null(R$marked.B) && !is.null(R$markers.selected.B)) {
-            p                    <- .plot_expression(R$random_walks, R$marked.B, coords, pseudotime,
+            p                    <- .plot_expression(R$random_walks, R$marked.B, tv$coords, R$pseudotime,
                                                      markers = R$markers.selected.B,
                                                      n.part = R$markers.n_segments.B,
                                                      exp.part = R$markers.scale_exp.B)
@@ -1129,8 +1122,8 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
 
     ## Cluster and triangulate walks
     withProgress(message = "Triangulating paths", style = "old", expr = {
-        walks_clusters <- remove_cycles(contract_walks(walks.selected, clusters), verbose = FALSE)
-        triangulation  <- triangulate_pathways(walks_clusters, coords.clusters, filtration$cmplx)
+        walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
+        triangulation  <- triangulate_pathways(walks_clusters, tv$codes, filtration$cmplx)
     })
 
     N <- length(idcs)
