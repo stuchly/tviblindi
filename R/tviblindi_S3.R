@@ -149,7 +149,7 @@ DimRed<-function(x,...){
 }
 
 DimRed.tviblindi<-function(x,layout){##for consistency only for now
-    tv1$laoyout<-layout
+    tv1$layout<-layout
     return(invisible(x))
 }
 
