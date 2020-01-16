@@ -114,15 +114,10 @@ shiny_server <- function(  input,
     })
 
     observeEvent(input$term_btn_update, {
-        updated <- .update_walks(walks_raw        = tv$walks,
+        updated <- .update_walks(tv               = tv,
                                  pseudotime       = R$pseudotime,
                                  tt               = R$term.marked, # selected terminal nodes
-                                 termini_per_path = term,
-                                 coords.clusters  = tv$codes,
-                                 clusters         = tv$clusters,
-                                 filtration       = tv$filtration,
-                                 b                = tv$boundary,
-                                 rb               = tv$reduced_boundary)
+                                 termini_per_path = term)
         R$random_walks <- updated$walks
         R$repre        <- updated$repre
         R$pers         <- updated$pers
@@ -357,6 +352,20 @@ shiny_server <- function(  input,
         R$to_append <- NULL
     })
     
+    observeEvent(input$btn_help, {
+        showModal(modalDialog(
+            title = "Welcome to tviblindi UI",
+            "This interface is a tool to allow for discrimination within a set of canonical developmental trajectories in input data, as well as between canonical and aberrant trajectories. Some trajectories will be biologically relevant, whereas others might not reflect the underlying biology.
+             First, select terminal nodes of simulated random walks in the left pane (tab Terminal nodes). This is done by clicking and drawing a rectangular selection. To mark selected points, press the PLUS button underneath. To remove marked points (and start over again), press the FIRE button underneath. Once you're satisfied with you selection (the marked terminal nodes will be clustered together), press the THUMBS-UP button to compute the relevant triangulation and create trajectory representations.
+             Second, select the tab Persistence in the left pane. Here, select relevant homology classes to be used for hierarchical classification of trajectories. Persistence increases upward. Again, you can make multiple piecewise selections by consecutively drawing rectangles and pressing PLUS to mark the selected points, or you can discard the marked points by pressing FIRE.
+             Third, select and mark trajectories of interest using the dendrogram which appears in the middle pane. Each bifurcation in the dendrogram corresponds to difference in path classification with regard to a single homology class. The horizontal coordinate of each bifurcation corresponds to filtration value associated with addition of a simplex associated with the death of that homology class during filtration. During the marking of trajectories using the PLUS button, be sure to select the desired category (A or B) for distinguishing between two collections of marked trajectories, as desired.
+             Fourth, inspect the projection of marked trajectories in the 2-D layout in the right pane. Category A trajectories are drawn in blue, whereas category B trajectories are drawn in blue. By default, red trajectories are drawn on the top. To flip this ordering, press the FLIP button (with the black-white circular icon) beneath the 2-D layout.
+             Fifth, inspect the progression of marker expression in either category of trajectories by entering marker(s) of interest the text boxes below the 2-D projection (category A is above category B here). By default, we separate the progression into 20 equally large segments by exponentially scaled pseudotime values. Both the scaling and the number of segments can be adjusted (however, the default settings should give sensible results in most cases). If a single marker of interest is entered, all the trajectories are included in the diagram. In addition, you can remove (un-mark) some trajectories by drawing a selection rectangle in the progression diagram and pressing the LIGHTNING BOLT button. All trajectories passing through the drawn area are 'zapped' (the number of 'zapped' trajectories is printed in the bottom part of the center pane). You cannot zap all pathways in a category.
+             If multiple markers of interest are chosen, the mean value for each segment for each marker is displayed.
+             Sixth, export an enhanced FCS file. In the simplest case, you can press the SAVE button in the middle pane straightaway to append two artificial channels to your FCS, containing the 2-D layout displayed in the left and right pane. If you want to append marked trajectories in either of the categories, along with pseudotime values, press the PIN button next to the header for either category. Then, press the SAVE button. To un-pin any all batches of vertices pinned so far, press the GARBARGE button next to it."
+        ))
+    })
+    
     ## Dialog: save output .fcs file
     save_modal <- function(failed = FALSE) {
         modalDialog(
@@ -437,7 +446,7 @@ shiny_server <- function(  input,
     ## Marker expression plots
     output$expression_plot.A <- renderPlot({
         if (!is.null(R$marked.A) && !is.null(R$markers.selected.A)) {
-            p                    <- .plot_expression(R$random_walks, R$marked.A, tv$coords, R$pseudotime,
+            p                    <- .plot_expression(R$random_walks, R$marked.A, tv, R$pseudotime,
                                                      markers = R$markers.selected.A,
                                                      n.part = R$markers.n_segments.A,
                                                      exp.part = R$markers.scale_exp.A)
@@ -447,7 +456,7 @@ shiny_server <- function(  input,
     })
     output$expression_plot.B <- renderPlot({
         if (!is.null(R$marked.B) && !is.null(R$markers.selected.B)) {
-            p                    <- .plot_expression(R$random_walks, R$marked.B, tv$coords, R$pseudotime,
+            p                    <- .plot_expression(R$random_walks, R$marked.B, tv, R$pseudotime,
                                                      markers = R$markers.selected.B,
                                                      n.part = R$markers.n_segments.B,
                                                      exp.part = R$markers.scale_exp.B)
@@ -914,13 +923,12 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
 ## Functions: plot expression markers across pseudotime for selected walks
 .plot_expression <- function(walks,
                              walk_idcs,
-                             coords,
+                             tv,
                              pseudotime,
                              markers,
                              breaks = NULL,
                              n.part = 10,
                              exp.part = 1,
-                             expression.transform = NULL,
                              asinh.denominator = 5,
                              show_legend = FALSE) {
 
@@ -935,22 +943,16 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
 
 .plot_expression.single <- function(walks,
                                     walk_idcs,
-                                    coords,
+                                    tv,
                                     pseudotime,
                                     markers,
                                     breaks = NULL,
                                     n.part = 10,
                                     exp.part = 1,
-                                    expression.transform = NULL,
                                     asinh.denominator,
                                     show_legend = FALSE) {
     pseudotime <- pseudotime$res
     pseudotime <- pseudotime/max(pseudotime)
-    coords     <- coords[, markers]
-
-    if (!is.null(expression.transform))
-        if (expression.transform == "asinh")
-            coords <- asinh(coords/asinh.denominator)
 
     walks      <- walks[walk_idcs]
 
@@ -975,7 +977,9 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
     }
 
     categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
-
+    
+    coords <- tv$data[, markers]
+    
     stats  <- lapply(1:N, function(i) {
         inds <- categs == i # pick points on paths by pseudotime increment
 
@@ -998,16 +1002,7 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
     g <- ggplot(data = stats, aes(x = segment, y = expression, group = walk, color = walk)) +
         geom_line(linetype = "dashed") + geom_point() +
         ggtitle(paste0(markers, " expression per walk: means per segment")) +
-        labs(subtitle = paste0(
-            "Segmented by pseudotime values. ",
-            ifelse(!is.null(expression.transform),
-                   paste0("\n", expression.transform, " transform applied to expression values",
-                         ifelse(expression.transform == "asinh",
-                                paste(", with denominator ", asinh.denominator, "."),
-                                "."
-                         ), sep = ""),
-                   ""
-            ), sep = "")) +
+        labs(subtitle = "Segmented by pseudotime values.") +
         theme_light() +
         theme(axis.text.x = element_blank(), axis.ticks = element_blank())
     if (!show_legend) {
@@ -1019,22 +1014,16 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
 
 .plot_expression.multiple <- function(walks,
                                       walk_idcs,
-                                      coords,
+                                      tv,
                                       pseudotime,
                                       markers,
                                       breaks = NULL,
                                       n.part = 10,
                                       exp.part = 1,
-                                      expression.transform = NULL,
                                       asinh.denominator = 5,
                                       show_legend = TRUE) {
     pseudotime <- pseudotime$res
     pseudotime <- pseudotime/max(pseudotime)
-    coords <- coords[, markers]
-
-    if (!is.null(expression.transform))
-        if (expression.transform == "asinh")
-            coords <- asinh(coords/asinh.denominator)
 
     walks    <- walks[walk_idcs]
     progress <- lapply(walks, function(pts) pseudotime[pts])
@@ -1059,6 +1048,8 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
 
     categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
 
+    coords <- tv$data[, markers]
+    
     stats  <- lapply(markers, function(m) {
         lapply(1:N, function(i) {
 
@@ -1085,16 +1076,7 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
         geom_line() +
         geom_point() +
         ggtitle(paste0("Multiple markers expression")) +
-        labs(subtitle = paste0(
-            "Segmented by pseudotime values. ",
-            ifelse(!is.null(expression.transform),
-                   paste0("\n", expression.transform, " transform applied to expression values",
-                          ifelse(expression.transform == "asinh",
-                                 paste(", with denominator ", asinh.denominator, "."),
-                                 "."
-                          ), sep = ""),
-                   ""
-            ), sep = "")) +
+        labs(subtitle = "Segmented by pseudotime values. ") +
         theme_light() +
         theme(axis.text.x = element_blank(), axis.ticks = element_blank())
 
@@ -1102,13 +1084,13 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
          stats = stats)
 }
 
-.update_walks <- function(walks_raw, pseudotime, tt, termini_per_path, coords.clusters, clusters, filtration, b, rb) {
+.update_walks <- function(tv, pseudotime, tt, termini_per_path) {
 
     ## Identify chosen walks
     idcs <- which(termini_per_path %in% tt)
 
     ## Remove other walks
-    walks.selected <- lapply(idcs, function(idx) select_paths_points(walks_raw, idx))
+    walks.selected <- lapply(idcs, function(idx) select_paths_points(tv$walks, idx))
     lens           <- sapply(walks.selected, length)
     walks.selected <- list(v      = unlist(walks.selected),
                            starts = c(1, 1 + cumsum(lens[-length(lens)])))
@@ -1123,7 +1105,7 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
     ## Cluster and triangulate walks
     withProgress(message = "Triangulating paths", style = "old", expr = {
         walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
-        triangulation  <- triangulate_pathways(walks_clusters, tv$codes, filtration$cmplx)
+        triangulation  <- triangulate_pathways(walks_clusters, tv$codes, tv$filtration$cmplx)
     })
 
     N <- length(idcs)
@@ -1138,7 +1120,7 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
         for (idx in 2:N) {
             j          <- j + 1
             cycle      <- path_sum(triangulation[[1]], triangulation[[idx]])
-            this_repre <- get_rep_straight(cycle, rb, b, update = TRUE)
+            this_repre <- get_rep_straight(cycle, tv$reduced_boundary, tv$boundary, update = TRUE)
             repre[[j]] <- this_repre
             incProgress(tick)
         }
@@ -1146,7 +1128,7 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
 
     walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
 
-    pers <- pers_diagram(dBr = rb, plot = FALSE, repre = repre)
+    pers <- pers_diagram(dBr = tv$reduced_boundary, plot = FALSE, repre = repre)
     pd   <- data.frame(Dimension    = pers$vals$dim,
                        Birth        = pers$vals$birth,
                        Death        = pers$vals$death,

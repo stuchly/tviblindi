@@ -2,16 +2,25 @@ shiny_ui <- fluidPage(
   tags$style(HTML("#app_title{font-family: monospace; font-weight: bold}")),
   tags$style(type = "text/css", ".irs-slider {width: 15px; height: 30px; top: 22px;};"),
 
-  titlePanel(
-    h3(id = "app_title", "tviblindi"),
-    windowTitle = "tviblindi"
+  fluidRow(
+    column(
+      width = 11,
+      titlePanel(
+        h3(id = "app_title", "tviblindi"),
+        windowTitle = "tviblindi"
+      )
+    ),
+    column(
+      width = 1,
+      style = "text-align:right; padding-right:5px; margin-top: 15px;",
+      actionButton('btn_help', '', icon = icon('question-circle', lib = 'font-awesome')),
+    )
   ),
   br(),
       mainPanel(
           style = "width:100%",
           column(
               width = 4,
-
               tabsetPanel(
                 tabPanel(
                   "Terminal nodes",
