@@ -135,8 +135,12 @@ Walks<-function(x,...){
     UseMethod("Walks",x)
 }
 
-Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5){
-
+Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30){
+    
+    d<-KofRawN(x$KNN,K)
+    d  <- knn.raw2adj(d)
+    x$dsym <- knn.spadj2sym(knn.adj2spadj(d))
+    x$sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = "Exp"))
     oriented.sparseMatrix <- orient.sim.matrix(x$sim, x$pseudotime, breaks = breaks, base = base)
 
     ## Simulate random walks
