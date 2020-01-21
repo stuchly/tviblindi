@@ -608,7 +608,7 @@ sparse2triples <- function(m) {
 #'
 #' @export
 remove_back_R<-function(triplets,time){
-    triplets[which(time[triplets[,1]]<=time[triplets[,2]]),]
+    triplets[which(time[triplets[,1]]<time[triplets[,2]]),]
 }
 
 KofRawN<-function(rawadj,K=NULL){
