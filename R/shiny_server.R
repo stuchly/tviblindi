@@ -114,28 +114,30 @@ shiny_server <- function(  input,
     })
 
     observeEvent(input$term_btn_update, {
-        updated <- .update_walks(tv               = tv,
-                                 pseudotime       = R$pseudotime,
-                                 tt               = R$term.marked, # selected terminal nodes
-                                 termini_per_path = term)
-        R$random_walks <- updated$walks
-        R$repre        <- updated$repre
-        R$pers         <- updated$pers
-        R$pd           <- updated$pd
-
-        R$dendro_ready <- TRUE
-
-        ## Bump
-        # tmp <- R$pers.marked
-        # R$pers.marked <- NULL
-        # R$pers.marked <- tmp
-        # R$marked.A <- NULL
-        # R$marked.B <- NULL
-
-        R$pers.marked <- NULL
-        R$marked.A <- NULL
-        R$marked.B <- NULL
-        R$pers.selection <- NULL
+        if (length(R$term.marked) > 0) {
+            updated <- .update_walks(tv               = tv,
+                                     pseudotime       = R$pseudotime,
+                                     tt               = R$term.marked, # selected terminal nodes
+                                     termini_per_path = term)
+            R$random_walks <- updated$walks
+            R$repre        <- updated$repre
+            R$pers         <- updated$pers
+            R$pd           <- updated$pd
+            
+            R$dendro_ready <- TRUE
+            
+            ## Bump
+            # tmp <- R$pers.marked
+            # R$pers.marked <- NULL
+            # R$pers.marked <- tmp
+            # R$marked.A <- NULL
+            # R$marked.B <- NULL
+            
+            R$pers.marked <- NULL
+            R$marked.A <- NULL
+            R$marked.B <- NULL
+            R$pers.selection <- NULL
+        }
     })
 
     ## Selected homology classes log
