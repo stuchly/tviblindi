@@ -286,8 +286,8 @@ shiny_server <- function(  input,
                 layoutY <- layout.df$Y * 100
             } else {
                 layoutX <- layoutY <- rep(-1000, nrow(input_ff))
-                layoutX[event_sel] <- layout.df$X
-                layoutY[event_sel] <- layout.df$Y
+                layoutX[event_sel] <- layout.df$X * 100
+                layoutY[event_sel] <- layout.df$Y * 100
             }
             R$output_ff <- fcs.add_col(
                 fcs.add_col(
@@ -300,7 +300,7 @@ shiny_server <- function(  input,
         w <- list()
         w$v      <- unlist(R$random_walks)
         w$starts <- c(1, cumsum(sapply(R$random_walks, length)) + 1)
-        R$output_ff <- addPathInfot2Fcs(R$output_ff,
+        R$output_ff <- addPathInfo2Fcs(R$output_ff,
                                         R$pseudotime,
                                         w,
                                         R$to_append,
@@ -320,8 +320,8 @@ shiny_server <- function(  input,
                 layoutY <- layout.df$Y * 100
             } else {
                 layoutX <- layoutY <- rep(-1000, nrow(input_ff))
-                layoutX[event_sel] <- layout.df$X
-                layoutY[event_sel] <- layout.df$Y
+                layoutX[event_sel] <- layout.df$X * 100
+                layoutY[event_sel] <- layout.df$Y * 100
             }
             R$output_ff <- fcs.add_col(
                 fcs.add_col(
@@ -340,8 +340,8 @@ shiny_server <- function(  input,
                 layoutY <- layout.df$Y * 100
             } else {
                 layoutX <- layoutY <- rep(-1000, nrow(input_ff))
-                layoutX[event_sel] <- layout.df$X
-                layoutY[event_sel] <- layout.df$Y
+                layoutX[event_sel] <- layout.df$X * 100
+                layoutY[event_sel] <- layout.df$Y * 100
             }
             R$output_ff <- fcs.add_col(
                 fcs.add_col(
@@ -1150,4 +1150,16 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
     j   <- jpeg::readJPEG(system.file("tree.jpg", package = "tviblindi"), native = TRUE)
     plot(0:1, 0:1, type = "n", ann = FALSE, axes = FALSE)
     rasterImage(j, 0, 0, 1, 1)
+}
+
+addPathInfo2Fcs <- function(fcs, pseudotime, walks, walks.selection, event_sel = NULL, ID = NULL) {
+    pp            <- unique(select_paths_points(walks, walks.selection))
+    out           <- matrix(-1, nrow = nrow(fcs@exprs), ncol = 2)
+    colnames(out) <- c(paste(ID, "which_event", sep = "_"), paste(ID, "local_pseudotime", sep = "_"))
+    if (is.null(event_sel)) event_sel <- 1:nrow(fcs@exprs)
+    
+    out[event_sel[pp], 1] <- 1000
+    out[event_sel[pp], 2] <- as.numeric(as.factor(pseudotime$res[pp]))
+    
+    make_valid_fcs(cbind(fcs@exprs, out), desc1 = as.character(fcs@parameters@data$desc))
 }
