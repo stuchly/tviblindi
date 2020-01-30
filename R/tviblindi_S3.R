@@ -159,7 +159,7 @@ DimRed.tviblindi<-function(x,layout=NULL){##for consistency only for now
     }
     if (!reticulate::py_module_available("vaevictis")) reticulate::py_install("git+https://github.com/stuchly/vaevictis.git@master",pip=TRUE)
     vv=reticulate::import("vaevictis")    
-    layout=vv$dimred(x$data,dim=2L,vsplit=0.1,enc_shape=(128,128,128),dec_shape=c(128,128,128),perplexity=10.,batch_size=512L,epochs=100L,patience=0L,alpha=10.)
+    layout=vv$dimred(x$data,dim=2L,vsplit=0.1,enc_shape=c(128,128,128),dec_shape=c(128,128,128),perplexity=10.,batch_size=512L,epochs=100L,patience=0L,alpha=10.)
     x$layout<-layout
     return(invisible(x))
 }
