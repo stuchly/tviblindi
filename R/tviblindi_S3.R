@@ -152,14 +152,19 @@ DimRed<-function(x,...){
     UseMethod("DimRed",x)
 }
 
-DimRed.tviblindi<-function(x,layout=NULL,dim=2L,vsplit=0.1,enc_shape=c(128,128,128),dec_shape=c(128,128,128),perplexity=10.,batch_size=512L,epochs=100L,patience=0L,alpha=10.){##for consistency only for now
+DimRed.tviblindi<-function(x,layout=NULL,dim=2,vsplit=0.1,
+                           enc_shape=c(128,128,128),dec_shape=c(128,128,128),perplexity=10.,
+                           batch_size=512L,epochs=100L,patience=0L,alpha=10.){
     if (!is.null(layout)){
         x$layout<-layout
         return(invisible(x))
     }
     if (!reticulate::py_module_available("vaevictis")) reticulate::py_install("git+https://github.com/stuchly/vaevictis.git@master",pip=TRUE)
-    vv=reticulate::import("vaevictis")    
-    layout=vv$dimred(x$data,dim=as.integer(dim),enc_shape=enc_shape,dec_shape,perplexity=perplexity,batch_size=as.integer(batch_size),epochs=as.integer(epochs),patience=as.integer(patience),alpha=alpha)
+    vv=reticulate::import("vaevictis")   
+    print('debugging...')
+    layout=vv$dimred(x_train=x$data,dim=as.integer(dim),vsplit=vsplit,enc_shape=enc_shape,
+                     dec_shape,perplexity=perplexity,batch_size=as.integer(batch_size),epochs=as.integer(epochs),
+                     patience=as.integer(patience),alpha=alpha)[[1]]
     x$layout<-layout
     return(invisible(x))
 }
