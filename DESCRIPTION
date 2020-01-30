@@ -8,7 +8,7 @@ Description: tviblindi puts ideas from graph theory and algebraic topology to us
 Maintainer: Jan Stuchly <jan.stuchly@lfmotol.cuni.cz>
 License: open
 biocViews:
-Depends: R (>= 3.0.0), Matrix, igraph, RcppArmadillo, Rcpp, RcppEigen, BH, FlowSOM, shiny, shinyWidgets, shinyFiles, tidyverse, ggdendro, dendextend, scales, gplots, scattermore, jpeg, cowplot, tensorflow
+Depends: R (>= 3.0.0), Matrix, igraph, RcppArmadillo, Rcpp, RcppEigen, BH, FlowSOM, shiny, shinyWidgets, shinyFiles, tidyverse, ggdendro, dendextend, scales, gplots, scattermore, jpeg, cowplot, reticulate
 Remotes: github::exaexa/scattermore
 Suggests: TDA, PRIMME, flowCore
 Imports: Rcpp (>= 0.12.12), RcppEigen (>= 0.3.3.3.0)
