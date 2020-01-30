@@ -159,10 +159,7 @@ DimRed.tviblindi<-function(x,layout=NULL,dim=2,vsplit=0.1,
         x$layout<-layout
         return(invisible(x))
     } 
-    if (!reticulate::py_module_available("tensorflow")) reticulate::py_install("tensorflow",pip=TRUE)
-    if (!reticulate::py_module_available("numba")) reticulate::py_install("numba",pip=TRUE)
-    if (!reticulate::py_module_available("numpy")) reticulate::py_install("numpy",pip=TRUE)
-    if (!reticulate::py_module_available("vaevictis")) reticulate::py_install("git+https://github.com/stuchly/vaevictis.git@master",pip=TRUE)
+    
     vv=reticulate::import("vaevictis")   
     layout=vv$dimred(x$data,dim,vsplit,enc_shape,
                      dec_shape,perplexity,batch_size,epochs,
