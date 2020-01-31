@@ -1,7 +1,17 @@
 shiny_ui <- fluidPage(
   tags$style(HTML("#app_title{font-family: monospace; font-weight: bold}")),
   tags$style(type = "text/css", ".irs-slider {width: 15px; height: 30px; top: 22px;};"),
-
+  tags$head(tags$style(HTML('#large_plot_modal .modal-lg {width:1100px;}'))),
+  tags$head(tags$style("#large_plot_modal .modal-body{ height:850px}")),
+  
+  shinyBS::bsModal(
+    id = "large_plot_modal",
+    size = "large",
+    title = "Enlarged",
+    trigger = "term_btn_enlarge",
+    plotOutput("large_plot", width = "1024px", height = "800px")
+  ),
+  
   fluidRow(
     column(
       width = 11,
@@ -33,20 +43,29 @@ shiny_ui <- fluidPage(
                                )
                     )
                   ),
-
-                  ## Button: mark selected terminal nodes
-                  actionButton("term_btn_add", "", icon = icon("glyphicon glyphicon-plus", lib = "glyphicon")),
-
-                  ## Button: clear marked teminal nodes
-                  actionButton("term_btn_clear", "", icon = icon("glyphicon glyphicon-fire", lib = "glyphicon")),
-
-                  HTML("&nbsp;&nbsp;&nbsp;&nbsp;"),
-
-                  ## Button: update walks by selected terminal nodes
-                  actionButton("term_btn_update", "", icon = icon(" glyphicon glyphicon-thumbs-up", lib = "glyphicon")),
-
-                  ## Button: reset&recompute psedudotime and walks by selected terminal nodes
-                  actionButton("term_btn_reset", "", icon = icon(" glyphicon  glyphicon-refresh", lib = "glyphicon")),
+                  column(
+                    width = 8,
+                    style = "text-align:left; padding-bottom:10px;",
+                    ## Button: mark selected terminal nodes
+                    actionButton("term_btn_add", "", icon = icon("glyphicon glyphicon-plus", lib = "glyphicon")),
+                    
+                    ## Button: clear marked teminal nodes
+                    actionButton("term_btn_clear", "", icon = icon("glyphicon glyphicon-fire", lib = "glyphicon")),
+                    
+                    HTML("&nbsp;&nbsp;&nbsp;&nbsp;"),
+                    
+                    ## Button: update walks by selected terminal nodes
+                    actionButton("term_btn_update", "", icon = icon(" glyphicon glyphicon-thumbs-up", lib = "glyphicon")),
+                    
+                    ## Button: reset&recompute psedudotime and walks by selected terminal nodes
+                    actionButton("term_btn_reset", "", icon = icon(" glyphicon  glyphicon-refresh", lib = "glyphicon"))
+                  ),
+                  column(
+                    width = 4,
+                    style = "text-align:right; padding-bottom:10px;",
+                    actionButton("term_btn_colouring", "", icon = icon("glyphicon glyphicon-eye-open", lib = "glyphicon")),
+                    actionButton("term_btn_enlarge", "", icon = icon("glyphicon glyphicon-fullscreen", lib = "glyphicon"))
+                  ),
                   ## Selected terminal nodes log
                   fluidRow(
                     h4("Selected terminal nodes"),

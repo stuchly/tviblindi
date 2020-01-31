@@ -24,6 +24,7 @@ shiny_server <- function(  input,
     R$repre.reduced          <- NULL # only include some homology classes
     R$term.selection         <- NULL
     R$term.marked            <- NULL
+    R$term.show_gating       <- FALSE
     R$pers.selection         <- NULL
     R$pers.marked            <- data.frame()
     R$markers.n_segments.A   <- NULL
@@ -71,6 +72,11 @@ shiny_server <- function(  input,
     layout.df        <- data.frame(layout)
     colnames(layout.df) <- c("X", "Y")
 
+    gating_palette <- RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$category == 'qual', ]
+    gating_palette <- unlist(mapply(RColorBrewer::brewer.pal, gating_palette$maxcolors, rownames(gating_palette)))
+    gating_palette <- gating_palette[1:length(unique(tv$labels))]
+    gating_colour_vector <- gating_palette[as.numeric(as.factor(tv$labels))]
+    
     term <- c(tv$walks$v[tv$walks$starts[-1] - 1], tail(tv$walks$v, 1))
     
     ## Interactive persistence diagram
@@ -85,28 +91,65 @@ shiny_server <- function(  input,
     })
 
     output$term_plot <- renderPlot({
-        par(mar = c(0, 0, 0, 0))
-        psc <- as.numeric(as.factor(R$pseudotime$res))
-        psc <- psc / max(psc)
-        psc <- psc * 10000 + 1
-        col <- greenred(10500)
-        plot(layout, col = alpha(col[psc], 0.05), axes = FALSE, xlab = "", ylab = "", pch = 20, cex = .3)
+        if (!R$term.show_gating) { # show pseudotime
+            psc  <- as.numeric(as.factor(R$pseudotime$res))
+            psc  <- psc / max(psc)
+            psc  <- psc * 10000 + 1
+            col  <- greenred(10500)
+            colour_vector <- col[psc]
+        } else {
+            colour_vector <- gating_colour_vector
+        }
+        
+        ends <- unique(term)
+        
+        #background     <- scattermore(layout, xlim = c(0, 1), ylim = c(0, 1), rgba = col2rgb(col[psc], alpha = TRUE))
+        #terminal_nodes <- scattermore(layout[ends, ], xlim = c(0, 1), ylim = c(0, 1), rgba = c(127, 0, 255, 180), cex = 8)
+        #plot(background)
+        #plot(terminal_nodes, add = TRUE)
+        #scattermoreplot(x = layout[, 1], y = layout[, 2], col = col[psc], xlab = '', ylab = '', cex = .5, axes = FALSE)
+        #scattermoreplot(x = layout[ends, 1], y = layout[ends, 2], cex = 10, add = TRUE)
+        par(mar = c(1, 1, 1, 1))
+        plot(layout, col = alpha(colour_vector, 0.05), axes = FALSE, xlab = "", ylab = "", pch = 20, cex = .3, xlim = c(0, 1), ylim = c(0, 1))
         #points(layout[origin, ], col = alpha("purple", 0.75), cex = 1,  pch = 8)
         points(layout[unique(term), ], col = alpha("purple", 0.75), cex = 3, pch = 20)
+        points(layout[tv$origin, 1], layout[tv$origin, 2], col = alpha("yellow", 0.75), cex = 3, pch = 15)
     })
 
     output$term_brush_info <- renderPrint({
+        # brushed_area <- input$term_brush
+        # if (!is.null(brushed_area)) {
+        #     print(brushed_area$xmin)
+        #     print(brushed_area$ymin)
+        #     print(brushed_area$xmax)
+        #     print(brushed_area$ymax)
+        # }
+        
         R$term.selection <- as.numeric(rownames(brushedPoints(layout.df[unique(term), ], input$term_brush, xvar = "X", yvar = "Y")))
         out <- sapply(R$term.selection, function(s) paste0(s, " (", sum(term == s), " pathways)"))
         cat(out, sep = "\n")
     })
 
+    ## Button: switch between pseudotime and gating colouring
+    observeEvent(input$term_btn_colouring, {
+        R$term.show_gating <- !R$term.show_gating
+    })
+    
+    # observeEvent(input$term_btn_enlarge, {
+    #     showModal(large_plot_modal())
+    # })
+    
     ## Button: mark selected persistence diagram points
     observeEvent(input$term_btn_add, {
         R$term.marked <- unique(unlist(c(R$term.marked, R$term.selection)))
         output$term_marked_info <- renderPrint({ cat(R$term.marked, sep = "\n") })
     })
 
+    output$large_plot <- renderPlot({
+        par(mar = c(1, 1, 1, 1))
+        plot(layout, col = alpha(gating_colour_vector, 0.05), axes = FALSE, xlab = "", ylab = "", pch = 20, cex = .3, xlim = c(0, 1), ylim = c(0, 1))
+    })
+    
     ## Button: clear marked persistence diagram points
     observeEvent(input$term_btn_clear, {
         R$term.marked           <- data.frame()
