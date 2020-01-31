@@ -23,6 +23,7 @@ new_tviblindi<-function(data,labels,keep.intermediate=FALSE){
     out$clusters<-NULL
     out$codes<-NULL
     out$layout<-NULL
+    out$vae_predict=NULL
     structure(out,class="tviblindi")
 }
 
@@ -163,8 +164,9 @@ DimRed.tviblindi<-function(x,layout=NULL,dim=2,vsplit=0.1,
     vv=reticulate::import("vaevictis")   
     layout=vv$dimred(x$data,dim,vsplit,enc_shape,
                      dec_shape,perplexity,batch_size,epochs,
-                     patience,alpha)[[1]]
-    x$layout<-layout
+                     patience,alpha)
+    x$vae_predict=layout[[2]]
+    x$layout<-layout[[1]]
     return(invisible(x))
 }
 
