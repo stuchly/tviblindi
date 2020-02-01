@@ -1049,7 +1049,7 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
         ggtitle(paste0(markers, " expression per walk: means per segment")) +
         labs(subtitle = "Segmented by pseudotime values.") +
         theme_light() +
-        theme(axis.text.x = element_blank(), axis.ticks = element_blank())
+        theme(axis.text.x = element_blank(), axis.ticks = element_blank(), plot.title = element_text(size = 20), legend.title = element_text(size = 24), legend.text = element_text(size = 24))
     if (!show_legend) {
         g <- g + theme(legend.position = "none")
     }
@@ -1123,7 +1123,7 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
         ggtitle(paste0("Multiple markers expression")) +
         labs(subtitle = "Segmented by pseudotime values. ") +
         theme_light() +
-        theme(axis.text.x = element_blank(), axis.ticks = element_blank())
+        theme(axis.text.x = element_blank(), axis.ticks = element_blank(), plot.title = element_text(size = 20), legend.title = element_text(size = 24), legend.text = element_text(size = 24))
 
     list(plot  = g,
          stats = stats)
