@@ -1,22 +1,22 @@
 shiny_server <- function(  input,
                            output,
                            session  ) {
-    
+
     shiny_inputs_dir <- "tviblindi_tmp"
-    
+
     cancel.onSessionEnded <- session$onSessionEnded(function() {
         message(paste0('tviblindi Shiny session ended'))
     })
-    
+
     message(paste0('Running tviblindi Shiny UI, working directory is ', getwd()))
-    
+
     tv_name <- readRDS(file.path(shiny_inputs_dir, 'tv.RDS'))
     tv <- get(tv_name, parent.env(environment()))
-    
+
     layout           <- tv$layout
-    
+
     event_sel        <- readRDS(file.path(shiny_inputs_dir, 'event_sel.RDS'))
-    
+
     R                        <- reactiveValues()
     R$pseudotime             <- tv$pseudotime
     R$pers                   <- NULL
@@ -52,7 +52,7 @@ shiny_server <- function(  input,
 
     R$output_ff              <- NULL
     R$save_count             <- 0
-    
+
     R$random_walks           <- NULL
 
     R$to_append              <- NULL
@@ -66,7 +66,7 @@ shiny_server <- function(  input,
     R$expression.stats.B     <- NULL
     R$markers.brushed.A      <- NULL
     R$markers.brushed.B      <- NULL
-    
+
     layout[, 1]      <- layout[, 1] - min(layout[, 1]); layout[, 1] <- layout[, 1] / max(layout[, 1])
     layout[, 2]      <- layout[, 2] - min(layout[, 2]); layout[, 2] <- layout[, 2] / max(layout[, 2])
     layout.df        <- data.frame(layout)
@@ -76,9 +76,9 @@ shiny_server <- function(  input,
     gating_palette <- unlist(mapply(RColorBrewer::brewer.pal, gating_palette$maxcolors, rownames(gating_palette)))[-1]
     gating_palette <- gating_palette[1:length(unique(tv$labels))]
     gating_colour_vector <- gating_palette[as.numeric(as.factor(tv$labels))]
-    
+
     term <- c(tv$walks$v[tv$walks$starts[-1] - 1], tail(tv$walks$v, 1))
-    
+
     ## Interactive persistence diagram
     output$pers_plot <- renderPlot({
         if (!is.null(R$pers)) {
@@ -100,9 +100,9 @@ shiny_server <- function(  input,
         } else {
             colour_vector <- gating_colour_vector
         }
-        
+
         ends <- unique(term)
-        
+
         #background     <- scattermore(layout, xlim = c(0, 1), ylim = c(0, 1), rgba = col2rgb(col[psc], alpha = TRUE))
         #terminal_nodes <- scattermore(layout[ends, ], xlim = c(0, 1), ylim = c(0, 1), rgba = c(127, 0, 255, 180), cex = 8)
         #plot(background)
@@ -124,7 +124,7 @@ shiny_server <- function(  input,
         #     print(brushed_area$xmax)
         #     print(brushed_area$ymax)
         # }
-        
+
         R$term.selection <- as.numeric(rownames(brushedPoints(layout.df[unique(term), ], input$term_brush, xvar = "X", yvar = "Y")))
         out <- sapply(R$term.selection, function(s) paste0(s, " (", sum(term == s), " pathways)"))
         cat(out, sep = "\n")
@@ -134,11 +134,11 @@ shiny_server <- function(  input,
     # observeEvent(input$term_btn_colouring, {
     #     R$term.show_gating <- !R$term.show_gating
     # })
-    
+
     # observeEvent(input$term_btn_enlarge, {
     #     showModal(large_plot_modal())
     # })
-    
+
     ## Button: mark selected persistence diagram points
     observeEvent(input$term_btn_add, {
         R$term.marked <- unique(unlist(c(R$term.marked, R$term.selection)))
@@ -146,15 +146,15 @@ shiny_server <- function(  input,
     })
 
     output$large_plot <- renderPlot({
-        
+
         ## Messy code, but works for now
-        
+
         par(mar = c(1, 1, 1, 1))
-        
+
         large_plot.colours <- gating_colour_vector
-        colours.aligned    <- unique(large_plot.colours) 
+        colours.aligned    <- unique(large_plot.colours)
         labels.aligned     <- unique(tv$labels)
-        
+
         ## Get approximate label ordering
         avg_pseudotime <- c()
         for (l in labels.aligned) {
@@ -165,31 +165,31 @@ shiny_server <- function(  input,
         o <- order(avg_pseudotime)
         labels.aligned  <- labels.aligned[o]
         colours.aligned <- colours.aligned[o]
-        
+
         pch <- rep(20, length(tv$labels))
-        
+
         par(xpd = TRUE)
         par(mar = c(2, 2, 2, 25), xpd = TRUE)
-        
+
         ## If there is an ungated population, plot it differently
         which.ungated <- which(labels.aligned %in% c('ungated', '*ungated*', 'nic'))
-        
+
         if (length(which.ungated) == 1) {
             label.ungated                  <- labels.aligned[which.ungated]
             idcs.ungated                   <- which(tv$labels == label.ungated)
             colours.aligned[which.ungated] <- gating_colour_vector[idcs.ungated] <- 'black'
-            plot(layout[idcs.ungated, ], col = alpha('black', 0.4), axes = FALSE, xlab = '', ylab = '', pch = 1, cex = .5, xlim = c(0, 1), ylim = c(0, 1))
+            plot(layout[idcs.ungated, ], col = alpha('black', 0.4), axes = FALSE, xlab = '', ylab = '', pch = ".", cex = .5, xlim = c(0, 1), ylim = c(0, 1))
             points(layout[-idcs.ungated, 1], layout[-idcs.ungated, 2], col = alpha(gating_colour_vector[-idcs.ungated], 0.4), pch = 20, cex = .18)
         } else {
             plot(layout, col = alpha(gating_colour_vector, 0.35), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = .18, xlim = c(0, 1), ylim = c(0, 1))
         }
-        
+
         points(layout[unique(term), ], col = alpha("purple", 0.75), cex = 3, pch = 20)
         points(layout[tv$origin, 1], layout[tv$origin, 2], col = alpha("yellow", 0.75), cex = 3, pch = 15)
-        
+
         legend(x = 1.08, y = 1, legend = labels.aligned, fill = colours.aligned, cex = 1.5, bty = 'n')
     })
-    
+
     ## Button: clear marked persistence diagram points
     observeEvent(input$term_btn_clear, {
         R$term.marked           <- data.frame()
@@ -206,16 +206,16 @@ shiny_server <- function(  input,
             R$repre        <- updated$repre
             R$pers         <- updated$pers
             R$pd           <- updated$pd
-            
+
             R$dendro_ready <- TRUE
-            
+
             ## Bump
             # tmp <- R$pers.marked
             # R$pers.marked <- NULL
             # R$pers.marked <- tmp
             # R$marked.A <- NULL
             # R$marked.B <- NULL
-            
+
             R$pers.marked <- NULL
             R$marked.A <- NULL
             R$marked.B <- NULL
@@ -390,11 +390,11 @@ shiny_server <- function(  input,
                                         ID = R$save_count,
                                         event_sel = event_sel)
     })
-    
+
     observeEvent(R$save_count, {
         output$save_count_info <- renderPrint(cat(paste0(R$save_count, " ", if (R$save_count == 1) { "batch" } else { "batches" }, " pinned")))
     })
-    
+
     ## Button: open dialog for saving output .fcs file
     observeEvent(input$dendro_btn_save, {
         if (is.null(R$output_ff)) {
@@ -436,7 +436,7 @@ shiny_server <- function(  input,
         R$save_count <- 0
         R$to_append <- NULL
     })
-    
+
     observeEvent(input$btn_help, {
         showModal(modalDialog(
             title = "Welcome to tviblindi UI",
@@ -450,7 +450,7 @@ shiny_server <- function(  input,
              Sixth, export an enhanced FCS file. In the simplest case, you can press the SAVE button in the middle pane straightaway to append two artificial channels to your FCS, containing the 2-D layout displayed in the left and right pane. If you want to append marked trajectories in either of the categories, along with pseudotime values, press the PIN button next to the header for either category. Then, press the SAVE button. To un-pin any all batches of vertices pinned so far, press the GARBARGE button next to it."
         ))
     })
-    
+
     ## Dialog: save output .fcs file
     save_modal <- function(failed = FALSE) {
         modalDialog(
@@ -513,11 +513,11 @@ shiny_server <- function(  input,
             updateSelectInput(session, "marker_selector.B", selected = input$marker_selector.A)
         }
     })
-    observeEvent(input$marker_selector.B, { 
+    observeEvent(input$marker_selector.B, {
         R$markers.selected.B <- input$marker_selector.B
         if (is.null(R$markers.selected.A)) {
             updateSelectInput(session, "marker_selector.A", selected = input$marker_selector.B)
-        }    
+        }
     })
 
     ## Segmentation inputs
@@ -556,10 +556,10 @@ shiny_server <- function(  input,
             pts             <- brushedPoints(R$expression.stats.A,
                                              input$expression_brush.A,
                                              xvar = "segment", yvar = "expression")
-            
+
             if (nrow(pts) < length(R$marked.A)) {
                 junk            <- R$marked_idcs.A[unique(pts$walk)]
-                
+
                 R$junk.A        <- na.omit(unique(c(R$junk.A, junk)))
                 nonjunk         <- !R$marked_idcs.A %in% junk
                 R$marked.A      <- na.omit(R$marked.A[nonjunk])
@@ -574,10 +574,10 @@ shiny_server <- function(  input,
             pts             <- brushedPoints(R$expression.stats.B,
                                              input$expression_brush.B,
                                              xvar = "segment", yvar = "expression")
-            
+
             if (nrow(pts) < length(R$marked.B)) {
                 junk            <- R$marked_idcs.B[unique(pts$walk)]
-                
+
                 R$junk.B        <- na.omit(unique(c(R$junk.B, junk)))
                 nonjunk         <- !R$marked_idcs.B %in% junk
                 R$marked.B      <- na.omit(R$marked.B[nonjunk])
@@ -591,7 +591,7 @@ shiny_server <- function(  input,
 
     observeEvent(R$marked.A, {
         R$junk.A <- R$junk.A[!R$junk.A %in% R$marked_idcs.A]
-        
+
         len <- length(R$junk.A)
         z <- if (len > 0) { paste0(" (", len, " zapped)") } else { "" }
         output$marked_A_counts_info <- renderPrint({ cat("N = ", length(R$marked.A), z, sep = "")})
@@ -607,7 +607,7 @@ shiny_server <- function(  input,
 
     observeEvent(R$marked.B, {
         R$junk.B <- R$junk.B[!R$junk.B %in% R$marked_idcs.B]
-        
+
         len <- length(R$junk.B)
         z <- if (len > 0) { paste0(" (", len, " zapped)") } else { "" }
         output$marked_B_counts_info <- renderPrint({ cat("N = ", length(R$marked.B), z, sep = "")})
@@ -632,21 +632,21 @@ shiny_server <- function(  input,
 }
 
 fcs.add_col <- function(ff, new_col, colname = "label") {
-    
+
     efcs <- ff@exprs
-    
+
     N <- nrow(efcs)
     len <- length(new_col)
-    
+
     if (N != len)  stop(paste0("Number of rows of expression matrix is ", N, ", whereas length of new column is ", len, "."))
-    
+
     params <- ff@parameters
     pd     <- pData(params)
     cols   <- as.vector(pd$name)
     idcs   <- match(cols, pd$name)
-    
+
     if (any(is.na(idcs))) stop("Invalid column specifier")
-    
+
     channel_number     <- ncol(ff) + 1
     channel_id         <- paste0("$P", channel_number)
     channel_name       <- colname
@@ -661,9 +661,9 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
     channel_names      <- colnames(efcs)
     efcs.mod           <- cbind(efcs, new_col)
     colnames(efcs.mod) <- c(channel_names, colname)
-    
+
     ff.mod             <- flowFrame(efcs.mod, params, description = description(ff))
-    
+
     keyval                                      <- list()
     keyval[[paste0("$P", channel_number, "B")]] <- "32"
     keyval[[paste0("$P", channel_number, "R")]] <- toString(channel_range)
@@ -671,13 +671,13 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
     keyval[[paste0("$P", channel_number, "N")]] <- channel_name
     keyval[[paste0("$P", channel_number, "S")]] <- channel_name
     keyword(ff.mod)                             <- keyval
-    
+
     flowCoreP_Rmax <- paste0("flowCore_$P", channel_number, "Rmax")
     flowCoreP_Rmin <- paste0("flowCore_$P", channel_number, "Rmin")
-    
+
     description(ff.mod)[flowCoreP_Rmax] <- max(20000, description(ff.mod)$`flowCore_$P1Rmax`)
     description(ff.mod)[flowCoreP_Rmin] <- 0
-    
+
     return(ff.mod)
 }
 
@@ -928,7 +928,7 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
     }
     i <- c(walk_idcs.A, walk_idcs.B)
     a.idcs <- if (is.null(i)) { (1:length(walks)) } else { (1:length(walks))[-i] }
-    
+
     rest   <- if (length(a.idcs) > 0) { walks[a.idcs] } else { NULL }
 
     for (i in rest) {
@@ -1062,9 +1062,9 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
     }
 
     categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
-    
+
     coords <- tv$data[, markers]
-    
+
     stats  <- lapply(1:N, function(i) {
         inds <- categs == i # pick points on paths by pseudotime increment
 
@@ -1134,7 +1134,7 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
     categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
 
     coords <- tv$data[, markers]
-    
+
     stats  <- lapply(markers, function(m) {
         lapply(1:N, function(i) {
 
@@ -1240,9 +1240,9 @@ addPathInfo2Fcs <- function(fcs, pseudotime, walks, walks.selection, event_sel =
     out           <- matrix(-1, nrow = nrow(fcs@exprs), ncol = 2)
     colnames(out) <- c(paste(ID, "which_event", sep = "_"), paste(ID, "local_pseudotime", sep = "_"))
     if (is.null(event_sel)) event_sel <- 1:nrow(fcs@exprs)
-    
+
     out[event_sel[pp], 1] <- 1000
     out[event_sel[pp], 2] <- as.numeric(as.factor(pseudotime$res[pp]))
-    
+
     make_valid_fcs(cbind(fcs@exprs, out), desc1 = as.character(fcs@parameters@data$desc))
 }
