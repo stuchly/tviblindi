@@ -13,6 +13,8 @@ shiny_server <- function(  input,
     tv_name <- readRDS(file.path(shiny_inputs_dir, 'tv.RDS'))
     tv <- get(tv_name, parent.env(environment()))
 
+    if (!is.factor(tv$labels)) tv$labels <- as.factor(tv$labels)
+    
     layout           <- tv$layout
 
     event_sel        <- readRDS(file.path(shiny_inputs_dir, 'event_sel.RDS'))
