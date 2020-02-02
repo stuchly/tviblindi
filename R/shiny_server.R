@@ -1,7 +1,7 @@
 shiny_server <- function(  input,
                            output,
                            session  ) {
-
+    
     shiny_inputs_dir <- "tviblindi_tmp"
 
     cancel.onSessionEnded <- session$onSessionEnded(function() {
@@ -16,7 +16,7 @@ shiny_server <- function(  input,
     layout           <- tv$layout
 
     event_sel        <- readRDS(file.path(shiny_inputs_dir, 'event_sel.RDS'))
-
+    
     R                        <- reactiveValues()
     R$pseudotime             <- tv$pseudotime
     R$pers                   <- NULL
@@ -32,6 +32,11 @@ shiny_server <- function(  input,
     R$markers.n_segments.B   <- NULL
     R$markers.scale_exp.B    <- NULL
     input_ff                 <- flowCore::read.FCS(readRDS(file.path(shiny_inputs_dir, 'input_fcs_path.RDS')))
+    
+    if ((is.null(event_sel) && nrow(input_ff) != nrow(tv$data)) || (!is.null(event_sel) && length(event_sel) != nrow(tv$data))) {
+        stop('Number of events in expression matrix incongruent with dimensionality of input FCS file. Did you misuse the event_sel parameter?')
+    }
+    
     R$dendro                 <- NA
     R$dendro_ready           <- FALSE
     R$dendro_data            <- NULL
@@ -152,6 +157,10 @@ shiny_server <- function(  input,
         par(mar = c(1, 1, 1, 1))
 
         large_plot.colours <- gating_colour_vector
+        
+        labels.aligned  <- levels(tv$labels)
+        colours.aligned <- gating_palette[1:length(labels.aligned)]
+        
         colours.aligned    <- unique(large_plot.colours)
         labels.aligned     <- unique(tv$labels)
 
@@ -159,7 +168,7 @@ shiny_server <- function(  input,
         avg_pseudotime <- c()
         for (l in labels.aligned) {
             idcs           <- which(tv$labels == l)
-            idcs.sample    <- sample(idcs, min(100, length(idcs)))
+            idcs.sample    <- sample(idcs, min(1000, length(idcs)))
             avg_pseudotime <- c(avg_pseudotime, mean(tv$pseudotime$res[idcs.sample]))
         }
         o <- order(avg_pseudotime)
@@ -367,6 +376,9 @@ shiny_server <- function(  input,
             if (is.null(event_sel)) {
                 layoutX <- layout.df$X * 100
                 layoutY <- layout.df$Y * 100
+                message(length(layoutX))
+                message(length(layoutY))
+                message(dim(layout.df))
             } else {
                 layoutX <- layoutY <- rep(-1000, nrow(input_ff))
                 layoutX[event_sel] <- layout.df$X * 100
@@ -383,6 +395,7 @@ shiny_server <- function(  input,
         w <- list()
         w$v      <- unlist(R$random_walks)
         w$starts <- c(1, cumsum(sapply(R$random_walks, length)) + 1)
+        
         R$output_ff <- addPathInfo2Fcs(R$output_ff,
                                         R$pseudotime,
                                         w,
@@ -441,7 +454,7 @@ shiny_server <- function(  input,
         showModal(modalDialog(
             title = "Welcome to tviblindi UI",
             "This interface is a tool to allow for discrimination within a set of canonical developmental trajectories in input data, as well as between canonical and aberrant trajectories. Some trajectories will be biologically relevant, whereas others might not reflect the underlying biology.
-             First, select terminal nodes of simulated random walks in the left pane (tab Terminal nodes). This is done by clicking and drawing a rectangular selection. To mark selected points, press the PLUS button underneath. To remove marked points (and start over again), press the FIRE button underneath. Once you're satisfied with you selection (the marked terminal nodes will be clustered together), press the THUMBS-UP button to compute the relevant triangulation and create trajectory representations.
+             First, select terminal nodes of simulated random walks in the left pane (tab Terminal nodes). This is done by clicking and drawing a rectangular selection. To mark selected points, press the PLUS button underneath. To remove marked points (and start over again), press the FIRE button underneath. Once you're satisfied with you selection (the marked terminal nodes will be clustered together), press the THUMBS-UP button to compute the relevant triangulation and create trajectory representations. Additionally, press the ENLARGE button in the right part of the left panel to view the dimension reduction layout annotated with cell population labels.
              Second, select the tab Persistence in the left pane. Here, select relevant homology classes to be used for hierarchical classification of trajectories. Persistence increases upward. Again, you can make multiple piecewise selections by consecutively drawing rectangles and pressing PLUS to mark the selected points, or you can discard the marked points by pressing FIRE.
              Third, select and mark trajectories of interest using the dendrogram which appears in the middle pane. Each bifurcation in the dendrogram corresponds to difference in path classification with regard to a single homology class. The horizontal coordinate of each bifurcation corresponds to filtration value associated with addition of a simplex associated with the death of that homology class during filtration. During the marking of trajectories using the PLUS button, be sure to select the desired category (A or B) for distinguishing between two collections of marked trajectories, as desired.
              Fourth, inspect the projection of marked trajectories in the 2-D layout in the right pane. Category A trajectories are drawn in blue, whereas category B trajectories are drawn in blue. By default, red trajectories are drawn on the top. To flip this ordering, press the FLIP button (with the black-white circular icon) beneath the 2-D layout.
