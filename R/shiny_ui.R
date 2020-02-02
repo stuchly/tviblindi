@@ -1,15 +1,15 @@
 shiny_ui <- fluidPage(
   tags$style(HTML("#app_title{font-family: monospace; font-weight: bold}")),
   tags$style(type = "text/css", ".irs-slider {width: 15px; height: 30px; top: 22px;};"),
-  tags$head(tags$style(HTML('#large_plot_modal .modal-lg {width:1800px;}'))),
-  tags$head(tags$style("#large_plot_modal .modal-body{ height:850px}")),
+  tags$head(tags$style(HTML('#large_plot_modal .modal-lg {width:1850px;}'))),
+  tags$head(tags$style("#large_plot_modal .modal-body{ height:1000px}")),
   
   shinyBS::bsModal(
     id = "large_plot_modal",
     size = "large",
     title = "2-dimensional layout with annotated populations",
     trigger = "term_btn_enlarge",
-    plotOutput("large_plot", width = "1750px", height = "800px")
+    plotOutput("large_plot", width = "1800px", height = "950px")
   ),
   
   fluidRow(
