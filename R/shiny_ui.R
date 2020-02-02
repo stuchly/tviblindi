@@ -1,15 +1,15 @@
 shiny_ui <- fluidPage(
   tags$style(HTML("#app_title{font-family: monospace; font-weight: bold}")),
   tags$style(type = "text/css", ".irs-slider {width: 15px; height: 30px; top: 22px;};"),
-  tags$head(tags$style(HTML('#large_plot_modal .modal-lg {width:1100px;}'))),
+  tags$head(tags$style(HTML('#large_plot_modal .modal-lg {width:1400px;}'))),
   tags$head(tags$style("#large_plot_modal .modal-body{ height:850px}")),
   
   shinyBS::bsModal(
     id = "large_plot_modal",
     size = "large",
-    title = "Enlarged",
+    title = "2-dimensional layout with annotated populations",
     trigger = "term_btn_enlarge",
-    plotOutput("large_plot", width = "1024px", height = "800px")
+    plotOutput("large_plot", width = "1350px", height = "800px")
   ),
   
   fluidRow(
@@ -63,7 +63,6 @@ shiny_ui <- fluidPage(
                   column(
                     width = 4,
                     style = "text-align:right; padding-bottom:10px;",
-                    actionButton("term_btn_colouring", "", icon = icon("glyphicon glyphicon-eye-open", lib = "glyphicon")),
                     actionButton("term_btn_enlarge", "", icon = icon("glyphicon glyphicon-fullscreen", lib = "glyphicon"))
                   ),
                   ## Selected terminal nodes log

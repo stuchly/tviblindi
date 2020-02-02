@@ -73,7 +73,7 @@ shiny_server <- function(  input,
     colnames(layout.df) <- c("X", "Y")
 
     gating_palette <- RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$category == 'qual', ]
-    gating_palette <- unlist(mapply(RColorBrewer::brewer.pal, gating_palette$maxcolors, rownames(gating_palette)))
+    gating_palette <- unlist(mapply(RColorBrewer::brewer.pal, gating_palette$maxcolors, rownames(gating_palette)))[-1]
     gating_palette <- gating_palette[1:length(unique(tv$labels))]
     gating_colour_vector <- gating_palette[as.numeric(as.factor(tv$labels))]
     
@@ -131,9 +131,9 @@ shiny_server <- function(  input,
     })
 
     ## Button: switch between pseudotime and gating colouring
-    observeEvent(input$term_btn_colouring, {
-        R$term.show_gating <- !R$term.show_gating
-    })
+    # observeEvent(input$term_btn_colouring, {
+    #     R$term.show_gating <- !R$term.show_gating
+    # })
     
     # observeEvent(input$term_btn_enlarge, {
     #     showModal(large_plot_modal())
@@ -146,8 +146,48 @@ shiny_server <- function(  input,
     })
 
     output$large_plot <- renderPlot({
+        
+        ## Messy code, but works for now
+        
         par(mar = c(1, 1, 1, 1))
-        plot(layout, col = alpha(gating_colour_vector, 0.05), axes = FALSE, xlab = "", ylab = "", pch = 20, cex = .3, xlim = c(0, 1), ylim = c(0, 1))
+        
+        large_plot.colours <- gating_colour_vector
+        colours.aligned    <- unique(large_plot.colours) 
+        labels.aligned     <- unique(tv$labels)
+        
+        ## Get approximate label ordering
+        avg_pseudotime <- c()
+        for (l in labels.aligned) {
+            idcs           <- which(tv$labels == l)
+            idcs.sample    <- sample(idcs, min(100, length(idcs)))
+            avg_pseudotime <- c(avg_pseudotime, mean(tv$pseudotime$res[idcs.sample]))
+        }
+        o <- order(avg_pseudotime)
+        labels.aligned  <- labels.aligned[o]
+        colours.aligned <- colours.aligned[o]
+        
+        pch <- rep(20, length(tv$labels))
+        
+        par(xpd = TRUE)
+        par(mar = c(2, 2, 2, 25), xpd = TRUE)
+        
+        ## If there is an ungated population, plot it differently
+        which.ungated <- which(labels.aligned %in% c('ungated', '*ungated*', 'nic'))
+        
+        if (length(which.ungated) == 1) {
+            label.ungated                  <- labels.aligned[which.ungated]
+            idcs.ungated                   <- which(tv$labels == label.ungated)
+            colours.aligned[which.ungated] <- gating_colour_vector[idcs.ungated] <- 'black'
+            plot(layout[idcs.ungated, ], col = alpha('black', 0.4), axes = FALSE, xlab = '', ylab = '', pch = 1, cex = .5, xlim = c(0, 1), ylim = c(0, 1))
+            points(layout[-idcs.ungated, 1], layout[-idcs.ungated, 2], col = alpha(gating_colour_vector[-idcs.ungated], 0.4), pch = 20, cex = .18)
+        } else {
+            plot(layout, col = alpha(gating_colour_vector, 0.35), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = .18, xlim = c(0, 1), ylim = c(0, 1))
+        }
+        
+        points(layout[unique(term), ], col = alpha("purple", 0.75), cex = 3, pch = 20)
+        points(layout[tv$origin, 1], layout[tv$origin, 2], col = alpha("yellow", 0.75), cex = 3, pch = 15)
+        
+        legend(x = 1.08, y = 1, legend = labels.aligned, fill = colours.aligned, cex = 1.5, bty = 'n')
     })
     
     ## Button: clear marked persistence diagram points
