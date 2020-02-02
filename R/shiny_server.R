@@ -169,7 +169,7 @@ shiny_server <- function(  input,
         pch <- rep(20, length(tv$labels))
 
         par(xpd = TRUE)
-        par(mar = c(2, 2, 2, 25), xpd = TRUE)
+        par(mar = c(2, 2, 2, 50), xpd = TRUE)
 
         ## If there is an ungated population, plot it differently
         which.ungated <- which(labels.aligned %in% c('ungated', '*ungated*', 'nic'))
