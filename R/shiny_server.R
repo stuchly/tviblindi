@@ -161,9 +161,6 @@ shiny_server <- function(  input,
         labels.aligned  <- levels(tv$labels)
         colours.aligned <- gating_palette[1:length(labels.aligned)]
         
-        colours.aligned    <- unique(large_plot.colours)
-        labels.aligned     <- unique(tv$labels)
-
         ## Get approximate label ordering
         avg_pseudotime <- c()
         for (l in labels.aligned) {
