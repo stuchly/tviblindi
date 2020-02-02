@@ -413,7 +413,7 @@ shiny_server <- function(  input,
                 layoutY, colname = "dimension_reduction_2"
             )
         }
-        if (!is.null(R$pseudotime) && !is.null(R$random_walks)) showModal(save_modal())
+        showModal(save_modal())
     })
 
     observeEvent(input$dendro_btn_erase_pinned, {
