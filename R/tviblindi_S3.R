@@ -171,9 +171,9 @@ DimRed.tviblindi<-function(x,layout=NULL,dim=2,vsplit=0.1,
 }
 
 ## Already generic
-plot.tviblindi(x,pch=".",col=c("labels","pseudotime")){
+plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime")){
     if (is.null(x$layout)) stop("Layout not computed!")
-    if (col="pseudotime"){
+    if (col=="pseudotime"){
         if(is.null(x$pseudotime)) stop("Pseudotime not computed!")
         psc  <- as.numeric(as.factor(x$pseudotime$res))
         psc  <- psc / max(psc)
