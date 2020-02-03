@@ -1175,7 +1175,7 @@ fcs.add_col <- function(ff, new_col, colname = "label") {
         ggtitle(paste0("Multiple markers expression")) +
         labs(subtitle = "Segmented by pseudotime values. ") +
         theme_light() +
-        theme(axis.text.x = element_blank(), axis.ticks = element_blank(), plot.title = element_text(size = 20), legend.title = element_text(size = 24), legend.text = element_text(size = 24))
+        theme(axis.text.x = element_blank(), axis.ticks = element_blank(), plot.title = element_text(size = 20), legend.title = element_text(size = 16), legend.text = element_text(size = 12))
 
     list(plot  = g,
          stats = stats)
