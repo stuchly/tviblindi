@@ -162,7 +162,7 @@ DimRed.tviblindi<-function(x,layout=NULL,dim=2,vsplit=0.1,
     } 
     
     vv=reticulate::import("vaevictis")   
-    layout=vv$dimred(x$data,dim,vsplit,enc_shape,
+    layout=vv$dimred(x$data,as.integer(dim),vsplit,enc_shape,
                      dec_shape,perplexity,as.integer(batch_size),as.integer(epochs),
                      as.integer(patience),alpha)
     x$vae_predict=layout[[2]]
@@ -170,6 +170,20 @@ DimRed.tviblindi<-function(x,layout=NULL,dim=2,vsplit=0.1,
     return(invisible(x))
 }
 
+## Already generic
+plot.tviblindi(x,pch=".",col=c("labels","pseudotime"){
+    if (is.null(x$layout)) stop("Layout not computed!")
+    if (col="pseudotime"){
+        if(is.null(x$pseudotime)) stop("Pseudotime not computed!")
+        psc  <- as.numeric(as.factor(x$pseudotime$res))
+        psc  <- psc / max(psc)
+        psc  <- psc * 10000 + 1
+        col  <- greenred(10500)
+        plot(x$layout,col=col[psc],pch=pch)
+    } else {
+        plot(x$layout,col=x$labels,pch=pch)
+    }
+}
 mock_pass<-function(x){
     nx<-deparse(substitute(x))
     saveRDS(nx,"nx")
