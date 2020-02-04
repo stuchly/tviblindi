@@ -189,7 +189,7 @@ DimRed.tviblindi <-
             x$vae_predict = layout[[2]]
             x$layout <- layout[[1]]
         } else if (method[1] == "diffuse") {
-            if (is.nul(x$KNN)) stop("Compute KNN graph first.")
+            if (is.null(x$KNN)) stop("Compute KNN graph first.")
             x$layout<-sparse.diffuse(
                 sparse.Laplacian.construct(knn.raw2adj(x$KNN)),
                 neigen = neigen,
