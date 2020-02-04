@@ -153,22 +153,53 @@ DimRed<-function(x,...){
     UseMethod("DimRed",x)
 }
 
-DimRed.tviblindi<-function(x,layout=NULL,dim=2,vsplit=0.1,
-                           enc_shape=c(128,128,128),dec_shape=c(128,128,128),perplexity=10.,
-                           batch_size=512L,epochs=100L,patience=0L,alpha=10.){
-    if (!is.null(layout)){
-        x$layout<-layout
+DimRed.tviblindi <-
+    function(x,
+             method = c("vaevictis", "diffuse"),
+             layout = NULL,
+             dim = 2,
+             vsplit = 0.1,
+             enc_shape = c(128, 128, 128),
+             dec_shape = c(128, 128, 128),
+             perplexity = 10.,
+             batch_size = 512L,
+             epochs = 100L,
+             patience = 0L,
+             alpha = 10.,
+             neigen = 2,
+             t = 0) {
+        if (!is.null(layout)) {
+            x$layout <- layout
+            return(invisible(x))
+        }
+        if (method[1] == "vaevictis") {
+            vv = reticulate::import("vaevictis")
+            layout = vv$dimred(
+                x$data,
+                as.integer(dim),
+                vsplit,
+                enc_shape,
+                dec_shape,
+                perplexity,
+                as.integer(batch_size),
+                as.integer(epochs),
+                as.integer(patience),
+                alpha
+            )
+            x$vae_predict = layout[[2]]
+            x$layout <- layout[[1]]
+        } else if (method[1] == "diffuse") {
+            x$layout<-sparse.diffuse(
+                sparse.Laplacian.construct(knn.raw2adj(x$KNN)),
+                neigen = neigen,
+                t = t
+            )$X
+            
+        } else {
+            message("Unimplemented method. Nothing done.")
+        }
         return(invisible(x))
-    } 
-    
-    vv=reticulate::import("vaevictis")   
-    layout=vv$dimred(x$data,as.integer(dim),vsplit,enc_shape,
-                     dec_shape,perplexity,as.integer(batch_size),as.integer(epochs),
-                     as.integer(patience),alpha)
-    x$vae_predict=layout[[2]]
-    x$layout<-layout[[1]]
-    return(invisible(x))
-}
+    }
 
 ## Already generic
 plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime")){
