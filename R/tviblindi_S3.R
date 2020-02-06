@@ -247,7 +247,21 @@ mock_pass<-function(x){
     return(z)
 }
 
+Copy<-<-function(x,...){
+    UseMethod("Copy",x)
+}
 
+    
+##Adapted for Rfast package
+Copy.tviblindi<-function(x){
+    y<-new.env()
+    all.vars<-ls(x)
+    for(var in all.vars){
+        val<-x[[var]]
+        y[[var]] <- if(is.environment(val)) env.copy(val,all.names) else x[[var]]
+    }
+    y
+}
 
 
 
