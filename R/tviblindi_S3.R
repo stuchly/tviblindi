@@ -201,11 +201,30 @@ DimRed.tviblindi <-
         }
         return(invisible(x))
     }
+DownSample<-function(x,N=10000,K=10,e=1.){
+    if (is.null(x$KNN)) stop("Compute KNN first.")
+    N=min(nrow(x$data),N)
+    ss<-sample(x=1:nrow(x$data),prob=tv1$KNN$DIST[,K]^e,size=N,replace=FALSE)
+    x$pseudotime<-NULL
+    x$filtration<-NULL
+    x$boundary<-NULL
+    x$reduced_boundary<-NULL
+    x$walks<-NULL
+    x$KNN<-NULL
+    x$sim<-NULL
+    x$dsim<-NULL
+    x$clusters<-NULL
+    x$codes<-NULL
+    x$layout<-NULL
+    x$labels<-x$labels[ss]
+    x$data<-x$data[ss,]
+    return(invisible(x))
+}
 
 ## Already generic
-plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime")){
+plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime"),legend="bottomleft",l_cex=0.5){
     if (is.null(x$layout)) stop("Layout not computed!")
-    if (col=="pseudotime"){
+    if (col[1]=="pseudotime"){
         if(is.null(x$pseudotime)) stop("Pseudotime not computed!")
         psc  <- as.numeric(as.factor(x$pseudotime$res))
         psc  <- psc / max(psc)
@@ -213,7 +232,11 @@ plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime")){
         col  <- greenred(10500)
         plot(x$layout,col=col[psc],pch=pch)
     } else {
+        KK<-length(levels(tv1$labels))
+        palette(rainbow(KK))
         plot(x$layout,col=x$labels,pch=pch)
+        legend(legend,legend=levels(tv1$labels),col=1:KK,pch=19,cex=l_cex)
+        palette("default")
     }
 }
 mock_pass<-function(x){
