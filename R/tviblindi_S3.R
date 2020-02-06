@@ -247,7 +247,7 @@ mock_pass<-function(x){
     return(z)
 }
 
-Copy<-<-function(x,...){
+Copy<-function(x,...){
     UseMethod("Copy",x)
 }
 
