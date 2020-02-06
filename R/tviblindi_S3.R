@@ -201,10 +201,19 @@ DimRed.tviblindi <-
         }
         return(invisible(x))
     }
-DownSample<-function(x,N=10000,K=10,e=1.){
+
+DownSample<-function(x,...){
+    UseMethod("DownSample",x)
+}
+DownSample.tviblindi<-function(x,N=10000,K=10,e=1.){
     if (is.null(x$KNN)) stop("Compute KNN first.")
     N=min(nrow(x$data),N)
-    ss<-sample(x=1:nrow(x$data),prob=tv1$KNN$DIST[,K]^e,size=N,replace=FALSE)
+    if (is.numeric(e)) 
+        ss<-sample(x=1:nrow(x$data),prob=tv1$KNN$DIST[,K]^e,size=N,replace=FALSE)
+    else
+        if (e=="exp") ss<-sample(x=1:nrow(x$data),prob=exp(tv1$KNN$DIST[,K]),size=N,replace=FALSE)
+    else
+        if (e=="exp2") ss<-sample(x=1:nrow(x$data),prob=exp(tv1$KNN$DIST[,K]^2),size=N,replace=FALSE)
     x$pseudotime<-NULL
     x$filtration<-NULL
     x$boundary<-NULL
@@ -260,7 +269,7 @@ Copy.tviblindi<-function(x){
         val<-x[[var]]
         y[[var]] <- if(is.environment(val)) env.copy(val,all.names) else x[[var]]
     }
-    y
+    structure(y,class="tviblindi")
 }
 
 
