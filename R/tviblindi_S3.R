@@ -216,7 +216,7 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.){
         k<-ncol(x$data)
         Vd<-pi^(k/2)/gamma(k/2+1)
         dens<-K/(nrow(x$data)*Vd)
-        dens<-dens/x$KNN$DIST[,K]
+        dens<-dens/x$KNN$DIST[,K]^k
         dens<-dens^e
         density_s <- sort(dens)
 		cdf<- rev(cumsum(1.0/rev(density_s)))
