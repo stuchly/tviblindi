@@ -137,7 +137,7 @@ Walks<-function(x,...){
 }
 
 Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30){
-    
+
     d<-KofRawN(x$KNN,K)
     d  <- knn.raw2adj(d)
     x$dsym <- knn.spadj2sym(knn.adj2spadj(d))
@@ -195,7 +195,7 @@ DimRed.tviblindi <-
                 neigen = neigen,
                 t = t
             )$X
-            
+
         } else {
             message("Unimplemented method. Nothing done.")
         }
@@ -205,15 +205,32 @@ DimRed.tviblindi <-
 DownSample<-function(x,...){
     UseMethod("DownSample",x)
 }
-DownSample.tviblindi<-function(x,N=10000,K=10,e=1.){
+DownSample.tviblindi<-function(x,N=10000,K=10,e="default"){
     if (is.null(x$KNN)) stop("Compute KNN first.")
     N=min(nrow(x$data),N)
-    if (is.numeric(e)) 
-        ss<-sample(x=1:nrow(x$data),prob=tv1$KNN$DIST[,K]^e,size=N,replace=FALSE)
+    if (is.numeric(e))
+        ss<-sample(x=1:nrow(x$data),prob=x$KNN$DIST[,K]^e,size=N,replace=FALSE)
     else
-        if (e=="exp") ss<-sample(x=1:nrow(x$data),prob=exp(tv1$KNN$DIST[,K]),size=N,replace=FALSE)
+        if (e=="exp") ss<-sample(x=1:nrow(x$data),prob=exp(x$KNN$DIST[,K]),size=N,replace=FALSE)
     else
-        if (e=="exp2") ss<-sample(x=1:nrow(x$data),prob=exp(tv1$KNN$DIST[,K]^2),size=N,replace=FALSE)
+        if (e=="exp2") ss<-sample(x=1:nrow(x$data),prob=exp(x$KNN$DIST[,K]^2),size=N,replace=FALSE)
+    else {
+        k<-ncol(x$data)
+        Vd<-pi^(k/2)/gamma(k/2+1)
+        dens<-K/(nrow(x$data)*Vd)
+        dens<-dens/x$KNN$DIST[,K]
+        density_s <- sort(dens)
+		cdf<- rev(cumsum(1.0/rev(density_s)))
+        boundary <- N/cdf[1]
+
+		if (boundary > density_s[1]) {  # Boundary actually falls amongst densities present
+			targets <- (N-1:length(density_s)) / cdf
+			boundary <- targets[which.min(targets-density_s > 0)]
+		}
+		ss<-which(boundary/density > runif(length(density)))
+
+    }
+
     x$pseudotime<-NULL
     x$filtration<-NULL
     x$boundary<-NULL
@@ -241,10 +258,10 @@ plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime"),legend="bottomle
         col  <- greenred(10500)
         plot(x$layout,col=col[psc],pch=pch)
     } else {
-        KK<-length(levels(tv1$labels))
+        KK<-length(levels(x$labels))
         palette(rainbow(KK))
         plot(x$layout,col=x$labels,pch=pch)
-        legend(legend,legend=levels(tv1$labels),col=1:KK,pch=19,cex=l_cex)
+        legend(legend,legend=levels(x$labels),col=1:KK,pch=19,cex=l_cex)
         palette("default")
     }
 }
@@ -260,7 +277,7 @@ Copy<-function(x,...){
     UseMethod("Copy",x)
 }
 
-    
+
 ##Adapted for Rfast package
 Copy.tviblindi<-function(x){
     y<-new.env()
