@@ -205,20 +205,19 @@ DimRed.tviblindi <-
 DownSample<-function(x,...){
     UseMethod("DownSample",x)
 }
-DownSample.tviblindi<-function(x,N=10000,K=10,e="default"){
+DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.){
     if (is.null(x$KNN)) stop("Compute KNN first.")
     N=min(nrow(x$data),N)
-    if (is.numeric(e))
+    if (method=="naive")
         ss<-sample(x=1:nrow(x$data),prob=x$KNN$DIST[,K]^e,size=N,replace=FALSE)
     else
-        if (e=="exp") ss<-sample(x=1:nrow(x$data),prob=exp(x$KNN$DIST[,K]),size=N,replace=FALSE)
-    else
-        if (e=="exp2") ss<-sample(x=1:nrow(x$data),prob=exp(x$KNN$DIST[,K]^2),size=N,replace=FALSE)
+        if (method=="exp") ss<-sample(x=1:nrow(x$data),prob=exp(x$KNN$DIST[,K]^e),size=N,replace=FALSE)
     else {
         k<-ncol(x$data)
         Vd<-pi^(k/2)/gamma(k/2+1)
         dens<-K/(nrow(x$data)*Vd)
         dens<-dens/x$KNN$DIST[,K]
+        dens<-dens^e
         density_s <- sort(dens)
 		cdf<- rev(cumsum(1.0/rev(density_s)))
         boundary <- N/cdf[1]
@@ -227,8 +226,7 @@ DownSample.tviblindi<-function(x,N=10000,K=10,e="default"){
 			targets <- (N-1:length(density_s)) / cdf
 			boundary <- targets[which.min(targets-density_s > 0)]
 		}
-		ss<-which(boundary/density > runif(length(density)))
-
+		ss<-which(boundary/dens > runif(length(dens)))
     }
 
     x$pseudotime<-NULL
@@ -241,7 +239,7 @@ DownSample.tviblindi<-function(x,N=10000,K=10,e="default"){
     x$dsim<-NULL
     x$clusters<-NULL
     x$codes<-NULL
-    x$layout<-NULL
+    x$layout<-x$layout[ss,]
     x$labels<-x$labels[ss]
     x$data<-x$data[ss,]
     return(invisible(x))
