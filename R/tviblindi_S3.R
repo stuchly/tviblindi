@@ -205,7 +205,7 @@ DimRed.tviblindi <-
 DownSample<-function(x,...){
     UseMethod("DownSample",x)
 }
-DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.){
+DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
     if (is.null(x$KNN)) stop("Compute KNN first.")
     N=min(nrow(x$data),N)
     if (method=="naive")
@@ -214,9 +214,9 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.){
         if (method=="exp") ss<-sample(x=1:nrow(x$data),prob=exp(x$KNN$DIST[,K]^e),size=N,replace=FALSE)
     else {
         k<-ncol(x$data)
-        Vd<-pi^(k/2)/gamma(k/2+1)
+        Vd<-pi^(D/2)/gamma(D/2+1)
         dens<-K/(nrow(x$data)*Vd)
-        dens<-dens/x$KNN$DIST[,K]^k
+        dens<-dens/x$KNN$DIST[,K]^D
         dens<-dens^e
         density_s <- sort(dens)
 		cdf<- rev(cumsum(1.0/rev(density_s)))
