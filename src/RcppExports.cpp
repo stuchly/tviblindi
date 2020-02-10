@@ -281,14 +281,49 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// jaccard_coeff_parallel
+NumericMatrix jaccard_coeff_parallel(NumericMatrix idx);
+RcppExport SEXP _tviblindi_jaccard_coeff_parallel(SEXP idxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type idx(idxSEXP);
+    rcpp_result_gen = Rcpp::wrap(jaccard_coeff_parallel(idx));
+    return rcpp_result_gen;
+END_RCPP
+}
 // jaccard_coeff
-NumericMatrix jaccard_coeff(const NumericMatrix idx);
+NumericMatrix jaccard_coeff(NumericMatrix idx);
 RcppExport SEXP _tviblindi_jaccard_coeff(SEXP idxSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericMatrix >::type idx(idxSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type idx(idxSEXP);
     rcpp_result_gen = Rcpp::wrap(jaccard_coeff(idx));
+    return rcpp_result_gen;
+END_RCPP
+}
+// jaccard_coeff_true_parallel
+NumericMatrix jaccard_coeff_true_parallel(NumericMatrix idx);
+RcppExport SEXP _tviblindi_jaccard_coeff_true_parallel(SEXP idxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type idx(idxSEXP);
+    rcpp_result_gen = Rcpp::wrap(jaccard_coeff_true_parallel(idx));
+    return rcpp_result_gen;
+END_RCPP
+}
+// knn_annoy
+SEXP knn_annoy(Rcpp::NumericMatrix mat, const int K, const int trees);
+RcppExport SEXP _tviblindi_knn_annoy(SEXP matSEXP, SEXP KSEXP, SEXP treesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type mat(matSEXP);
+    Rcpp::traits::input_parameter< const int >::type K(KSEXP);
+    Rcpp::traits::input_parameter< const int >::type trees(treesSEXP);
+    rcpp_result_gen = Rcpp::wrap(knn_annoy(mat, K, trees));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -641,7 +676,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tviblindi_get_rep_straight_modified", (DL_FUNC) &_tviblindi_get_rep_straight_modified, 3},
     {"_tviblindi_get_reps_straight_modified", (DL_FUNC) &_tviblindi_get_reps_straight_modified, 3},
     {"_tviblindi_interpolate_trajectories", (DL_FUNC) &_tviblindi_interpolate_trajectories, 2},
+    {"_tviblindi_jaccard_coeff_parallel", (DL_FUNC) &_tviblindi_jaccard_coeff_parallel, 1},
     {"_tviblindi_jaccard_coeff", (DL_FUNC) &_tviblindi_jaccard_coeff, 1},
+    {"_tviblindi_jaccard_coeff_true_parallel", (DL_FUNC) &_tviblindi_jaccard_coeff_true_parallel, 1},
+    {"_tviblindi_knn_annoy", (DL_FUNC) &_tviblindi_knn_annoy, 3},
     {"_tviblindi_openmp_knn_C", (DL_FUNC) &_tviblindi_openmp_knn_C, 3},
     {"_tviblindi_hello", (DL_FUNC) &_tviblindi_hello, 0},
     {"_tviblindi_phatBoundary", (DL_FUNC) &_tviblindi_phatBoundary, 2},

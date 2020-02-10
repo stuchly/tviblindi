@@ -85,8 +85,20 @@ interpolate_trajectories <- function(pts, coef = 200) {
     .Call('_tviblindi_interpolate_trajectories', PACKAGE = 'tviblindi', pts, coef)
 }
 
+jaccard_coeff_parallel <- function(idx) {
+    .Call('_tviblindi_jaccard_coeff_parallel', PACKAGE = 'tviblindi', idx)
+}
+
 jaccard_coeff <- function(idx) {
     .Call('_tviblindi_jaccard_coeff', PACKAGE = 'tviblindi', idx)
+}
+
+jaccard_coeff_true_parallel <- function(idx) {
+    .Call('_tviblindi_jaccard_coeff_true_parallel', PACKAGE = 'tviblindi', idx)
+}
+
+knn_annoy <- function(mat, K = 100L, trees = 150L) {
+    .Call('_tviblindi_knn_annoy', PACKAGE = 'tviblindi', mat, K, trees)
 }
 
 openmp_knn_C <- function(coordinates, K, distance_function = 0L) {

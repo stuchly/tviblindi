@@ -47,9 +47,13 @@ KNN<-function(x,...){
     UseMethod("KNN",x)
 }
 
-KNN.tviblindi<-function(x,K=100){
+KNN.tviblindi<-function(x,K=100,method="BT",trees=150){
+  if (method=="annoy"){
+    x$KNN<-KNN.annoy(x$data,K,trees) 
+  } else {
     x$KNN<-knn.adj.raw.parallel(x$data, K)
-    return(invisible(x))
+  }
+  return(invisible(x))
 }
 
 Denoise<-function(x,...){
@@ -57,14 +61,14 @@ Denoise<-function(x,...){
 }
 
 Denoise.tviblindi<-function(x,K=30,iter=1){
-    stopifnot(!is.null(x$KNN))
-
-    if (K>dim(x$KNN$IND)[2]){
-        K<-min(K,dim(x$KNN)[2])
-        warning("K > dim(KNN)[2]; K<-min(K,dim(x$KNN)[2])")
-    }
-        x$denoised<-denoise(x$data,x$KNN$IND[,2:K]+1,iter=iter)
-    return(invisible(x))
+  stopifnot(!is.null(x$KNN))
+  
+  if (K>dim(x$KNN$IND)[2]){
+    K<-min(K,dim(x$KNN)[2])
+    warning("K > dim(KNN)[2]; K<-min(K,dim(x$KNN)[2])")
+  }
+  x$denoised<-denoise(x$data,x$KNN$IND[,2:K]+1,iter=iter)
+  return(invisible(x))
 }
 
 Som<-function(x,...){
