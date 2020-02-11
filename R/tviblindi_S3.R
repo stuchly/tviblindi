@@ -19,8 +19,9 @@ new_tviblindi<-function(data,labels,keep.intermediate=FALSE){
     out$walks<-NULL
     out$KNN<-NULL
     out$sim<-NULL
-    out$dsim<-NULL
+    out$dsym<-NULL
     out$clusters<-NULL
+    out$metaclusters<-NULL
     out$codes<-NULL
     out$layout<-NULL
     out$vae_predict=NULL
@@ -49,7 +50,7 @@ KNN<-function(x,...){
 
 KNN.tviblindi<-function(x,K=100,method="BT",trees=150){
   if (method=="annoy"){
-    x$KNN<-KNN.annoy(x$data,K,trees) 
+    x$KNN<-KNN.annoy(x$data,K,trees)
   } else {
     x$KNN<-knn.adj.raw.parallel(x$data, K)
   }
@@ -62,7 +63,7 @@ Denoise<-function(x,...){
 
 Denoise.tviblindi<-function(x,K=30,iter=1){
   stopifnot(!is.null(x$KNN))
-  
+
   if (K>dim(x$KNN$IND)[2]){
     K<-min(K,dim(x$KNN)[2])
     warning("K > dim(KNN)[2]; K<-min(K,dim(x$KNN)[2])")
@@ -240,8 +241,9 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
     x$walks<-NULL
     x$KNN<-NULL
     x$sim<-NULL
-    x$dsim<-NULL
+    x$dsym<-NULL
     x$clusters<-NULL
+    x$metaclusters<-NULL
     x$codes<-NULL
     x$layout<-x$layout[ss,]
     x$labels<-x$labels[ss]
@@ -289,6 +291,14 @@ Copy.tviblindi<-function(x){
         y[[var]] <- if(is.environment(val)) env.copy(val,all.names) else x[[var]]
     }
     structure(y,class="tviblindi")
+}
+
+Connectome<-function(x,...){
+    UseMethod("Connectome",x)
+}
+
+Connectome.tviblindi<-function(x,...){
+    connectome(x)
 }
 
 
