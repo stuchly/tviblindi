@@ -1,4 +1,4 @@
-connectome<-function(x){
+connectome<-function(x,png="connectome.png"){
     if (is.null(x$metaclusters)) {
         message("Computing louvain metaclusters...\n")
         gU<-graph_from_adjacency_matrix(x$dsym,weighted=TRUE,mode="undirected")
@@ -23,11 +23,11 @@ connectome<-function(x){
     aa1<-Diagonal(x=Matrix::rowSums(Matrix::t(agDc)+agDc)^-1)%*%agDc
     ##aa1<-Diagonal(x=rowSums(agDc)^-1)%*%agDc
     g11<-graph_from_adjacency_matrix((aa1),weighted=TRUE,mode="directed")
-    E(g11)$width<-E(g11)$weight*7
+    E(g11)$width<-E(g11)$weight^1.2*19
     ##E(g11)$width<-E(g11)$width/max(E(g11)$width)
     E(g11)$curved=TRUE
-    E(g11)$arrow.size<-E(g11)$weight*7
-    E(g11)$arrow.width<-E(g11)$weight*21
+    E(g11)$arrow.size<-2.7
+    E(g11)$arrow.width<-0.7
     V(g11)$label.cex = 1
     pieD<-list()[1:length(clus)]
     for (i in clus) pieD[[i]]<-as.vector(table(x$labels[x$metaclusters==i]))
@@ -36,9 +36,14 @@ connectome<-function(x){
     colors <- list(cp)
 
     colors <- rep(colors,length(clus))
+    lsize=0.4
+    if (!is.null(png)){
+        png(png,2000,2000)
+        lsize=1.5
+    }
     igraph::plot.igraph(g11,layout=g_layout,main="infered conectome",vertex.size=7,vertex.shape = "pie",vertex.pie=pieD,vertex.pie.color=colors)
-    legend("topright",legend=levels(x$labels), col=colors[[1]],pch=19,cex=.4)
-
+    legend("topright",legend=levels(x$labels), col=colors[[1]],pch=19,cex=lsize)
+     if (!is.null(png)) dev.off()
     return(invisible(x))
 
 }
