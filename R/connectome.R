@@ -26,8 +26,8 @@ connectome<-function(x){
     E(g11)$width<-E(g11)$weight*7
     ##E(g11)$width<-E(g11)$width/max(E(g11)$width)
     E(g11)$curved=TRUE
-    E(g11)$arrow.size<-0.7
-    E(g11)$arrow.width<-0.5
+    E(g11)$arrow.size<-E(g11)$weight*7
+    E(g11)$arrow.width<-E(g11)$weight*21
     V(g11)$label.cex = 1
     pieD<-list()[1:length(clus)]
     for (i in clus) pieD[[i]]<-as.vector(table(x$labels[x$metaclusters==i]))
