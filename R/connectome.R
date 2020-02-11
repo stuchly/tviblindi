@@ -17,9 +17,10 @@ connectome<-function(x){
 
     clus<-sort(unique(x$metaclusters))
     agDc<-sparseMatrix(i=agDc$i,j=agDc$j,x=agDc$x,dims=rep(length(clus),2))
+
     g_layout<-NULL
-    for (i in clus) g_layout<-rbind(g_layout,colMeans(x$layout[which(clus==i),]))
-    aa1<-Diagonal(x=rowSums(t(agDc)+agDc)^-1)%*%agDc
+    for (i in clus) g_layout<-rbind(g_layout,colMeans(x$layout[which(x$metaclusters==i),]))
+    aa1<-Diagonal(x=Matrix::rowSums(Matrix::t(agDc)+agDc)^-1)%*%agDc
     ##aa1<-Diagonal(x=rowSums(agDc)^-1)%*%agDc
     g11<-graph_from_adjacency_matrix((aa1),weighted=TRUE,mode="directed")
     E(g11)$width<-E(g11)$weight*7
@@ -36,6 +37,8 @@ connectome<-function(x){
 
     colors <- rep(colors,length(clus))
     igraph::plot.igraph(g11,layout=g_layout,main="infered conectome",vertex.size=7,vertex.shape = "pie",vertex.pie=pieD,vertex.pie.color=colors)
-legend("topright",legend=levels(x$labels), col=colors[[1]],pch=19,cex=1.5)
+    legend("topright",legend=levels(x$labels), col=colors[[1]],pch=19,cex=1.5)
+
+    return(invisibel(x))
 
 }
