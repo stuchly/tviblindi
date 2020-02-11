@@ -27,18 +27,18 @@ connectome<-function(x){
     ##E(g11)$width<-E(g11)$width/max(E(g11)$width)
     E(g11)$curved=TRUE
     E(g11)$arrow.size<-0.7
-    E(g11)$arrow.width<-0.8
-    V(g11)$label.cex = 2
+    E(g11)$arrow.width<-0.5
+    V(g11)$label.cex = 1
     pieD<-list()[1:length(clus)]
-    for (i in clus) pieD[[i]]<-as.vector(table(x$labels[clus==i]))
+    for (i in clus) pieD[[i]]<-as.vector(table(x$labels[x$metaclusters==i]))
 
     cp<-rainbow(length(unique(x$labels))+1)
     colors <- list(cp)
 
     colors <- rep(colors,length(clus))
     igraph::plot.igraph(g11,layout=g_layout,main="infered conectome",vertex.size=7,vertex.shape = "pie",vertex.pie=pieD,vertex.pie.color=colors)
-    legend("topright",legend=levels(x$labels), col=colors[[1]],pch=19,cex=1.5)
+    legend("topright",legend=levels(x$labels), col=colors[[1]],pch=19,cex=.4)
 
-    return(invisibel(x))
+    return(invisible(x))
 
 }
