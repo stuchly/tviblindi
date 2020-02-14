@@ -162,7 +162,7 @@ SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool up
       cycle.pop_back();
       Vl.push_back(ll);
       repre.push_back(-ll);
-      int ll = cycle.back();
+      // int ll = cycle.back();
     }
     else
       {
