@@ -47,7 +47,7 @@ SEXP knn_annoy(Rcpp::NumericMatrix mat, const int K=100, const int trees=150) {
   
   int steps_completed = 0;
   
-#pragma omp parallel for num_threads(12)
+#pragma omp parallel for
   for (size_t i=0;i<nsamples;++i){
     std::vector<int> neighbor_index;
     std::vector<ANNOYTYPE> neighbor_dist;

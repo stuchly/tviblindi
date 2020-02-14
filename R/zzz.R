@@ -7,7 +7,7 @@
     if (!reticulate::py_module_available("tensorflow")) message("tensorflow")
     if (!reticulate::py_module_available("numba")) message("numba")
     if (!reticulate::py_module_available("numpy")) message("numpy")
-    if (!reticulate::py_module_available("vaevictis")) message("vaevictis - dimensinal reduction for tviblindi")
+    if (!reticulate::py_module_available("vaevictis")) message("vaevictis - dimensional reduction for tviblindi")
     yn<-readline("Proceed? (Yes/no)")
     if (yn!="Yes"){
       warning("function DimRed functionality missing!")
