@@ -44,9 +44,7 @@ launch_shiny_old <- function(input_fcs_path,
     shiny::runApp(app)
 }
 
-launch_shiny <- function(input_fcs_path,
-                         tviblindi_s3,
-                         event_sel = NULL) {
+launch_shiny <- function(tviblindi_s3) {
     
     if (class(tviblindi_s3) != 'tviblindi') stop('Invalid tviblindi S3 object')
     tmp_folder        <- 'tviblindi_tmp'
@@ -54,10 +52,6 @@ launch_shiny <- function(input_fcs_path,
     suppressWarnings(dir.create(tmp_folder))
     tv_path           <- file.path(tmp_folder, 'tv.RDS')
     saveRDS(tviblindi_s3_name, tv_path)
-
-    saveRDS(input_fcs_path, file.path(tmp_folder, 'input_fcs_path.RDS'))
-
-    saveRDS(event_sel, file.path(tmp_folder, 'event_sel.RDS'))
 
     app <- shiny::shinyApp(shiny_ui, shiny_server)
     shiny::runApp(app)

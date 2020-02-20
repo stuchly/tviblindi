@@ -17,7 +17,7 @@ shiny_server <- function(  input,
     
     layout           <- tv$layout
 
-    event_sel        <- readRDS(file.path(shiny_inputs_dir, 'event_sel.RDS'))
+    event_sel        <- tv$events_sel
     
     R                        <- reactiveValues()
     R$pseudotime             <- tv$pseudotime
@@ -33,7 +33,7 @@ shiny_server <- function(  input,
     R$markers.scale_exp.A    <- NULL
     R$markers.n_segments.B   <- NULL
     R$markers.scale_exp.B    <- NULL
-    input_ff                 <- flowCore::read.FCS(readRDS(file.path(shiny_inputs_dir, 'input_fcs_path.RDS')))
+    if (!is.null(tv1$fcs)) input_ff <- flowCore::read.FCS(tv$fcs) else input_ff<-make_valid_fcs(exprs = tv$data)
     
     if ((is.null(event_sel) && nrow(input_ff) != nrow(tv$data)) || (!is.null(event_sel) && length(event_sel) != nrow(tv$data))) {
         stop('Number of events in expression matrix incongruent with dimensionality of input FCS file. Did you misuse the event_sel parameter?')

@@ -1,8 +1,8 @@
-tviblindi<-function(data,labels){
-    new_tviblindi(data,labels)
+tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep_intermediate=FALSE){
+    new_tviblindi(data,labels,fcs_path,events_sel,keep_intermediate)
 }
 
-new_tviblindi<-function(data,labels,keep.intermediate=FALSE){
+new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep.intermediate=FALSE){
     stopifnot(is.matrix(data))
     stopifnot(length(labels)==nrow(data) && (is.factor(labels) || is.character(labels)))
     stopifnot(is.logical(keep.intermediate))
@@ -25,6 +25,8 @@ new_tviblindi<-function(data,labels,keep.intermediate=FALSE){
     out$codes<-NULL
     out$layout<-NULL
     out$vae_predict=NULL
+    out$events_sel=events_sel
+    out$fcs=fcs_path
     structure(out,class="tviblindi")
 }
 
