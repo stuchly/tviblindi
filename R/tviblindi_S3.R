@@ -255,6 +255,7 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
     x$layout<-x$layout[ss,]
     x$labels<-x$labels[ss]
     x$data<-x$data[ss,]
+    x$events_sel<-x$events_sel[ss]
     return(invisible(x))
 }
 
