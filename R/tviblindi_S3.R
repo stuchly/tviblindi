@@ -24,7 +24,7 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep.intermedi
     out$metaclusters<-NULL
     out$codes<-NULL
     out$layout<-NULL
-    out$vae_predict=NULL
+    out$vae=NULL
     out$events_sel=events_sel
     out$fcs=fcs_path
     structure(out,class="tviblindi")
@@ -198,7 +198,7 @@ DimRed.tviblindi <-
                 as.integer(patience),
                 alpha
             )
-            x$vae_predict = layout[[2]]
+            x$vae = layout[[3]]
             x$layout <- layout[[1]]
         } else if (method[1] == "diffuse") {
             if (is.null(x$KNN)) stop("Compute KNN graph first.")
