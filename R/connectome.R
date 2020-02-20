@@ -13,7 +13,7 @@ connectome<-function(x,png="connectome.png",K=70){
     }
 
     e.list <- cbind(x$walks$v[-c(x$walks$starts[-1]-1,length(x$walks$v))],x$walks$v[-x$walks$starts])
-    e.list<-rbind(e.list,dim(x$sim))
+    e.list<-rbind(e.list,dim(dsym))
     gD<-graph_from_edgelist(e.list,directed=TRUE)
     gD<-contract(gD,x$metaclusters)
     agDc<-summary(as_adjacency_matrix(gD))
