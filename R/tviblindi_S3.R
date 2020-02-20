@@ -98,6 +98,7 @@ Filtration<-function(x,...){
 Filtration.tviblindi<-function(x,method="witness",K=30,alpha2=10){
     if (method!="witness") stop("Not yet implemented")
     stopifnot(!is.null(x$codes))
+
     xy <- FNN::get.knnx(x$codes, x$denoised, k = K)
     Ilist           <- split(xy$nn.index, seq(nrow(xy$nn.index)))
     Dlist           <- split(xy$nn.dist, seq(nrow(xy$nn.index)))
@@ -131,10 +132,14 @@ Pseudotime.tviblindi<-function(x,K=30){
     }
     d<-KofRawN(x$KNN,K)
     d  <- knn.raw2adj(d)
-    x$dsym <- knn.spadj2sym(knn.adj2spadj(d))
-    x$sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = "Exp"))
-    x$pseudotime  <- assign_distance(x$sim, x$origin,weights = x$dsym)
+    dsym <- knn.spadj2sym(knn.adj2spadj(d))
+    sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = "Exp"))
+    x$pseudotime  <- assign_distance(sim, x$origin,weights = dsym)
     cat("Pseudotime error:", x$pseudotime$error, "\n")
+    if (x$keep) {
+        x$sim<-sim
+        x$dsym<-dsym
+    }
     return(invisible(x))
 }
 
@@ -147,10 +152,10 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30){
 
     d<-KofRawN(x$KNN,K)
     d  <- knn.raw2adj(d)
-    x$dsym <- knn.spadj2sym(knn.adj2spadj(d))
-    x$sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = "Exp"))
-    oriented.sparseMatrix <- orient.sim.matrix(x$sim, x$pseudotime, breaks = breaks, base = base)
-
+    if (x$keep) x$dsym <- knn.spadj2sym(knn.adj2spadj(d))
+    sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = "Exp"))
+    oriented.sparseMatrix <- orient.sim.matrix(sim, x$pseudotime, breaks = breaks, base = base)
+    if (x$keep) x$sim<-sim
     ## Simulate random walks
     x$walks           <- random_walk_adj_N_push(oriented.sparseMatrix, x$origin, N)
     return(invisible(x))
