@@ -1,7 +1,12 @@
-connectome<-function(x,png="connectome.png"){
+connectome<-function(x,png="connectome.png",K=70){
     if (is.null(x$metaclusters)) {
         message("Computing louvain metaclusters...\n")
-        gU<-graph_from_adjacency_matrix(x$dsym,weighted=TRUE,mode="undirected")
+        if (is.null(x$dsym)){
+            d<-KofRawN(x$KNN,K)
+            d  <- knn.raw2adj(d)
+            dsym <- knn.spadj2sym(knn.adj2spadj(d))
+        } else dsym<-x$dsym
+        gU<-graph_from_adjacency_matrix(dsym,weighted=TRUE,mode="undirected")
         x$metaclusters<-cluster_louvain(gU)$membership
         message("~Done!\n")
         rm(gU)

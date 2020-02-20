@@ -305,7 +305,7 @@ Connectome<-function(x,...){
 }
 
 Connectome.tviblindi<-function(x,...){
-    connectome(x)
+    connectome(x,png="connectome.png")
 }
 
 
