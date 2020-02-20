@@ -33,7 +33,7 @@ shiny_server <- function(  input,
     R$markers.scale_exp.A    <- NULL
     R$markers.n_segments.B   <- NULL
     R$markers.scale_exp.B    <- NULL
-    if (!is.null(tv1$fcs)) input_ff <- flowCore::read.FCS(tv$fcs) else input_ff<-make_valid_fcs(exprs = tv$data)
+    if (!is.null(tv$fcs)) input_ff <- flowCore::read.FCS(tv$fcs) else input_ff<-make_valid_fcs(exprs = tv$data)
     
     if ((is.null(event_sel) && nrow(input_ff) != nrow(tv$data)) || (!is.null(event_sel) && length(event_sel) != nrow(tv$data))) {
         stop('Number of events in expression matrix incongruent with dimensionality of input FCS file. Did you misuse the event_sel parameter?')
