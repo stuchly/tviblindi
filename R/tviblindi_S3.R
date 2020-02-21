@@ -189,7 +189,7 @@ DimRed.tviblindi <-
       vv = reticulate::import("vaevictis")
       if (!is.null(load_model)){
         model <- vv$loadModel(config_file = load_model[1],weights_file = load_model[2])
-        x$layout <- model$encoder$callp(data)$numpy()
+        x$layout <- model$encoder$callp(x$data)$numpy()
         x$vae <- model
       } else {
         layout = vv$dimred(
