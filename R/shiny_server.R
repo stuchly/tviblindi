@@ -119,7 +119,8 @@ shiny_server <- function(  input,
         par(mar = c(1, 1, 1, 1))
         plot(layout, col = alpha(colour_vector, 0.05), axes = FALSE, xlab = "", ylab = "", pch = 20, cex = .3, xlim = c(0, 1), ylim = c(0, 1))
         #points(layout[origin, ], col = alpha("purple", 0.75), cex = 1,  pch = 8)
-        points(layout[unique(term), ], col = alpha("purple", 0.75), cex = 3, pch = 20)
+        if (length(unique(term))==1)  points(layout[unique(term), 1],layout[unique(term), 2], col = alpha("purple", 0.75), cex = 3, pch = 20) 
+        else points(layout[unique(term), ], col = alpha("purple", 0.75), cex = 3, pch = 20)
         points(layout[tv$origin, 1], layout[tv$origin, 2], col = alpha("yellow", 0.75), cex = 3, pch = 15)
     })
 
@@ -192,7 +193,8 @@ shiny_server <- function(  input,
             plot(layout, col = alpha(gating_colour_vector, 0.35), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = .18, xlim = c(0, 1), ylim = c(0, 1))
         }
 
-        points(layout[unique(term), ], col = alpha("purple", 0.75), cex = 3, pch = 20)
+        if (length(unique(term))==1)  points(layout[unique(term), 1],layout[unique(term), 2], col = alpha("purple", 0.75), cex = 3, pch = 20) 
+        else points(layout[unique(term), ], col = alpha("purple", 0.75), cex = 3, pch = 20)
         points(layout[tv$origin, 1], layout[tv$origin, 2], col = alpha("yellow", 0.75), cex = 3, pch = 15)
 
         legend(x = 1.08, y = 1, legend = labels.aligned, fill = colours.aligned, cex = 1.5, bty = 'n')
