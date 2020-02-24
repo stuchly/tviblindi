@@ -248,7 +248,7 @@ Walks<-function(x,...){
 #'
 #' @details This method simulates random walks on directed graph (only edges pointing ahead in pseudotime are kept). To avoid short circuits
 #' the pseudotime (the cells with respect to pseudotime) is divided into \code{breaks} bins and the probability of jump over k-bins ahead is penalized
-#' by \code{base}^-k. Transition matrix is constructed independent of pseudotime estimation using \code{K} nearest neighbors.
+#' by \code{base}^-k. Transition matrix is constructed independently of pseudotime estimation using \code{K} nearest neighbors.
 #' If \code{equinumerous==TRUE} the potential ends (vertices in graph with no out-going edge) are identified and for each a subcomponent 
 #' of graph of vertices from which this end could be reached is used for simulation - this could be expensive for large number of ends. 
 #' The same approach is used when \code{!is.null(to)}.  
