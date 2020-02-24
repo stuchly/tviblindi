@@ -10,7 +10,7 @@
 \item{x}{tviblindi class object.}
 }
 \value{
-\code{tviblindi} returns a tviblindi class object.
+returns a tviblindi class object.
 }
 \description{
 \code{Copy}

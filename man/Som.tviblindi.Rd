@@ -12,7 +12,7 @@
 \item{xdim, }{ydim integer (default 25); SOM mesh size}
 }
 \value{
-\code{tviblindi} returns an invisible tviblindi class object.
+returns an invisible tviblindi class object.
 }
 \description{
 \code{Som}

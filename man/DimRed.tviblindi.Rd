@@ -56,7 +56,7 @@ any integer value (for "diffuse" \code{< nrow(data)})).}
 \item{load_model}{character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied}
 }
 \value{
-\code{tviblindi} returns an invisible tviblindi class object.
+returns an invisible tviblindi class object.
 }
 \description{
 \code{DimRed}

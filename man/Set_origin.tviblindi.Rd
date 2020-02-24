@@ -13,7 +13,7 @@
 or index of cell-of-origin.}
 }
 \value{
-\code{tviblindi} returns an invisible tviblindi class object.
+returns an invisible tviblindi class object.
 }
 \description{
 \code{Set_origin}

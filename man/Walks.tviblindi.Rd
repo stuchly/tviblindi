@@ -36,7 +36,7 @@
 \item{kernel}{character; see \code{knn.adj2spadjsim}.}
 }
 \value{
-\code{tviblindi} returns an invisible tviblindi class object.
+returns an invisible tviblindi class object.
 }
 \description{
 \code{Walks}

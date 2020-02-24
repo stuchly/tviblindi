@@ -44,17 +44,16 @@ launch_shiny_old <- function(input_fcs_path,
     shiny::runApp(app)
 }
 
-#' Launches shiny interface, modifies x$ShowAllFates
+#' Launches shiny interface
 #'
 #' \code{Filtration}
 #' @param tviblindi_s3 tviblindi class object.
-#' @param ShowAllFates bool; plot all theoretical fates, see \code{walks}
 #' 
+#' @details See \code{ToggleShowFates}.
 #'
 #' @export
 launch_shiny <- function(tviblindi_s3,ShowAllFates=TRUE) {
     
-    #tviblindi_s3$ShowAllFates<-ShowAllFates
     if (class(tviblindi_s3) != 'tviblindi') stop('Invalid tviblindi S3 object')
     tmp_folder        <- 'tviblindi_tmp'
     tviblindi_s3_name <- deparse(substitute(tviblindi_s3))

@@ -12,7 +12,7 @@
 \item{K}{integer (default K=30); number of nearest neighbors to compute transition matrix.}
 }
 \value{
-\code{tviblindi} returns an invisible tviblindi class object.
+returns an invisible tviblindi class object.
 }
 \description{
 \code{Pseudotime}

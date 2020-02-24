@@ -20,12 +20,12 @@
 \item{D}{integer; expected intrinsic dimension of the data - higher dimension underestimates the density of sparse regions.}
 }
 \value{
-\code{tviblindi} returns an invisible tviblindi class object. The labels, events_sel, data and layout are downsampled, 
-the rest is set to \code{NULL}
+returns an invisible tviblindi class object.
 }
 \description{
 \code{DownSample}
 }
 \details{
-Density-based downsampling of the data, should reduce over-abundant dense populations.
+Density-based downsampling of the data, should reduce over-abundant dense populations. The labels, events_sel, data and layout are downsampled, 
+the rest is set to \code{NULL}
 }

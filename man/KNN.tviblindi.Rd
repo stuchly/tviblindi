@@ -17,7 +17,7 @@ or Approximate Nearest Neighbors Oh Yeah (https://github.com/spotify/annoy).}
 \item{trees}{integer (default 150); number of trees for annoy - more trees more precision and more time of computation.}
 }
 \value{
-\code{tviblindi} returns an invisible tviblindi class object.
+returns an invisible tviblindi class object.
 }
 \description{
 \code{KNN}

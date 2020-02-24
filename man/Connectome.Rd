@@ -10,7 +10,7 @@ Connectome(x, ...)
 \item{x}{tviblindi class object.}
 }
 \value{
-\code{tviblindi} returns an invisible tviblindi class object.
+returns an invisible tviblindi class object.
 }
 \description{
 \code{Pseudotime}

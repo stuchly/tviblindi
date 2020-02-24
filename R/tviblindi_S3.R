@@ -59,7 +59,7 @@ Set_origin<-function(x,...){
 #' @param label character or integer; either label of population of origin (cell nearest to the mean of the population will be consider as origin)
 #' or index of cell-of-origin.
 #'
-#' @return \code{tviblindi} returns an invisible tviblindi class object.
+#' @return  returns an invisible tviblindi class object.
 #'
 #' @export
 Set_origin.tviblindi<-function(x,label){
@@ -88,7 +88,7 @@ KNN<-function(x,...){
 #' @param trees integer (default 150); number of trees for annoy - more trees more precision and more time of computation.
 
 #'
-#' @return \code{tviblindi} returns an invisible tviblindi class object.
+#' @return  returns an invisible tviblindi class object.
 #'
 #' @export
 KNN.tviblindi<-function(x,K=100,method="annoy",trees=150){
@@ -114,7 +114,7 @@ Denoise<-function(x,...){
 #' @details A simple noise reducution algorithm is applied - every cell coordinates are replaced by the average of \code{K} nearest neigbors. 
 #' This process is repeated \code{iter}-times.
 #' 
-#' @return \code{tviblindi} returns an invisible tviblindi class object.
+#' @return  returns an invisible tviblindi class object.
 #'
 #' @export
 Denoise.tviblindi<-function(x,K=30,iter=1){
@@ -138,7 +138,7 @@ Som<-function(x,...){
 #' @param x tviblindi class object.
 #' @param xdim, ydim integer (default 25); SOM mesh size
 #'
-#' @return \code{tviblindi} returns an invisible tviblindi class object.
+#' @return  returns an invisible tviblindi class object.
 #'
 #' @export
 Som.tviblindi<-function(x,xdim=25,ydim=25){
@@ -166,7 +166,7 @@ Filtration<-function(x,...){
 #' @param method character (only "witness" complex is implemeted); Uses Gudhi and CGAL libraries to compute witness complex
 #' @param alpha double (default 10); relaxation parameter for witness complex.
 #'
-#' @return \code{tviblindi} returns an invisible tviblindi class object.
+#' @return  returns an invisible tviblindi class object.
 #'
 #' @export
 Filtration.tviblindi<-function(x,method="witness",K=30,alpha2=10){
@@ -206,7 +206,7 @@ Pseudotime<-function(x,...){
 #' 
 #' @details Computes average distance of each cell from the cell-of-origin of all random walks in undirected graph of nearest neigbors.
 #' 
-#' @return \code{tviblindi} returns an invisible tviblindi class object.
+#' @return  returns an invisible tviblindi class object.
 #'
 #' @export
 Pseudotime.tviblindi<-function(x,K=30){
@@ -253,7 +253,7 @@ Walks<-function(x,...){
 #' of graph of vertices from which this end could be reached is used for simulation - this could be expensove for large number of ends. 
 #' The same approach is used when \code{!is.null(to)}.  
 #'
-#' @return \code{tviblindi} returns an invisible tviblindi class object.
+#' @return  returns an invisible tviblindi class object.
 #'
 #' @export
 Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL,add=FALSE,kernel="exp"){
@@ -318,6 +318,27 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
     return(invisible(x))
 }
 
+ToggleShowFates<-function(x,...){
+    UseMethod("ToggleShowFates",x)
+}
+
+#' Helper method to set ShowAllFates, modifies x
+#'
+#' \code{ToggleShowFates}
+#' @param x tviblindi class object.
+#' @param ShowAllFates; if NULL x$ShowAllFates<-!x$ShowAllFates
+#'
+#' @details If \code{x$ShowAllFates==TRUE} all potential fates (see \code{Walks}) are displayed in shiny app, otherwise only ends
+#' of actual simulations are display. \code{x$ShowAllFates==FALSE} by default.
+#'
+#' @return returns an invisible tviblindi class object.
+#'
+#' @export
+ToggleShowFates.tviblindi<-function(x,ShowAllFates=NULL){
+    if (is.null(ShowAllFates)) x$ShowAllFates<-!x$ShowAllFates else x$ShowAllFates<-ShowAllFates
+    return(invisible(x))
+}
+
 DimRed<-function(x,...){
     UseMethod("DimRed",x)
 }
@@ -345,7 +366,7 @@ DimRed<-function(x,...){
 #'
 #' @details The pathway analysis visualisation benefits from dimensional reductions which are by definition continuous... to be elaborated 
 #'
-#' @return \code{tviblindi} returns an invisible tviblindi class object.
+#' @return  returns an invisible tviblindi class object.
 #'
 #' @export
 DimRed.tviblindi <-
@@ -420,10 +441,10 @@ DownSample<-function(x,...){
 #' @param e double; deprecated.
 #' @param D integer; expected intrinsic dimension of the data - higher dimension underestimates the density of sparse regions.
 #' 
-#' @details Density-based downsampling of the data, should reduce over-abundant dense populations.
-#' 
-#' @return \code{tviblindi} returns an invisible tviblindi class object. The labels, events_sel, data and layout are downsampled, 
+#' @details Density-based downsampling of the data, should reduce over-abundant dense populations. The labels, events_sel, data and layout are downsampled, 
 #' the rest is set to \code{NULL}
+#' 
+#' @return  returns an invisible tviblindi class object.
 #'
 #' @export
 DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
@@ -506,7 +527,7 @@ Copy<-function(x,...){
 #' \code{Copy}
 #' @param x tviblindi class object.
 #' 
-#' @return \code{tviblindi} returns a tviblindi class object.
+#' @return  returns a tviblindi class object.
 #'
 #' @export
 Copy.tviblindi<-function(x){
@@ -526,7 +547,7 @@ Copy.tviblindi<-function(x){
 #' 
 #' @details See \code{connectome}
 #' 
-#' @return \code{tviblindi} returns an invisible tviblindi class object.
+#' @return  returns an invisible tviblindi class object.
 #'
 #' @export
 Connectome<-function(x,...){

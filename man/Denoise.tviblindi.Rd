@@ -14,7 +14,7 @@
 \item{iter}{integer (default 1); number of iterations (see details).}
 }
 \value{
-\code{tviblindi} returns an invisible tviblindi class object.
+returns an invisible tviblindi class object.
 }
 \description{
 \code{Denoise}

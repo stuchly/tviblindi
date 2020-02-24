@@ -16,7 +16,7 @@
 \item{alpha}{double (default 10); relaxation parameter for witness complex.}
 }
 \value{
-\code{tviblindi} returns an invisible tviblindi class object.
+returns an invisible tviblindi class object.
 }
 \description{
 \code{Filtration}
