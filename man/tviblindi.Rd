@@ -22,7 +22,9 @@ assignment of cells to population, unassigned cells should be labelled as "ungat
 
 \item{events_sel}{integer vector (optional); the indices of data in fcs file, defaults to 'code{1:nor(data)}.}
 
-\item{keep_intermediate}{bool (default FALSE); if intermediate matrices (transition probability and spar distance matrix)
+\item{keep_intermediate}{bool (default FALSE); if intermediate matrices (transition probability and spar distance matrix)}
+
+\item{ShowAllFate}{bool; if all teoretical fates (see \code{Walks}) should be stored and plotted
 should be kept during computation}
 }
 \value{
