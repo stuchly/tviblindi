@@ -4,8 +4,14 @@
 \alias{plot_walks}
 \title{Plot simulated random walks}
 \usage{
-plot_walks(XX, walks, sel = 1:length(walks$starts),
-  col = 1:length(walks$starts), Xmap = NULL, ...)
+plot_walks(
+  XX,
+  walks,
+  sel = 1:length(walks$starts),
+  col = 1:length(walks$starts),
+  Xmap = NULL,
+  ...
+)
 }
 \arguments{
 \item{XX}{matrix of vertex coordinates, with rows corresponding to vertices.}

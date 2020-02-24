@@ -4,8 +4,7 @@
 \alias{create_k_skeleton}
 \title{Create k-skeleton of a simplicial complex}
 \usage{
-create_k_skeleton(filtration, coordinates, k, type = "alpha",
-  threshold = 0)
+create_k_skeleton(filtration, coordinates, k, type = "alpha", threshold = 0)
 }
 \arguments{
 \item{filtration}{list; filtration of a simplicial complex. Must contain description of each simplex by indices in \code{cmplx}. \code{values} slot is disregarded, as filtration values must be computed from scratch.}

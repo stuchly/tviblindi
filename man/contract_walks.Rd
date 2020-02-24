@@ -12,10 +12,6 @@ contract_walks(walks, clusters)
 \item{walks}{output of \code{random_walk}.}
 
 \item{cluster}{vector of cluster assignement of the original pointcloud.}
-
-\item{walks}{output of \code{random_walk}.}
-
-\item{cluster}{vector of cluster assignement of the original pointcloud.}
 }
 \value{
 \code{contract_wlaks} returns a list of vertex indices and indices of walks starts.

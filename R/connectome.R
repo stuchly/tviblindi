@@ -1,3 +1,15 @@
+#' Create connectome from tvilblindi class object
+#'
+#' \code{Connectome}
+#' @param x tviblindi class object.
+#' @param K integer (default K=30); number of nearest neighbors for louvain clustering
+#' 
+#' @details Computes louvain clusters and estimates the flow (and the direction) between them from simulated walks 
+#' (parameter \code{equinumerous} in \code{Walks}) would bias the result!
+#' 
+#' @return \code{tviblindi} returns an invisible tviblindi class object.
+#'
+#' @export
 connectome<-function(x,png="connectome.png",K=70){
     if (is.null(x$metaclusters)) {
         message("Computing louvain metaclusters...\n")

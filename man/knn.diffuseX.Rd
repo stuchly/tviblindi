@@ -4,8 +4,7 @@
 \alias{knn.diffuseX}
 \title{Generate diffusion matrix from coordinates}
 \usage{
-knn.diffuseX(X, K = 30, neigen = dim(X)[2], metric = "euclid",
-  t = 0)
+knn.diffuseX(X, K = 30, neigen = dim(X)[2], metric = "euclid", t = 0)
 }
 \arguments{
 \item{X}{matrix of coordinates. Rows correspond to vertices.}

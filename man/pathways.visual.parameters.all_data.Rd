@@ -4,9 +4,17 @@
 \alias{pathways.visual.parameters.all_data}
 \title{Visualise pathways progression: single parameter using all pathway points}
 \usage{
-pathways.visual.parameters.all_data(paths, classes, which.class,
-  coordinates, pseudotime, which.param, expression.transform = NULL,
-  asinh.denominator = 5, show_legend = FALSE)
+pathways.visual.parameters.all_data(
+  paths,
+  classes,
+  which.class,
+  coordinates,
+  pseudotime,
+  which.param,
+  expression.transform = NULL,
+  asinh.denominator = 5,
+  show_legend = FALSE
+)
 }
 \arguments{
 \item{paths}{a list of pathways. This corresponds to the \code{walks} slot of a pathways list object, as generated

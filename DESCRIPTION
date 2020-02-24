@@ -13,4 +13,4 @@ Remotes: github::exaexa/scattermore
 Suggests: TDA, PRIMME, flowCore
 Imports: Rcpp (>= 0.12.12), RcppEigen (>= 0.3.3.3.0)
 LinkingTo: RcppArmadillo, Rcpp, RcppEigen, BH
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2

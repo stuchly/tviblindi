@@ -4,9 +4,17 @@
 \alias{pathways.visual.labels.segments}
 \title{Visualise pathways progression: cell population labels by segment}
 \usage{
-pathways.visual.labels.segments(paths, classes, which.class, labels,
-  pseudotime, breaks = NULL, n.part = 20, exp.part = 1,
-  proportional = TRUE)
+pathways.visual.labels.segments(
+  paths,
+  classes,
+  which.class,
+  labels,
+  pseudotime,
+  breaks = NULL,
+  n.part = 20,
+  exp.part = 1,
+  proportional = TRUE
+)
 }
 \arguments{
 \item{paths}{a list of pathways. This corresponds to the \code{walks} slot of a pathways list object, as generated

@@ -4,10 +4,20 @@
 \alias{pathways.visual.parameters.segments}
 \title{Visualise pathways progression: single parameter by segments}
 \usage{
-pathways.visual.parameters.segments(paths, classes, which.class,
-  coordinates, pseudotime, which.param, breaks = NULL, n.part = 10,
-  exp.part = 1, expression.transform = NULL, asinh.denominator = 5,
-  show_legend = FALSE)
+pathways.visual.parameters.segments(
+  paths,
+  classes,
+  which.class,
+  coordinates,
+  pseudotime,
+  which.param,
+  breaks = NULL,
+  n.part = 10,
+  exp.part = 1,
+  expression.transform = NULL,
+  asinh.denominator = 5,
+  show_legend = FALSE
+)
 }
 \arguments{
 \item{paths}{a list of pathways. This corresponds to the \code{walks} slot of a pathways list object, as generated
