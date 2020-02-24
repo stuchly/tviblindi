@@ -6,6 +6,7 @@ shiny_server <- function(  input,
 
     cancel.onSessionEnded <- session$onSessionEnded(function() {
         message(paste0('tviblindi Shiny session ended'))
+        stopApp()
     })
 
     message(paste0('Running tviblindi Shiny UI, working directory is ', getwd()))

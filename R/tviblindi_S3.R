@@ -286,14 +286,14 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
         equinumerous<-TRUE
     }
     if (equinumerous){
-        if (is.null(fates)) fates<-which(!(1:nrow(x$data) %in% Matrix::summary(oriented.sparseMatrix)$from))
+        if (is.null(fates)) fates<-which(!(1:nrow(x$data) %in% Matrix::summary(oriented.sparseMatrix)$i))
         g<-igraph::graph_from_adjacency_matrix(oriented.sparseMatrix,weighted=TRUE,mode="directed")
         V(g)$names<-1:nrow(x$data)
 
         if (!add) x$walks<-NULL
         ii<-1
         for (fate in fates){
-            message("fate",ii, "from", length(fates),"\n")
+            cat("fate ",ii, " from ", length(fates),"\n")
             ii<-ii+1
             gf<-subcomponent(g,fate,"in")
             gf<-induced_subgraph(g,gf)
@@ -336,7 +336,7 @@ DimRed<-function(x,...){
 #' @param alpha double; pnealty for tsne regularisation.
 #' @param neigen integer; for "diffuse" number of eigen vectors to compute.
 #' @param t double; time parameter for "diffuse", if \code{t==0} multi-time scale is used (geometric sum).
-#' @load_model character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied
+#' @param load_model character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied
 #'
 #' @details The pathway analysis visualisation benefits from dimensional reductions which are by definition continuous... to be elaborated 
 #'

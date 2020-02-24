@@ -52,6 +52,8 @@ any integer value (for "diffuse" \code{< nrow(data)})).}
 \item{neigen}{integer; for "diffuse" number of eigen vectors to compute.}
 
 \item{t}{double; time parameter for "diffuse", if \code{t==0} multi-time scale is used (geometric sum).}
+
+\item{load_model}{character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied}
 }
 \value{
 \code{tviblindi} returns an invisible tviblindi class object.
