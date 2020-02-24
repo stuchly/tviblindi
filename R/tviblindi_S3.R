@@ -291,7 +291,10 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
         V(g)$names<-1:nrow(x$data)
 
         if (!add) x$walks<-NULL
+        ii<-1
         for (fate in fates){
+            message("fate",ii, "from", length(fates),"\n")
+            ii<-ii+1
             gf<-subcomponent(g,fate,"in")
             gf<-induced_subgraph(g,gf)
             nnf<-V(gf)$names
