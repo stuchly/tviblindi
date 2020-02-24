@@ -54,7 +54,7 @@ launch_shiny_old <- function(input_fcs_path,
 #' @export
 launch_shiny <- function(tviblindi_s3,ShowAllFates=TRUE) {
     
-    tviblindi_s3$ShowAllFates<-ShowAllFates
+    #tviblindi_s3$ShowAllFates<-ShowAllFates
     if (class(tviblindi_s3) != 'tviblindi') stop('Invalid tviblindi S3 object')
     tmp_folder        <- 'tviblindi_tmp'
     tviblindi_s3_name <- deparse(substitute(tviblindi_s3))

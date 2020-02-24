@@ -120,7 +120,7 @@ shiny_server <- function(  input,
         par(mar = c(1, 1, 1, 1))
         plot(layout, col = alpha(colour_vector, 0.05), axes = FALSE, xlab = "", ylab = "", pch = 20, cex = .3, xlim = c(0, 1), ylim = c(0, 1))
         #points(layout[origin, ], col = alpha("purple", 0.75), cex = 1,  pch = 8)
-        if (tv$ShowAllFate) if (length(unique(tv$fates))==1)  points(layout[unique(tv$fates), 1],layout[unique(tv$fates), 2], col = alpha("grey", 0.75), cex = 1.5, pch = 20) 
+        if (tv$ShowAllFates) if (length(unique(tv$fates))==1)  points(layout[unique(tv$fates), 1],layout[unique(tv$fates), 2], col = alpha("grey", 0.75), cex = 1.5, pch = 20) 
         else points(layout[unique(tv$fates), ], col = alpha("grey", 0.75), cex = 1.5, pch = 20)
         if (length(unique(term))==1)  points(layout[unique(term), 1],layout[unique(term), 2], col = alpha("purple", 0.75), cex = 3, pch = 20) 
         else points(layout[unique(term), ], col = alpha("purple", 0.75), cex = 3, pch = 20)
@@ -196,7 +196,7 @@ shiny_server <- function(  input,
             plot(layout, col = alpha(gating_colour_vector, 0.35), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = .18, xlim = c(0, 1), ylim = c(0, 1))
         }
 
-        if (tv$ShowAllFate) if (length(unique(tv$fates))==1)  points(layout[unique(tv$fates), 1],layout[unique(tv$fates), 2], col = alpha("grey", 0.75), cex = 1.5, pch = 20) 
+        if (tv$ShowAllFates) if (length(unique(tv$fates))==1)  points(layout[unique(tv$fates), 1],layout[unique(tv$fates), 2], col = alpha("grey", 0.75), cex = 1.5, pch = 20) 
         else points(layout[unique(tv$fates), ], col = alpha("grey", 0.75), cex = 1.5, pch = 20)
         if (length(unique(term))==1)  points(layout[unique(term), 1],layout[unique(term), 2], col = alpha("purple", 0.75), cex = 3, pch = 20) 
         else points(layout[unique(term), ], col = alpha("purple", 0.75), cex = 3, pch = 20)
