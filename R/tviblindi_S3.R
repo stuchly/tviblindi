@@ -7,6 +7,7 @@
 #' @param fcs_path character (optional); path to fcs file to store the results - typically the fcs file with analysed data.
 #' @param events_sel integer vector (optional); the indices of data in fcs file, defaults to 'code{1:nor(data)}.
 #' @param keep_intermediate bool (default FALSE); if intermediate matrices (transition probability and spar distance matrix)
+#' @param ShowAllFate bool; if all teoretical fates (see \code{Walks}) should be stored and plotted
 #' should be kept during computation
 #'
 #' @return \code{tviblindi} returns a tviblindi class object.
@@ -31,6 +32,8 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep.intermedi
     out$boundary<-NULL
     out$reduced_boundary<-NULL
     out$walks<-NULL
+    out$fates<-NULL
+    out$ShowAllFates=FALSE
     out$KNN<-NULL
     out$sim<-NULL
     out$dsym<-NULL
@@ -285,8 +288,10 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
         fates <- to
         equinumerous<-TRUE
     }
+    
+    x$fates <- which(!(1:nrow(x$data) %in% Matrix::summary(oriented.sparseMatrix)$i))
     if (equinumerous){
-        if (is.null(fates)) fates<-which(!(1:nrow(x$data) %in% Matrix::summary(oriented.sparseMatrix)$i))
+        if (is.null(fates)) fates<-x$fates
         g<-igraph::graph_from_adjacency_matrix(oriented.sparseMatrix,weighted=TRUE,mode="directed")
         V(g)$names<-1:nrow(x$data)
 
@@ -450,6 +455,7 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
     x$boundary<-NULL
     x$reduced_boundary<-NULL
     x$walks<-NULL
+    x$fates<-NULL
     x$KNN<-NULL
     x$sim<-NULL
     x$dsym<-NULL
