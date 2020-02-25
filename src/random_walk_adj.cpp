@@ -66,6 +66,7 @@ RcppExport SEXP  C_random_walk_adj_N_push(const Eigen::Map<Eigen::SparseMatrix<d
                                           const Eigen::Index N=1) {
   Rcpp::IntegerVector v;
   Rcpp::IntegerVector ind_s(N);
+  Rcpp::NumericVector gprobs(N);
   const size_t nb_iter = (size_t)-1;
   int origin = start;
   int jj = 0;
@@ -75,29 +76,36 @@ RcppExport SEXP  C_random_walk_adj_N_push(const Eigen::Map<Eigen::SparseMatrix<d
     ind_s[j] = jj+1;
     v.push_back(origin);
     start = origin-1;
-    
+    int path_length=0;
+    double logpiprob=0;
     for (int i=1; i<=nb_iter; i++) {
       
       Rcpp::NumericVector probs;
-      Rcpp::IntegerVector vert;
+      Rcpp::IntegerVector vert,inds_vert;
+     
+      int j_index=0;
       
       for (Eigen::Map<Eigen::SparseMatrix<double> >::InnerIterator it(A,start); it; ++it) {
         
         probs.push_back(it.value());
         vert.push_back(it.index());
-        
+        inds_vert.push_back(j_index);
+        j_index++;
       }
       if (probs.length()==0) break;
-      Rcpp::IntegerVector ret = sample(vert, 1, FALSE, probs);
+      Rcpp::IntegerVector ret = sample(inds_vert, 1, FALSE, probs);
       jj++;
-      v.push_back(ret[0]+1);
-      start = ret[0];
+      logpiprob+=log(probs[ret[0]]);
+      v.push_back(vert[ret[0]]+1);
+      start = vert[ret[0]];
+      path_length++;
       
     }
+    gprobs[j]=exp(logpiprob/path_length);
     jj++;
     
   }
-  return Rcpp::List::create(Rcpp::Named("v", v[v>0]), Rcpp::Named("starts",ind_s));
+  return Rcpp::List::create(Rcpp::Named("v", v[v>0]), Rcpp::Named("starts",ind_s), Rcpp::Named("gprobs",gprobs));
 }
 
 // [[Rcpp::export]]
