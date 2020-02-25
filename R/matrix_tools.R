@@ -7,6 +7,7 @@ orient.sim.matrix<-function(sim,pseudotime,breaks=NULL,base=2){
         oriented$weight<-oriented$weight/base^breaks
     }
     A<-Matrix::sparseMatrix(i=oriented$from, j=oriented$to, x=oriented$weight, dims=c(N,N))
+    #is it ok?
     .DD<-Matrix::rowSums(A)
     .DD <- Matrix::Diagonal(x=.DD^-1)
     A<-.DD%*%A
