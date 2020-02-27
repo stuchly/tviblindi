@@ -38,14 +38,15 @@ shiny_server <- function(input, output, session) {
   react$persistence_marked           <- NULL # marked homology classes idcs
   # Trajectories dendrogram
   react$dendrogram                   <- NA   # dendrogram for clustering of trajectories by homology classes
-  react$dendrogram_ready             <- F
+  react$dendrogram_ready             <- FALSE
   react$dendrogram_selection         <- NULL
   react$dendrogram_selected_leaves   <- NULL 
   react$dendrogram_selected_idcs     <- NULL
   react$dendrogram_leaf_perc_cutoff  <- NULL
   react$dendrogram_classes           <- list()
   # 2D trajectories layout
-  react$layout_trajectories_flip_colours <- F
+  react$layout_trajectories_flip_colours            <- FALSE
+  react$layout_trajectories_highlight_in_background <- FALSE
   # Marker expression and population trackers
   react$trackers_n_segments          <- 20 # number of pseudotime segments in markers tracking
   react$trackers_scaling_exponent    <- 1 # scaling exponent for pseudotime segmentation in markers tracking
@@ -54,8 +55,8 @@ shiny_server <- function(input, output, session) {
   react$tracked_markers_stats.B      <- NULL
   react$tracked_markers_parts_to_remove.A <- NULL
   react$tracked_markers_parts_to_remove.B <- NULL
-  react$tracked_markers_ready.A      <- F
-  react$tracked_markers_ready.B      <- F
+  react$tracked_markers_ready.A      <- FALSE
+  react$tracked_markers_ready.B      <- FALSE
   react$tracked_markers_pseudotime_bounds.A <- NULL
   react$tracked_markers_pseudotime_bounds.B <- NULL
   react$tracked_markers_last_removed.A <- NULL
@@ -65,6 +66,7 @@ shiny_server <- function(input, output, session) {
   react$tracked_populations.B        <- NULL
   react$tracked_populations_stats.A  <- NULL
   react$tracked_populations_stats.B  <- NULL
+  react$tracked_populations_log2_transform <- FALSE
   # Marked trajectories manipulation & export
   react$trajectories_marked.A        <- NULL
   react$trajectories_marked_leaves.A <- NULL
@@ -113,9 +115,9 @@ shiny_server <- function(input, output, session) {
              Fourth, inspect the projection of marked trajectories in the 2D layout in the right pane. Category <b>A</b> trajectories are drawn in blue, whereas category <b>B</b> trajectories are drawn in blue. By default, red trajectories are drawn on the top. To flip this ordering, press the <b>FLIP</b> button (with the black-white circular icon) beneath the 2D layout plot.
              <br><br>
              Fifth, inspect the progression of marker expression in either category of trajectories by selecting the <i>Marker expression tracking</i> tab and entering marker(s) of interest in the text boxes below the 2D projection (category <b>A</b> is above category <b>B</b> here). By default, we separate the progression into 20 equally large segments by exponentially scaled pseudotime values. Both the scaling exponent and the number of segments can be adjusted (however, the default settings should give sensible results in most cases). If a single marker of interest is entered, all the trajectories are included in the diagram. In addition, you can remove (un-mark) some trajectories by drawing a selection rectangle in the progression diagram and pressing the <b>LIGHTNING BOLT</b> button. All trajectories passing through the drawn area are 'zapped' (the number of 'zapped' trajectories is printed in the bottom part of the center pane). You cannot zap all pathways in a category. You can undo a single last zap by pressing the <b>BACKWARD</b> button.
-             If multiple markers of interest are chosen, the mean value for each segment for each marker is displayed. In that case zapping is not possible. If you are interested in certain pseudotime segments (for example, corresponding to some sudden spike in marker expressions), select points in those segments and press the <b>FLAG</b> button to temporaritly overlay the trajectories layout with a highlight of those points which belong in the corresponding psedotime segments. After pressing the <b>FLAG</b> button, the selection is automatically cleared, therefore clicking the button again will undo the highlighting. Pseudotime segments highlighting works both when viewing single and multiple markers progressions.
+             If multiple markers of interest are chosen, the mean value for each segment for each marker is displayed. In that case zapping is not possible. If you are interested in certain pseudotime segments (for example, corresponding to some sudden spike in marker expressions), select points in those segments and press the <b>FLAG</b> button to temporaritly overlay the trajectories layout with a highlight of those points which belong in the corresponding psedotime segments. After pressing the <b>FLAG</b> button, the selection is automatically cleared, therefore clicking the button again will undo the highlighting. Alternatively, press the <b>CROSS</b> button under the 2D trajectories layout to remove the highlighting. In order to switch between a background and foreground positioning of the highlight, press the <b>GLASSES</b> button. Pseudotime segments highlighting works both when viewing single and multiple markers progressions.
              <br><br>
-             Sixth, inspect the counts of select annotated cell populations in each pseudotime segment by selecting the <i>Population tracking</i> tab. This is analogical to the marker tracking part.
+             Sixth, inspect the counts of select annotated cell populations in each pseudotime segment by selecting the <i>Population tracking</i> tab. This is analogical to the marker tracking part. If you wish to display log2 of cell counts, check the <i>log2</i> checkbox.
              <br><br>
              Seventh, export an enhanced FCS file. In the simplest use-case, you can press the <b>SAVE</b> button in the middle pane straightaway (without following any of the above steps) to append two artificial channels to your FCS, containing the 2D layout coordinates displayed in the left and right panes. If you want to append marked trajectories in either of the categories, along with pseudotime values, press the <b>PIN</b> button next to the header for either category. Then, press the <b>SAVE</b> button. To un-pin all the batches of vertices pinned so far, press the <b>GARBARGE</b> button next to it."
     )))
@@ -131,7 +133,7 @@ shiny_server <- function(input, output, session) {
     cols  <- gplots::greenred(10500)[psc]
     
     par(mar = c(1, 1, 1, 1))
-    plot(layout, col = scales::alpha(cols, .05), axes = F, xlab = '', ylab = '', pch = 20, cex = .3, xlim = c(0, 1), ylim = c(0, 1))
+    plot(layout, col = scales::alpha(cols, .05), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = .3, xlim = c(0, 1), ylim = c(0, 1))
     # Plot origin and terminal nodes
     points(layout[tv$origin, 1], layout[tv$origin, 2], col = scales::alpha('yellow', .75), cex = 3, pch = 15)
     if (!is.null(tv$ShowAllFates) && tv$ShowAllFates) {
@@ -164,7 +166,7 @@ shiny_server <- function(input, output, session) {
       react$representations           <- updated$repre
       react$persistence               <- updated$pers
       react$persistence_diagram       <- updated$pd
-      react$dendrogram_ready          <- T
+      react$dendrogram_ready          <- TRUE
       react$persistence_selected      <- NULL
       react$persistence_marked        <- NULL
       output$log_persistence_marked   <- renderPrint({ cat('Termini were reset\n') })
@@ -203,7 +205,7 @@ shiny_server <- function(input, output, session) {
     colours.aligned <- colours.aligned[ordering]
     
     pch <- rep(20, length(tv$labels)) # symbols (can be set to different for each population here)
-    par(xpd = T, mar = c(2, 2, 2, 50))
+    par(xpd = TRUE, mar = c(2, 2, 2, 50))
     
     # Plot ungated events distinctly
     which.ungated <- which(labels.aligned %in% c('ungated', '*ungated*', 'nic'))
@@ -211,10 +213,10 @@ shiny_server <- function(input, output, session) {
       label.ungated                  <- labels.aligned[which.ungated]
       idcs.ungated                   <- which(tv$labels == label.ungated)
       colours.aligned[which.ungated] <- gating_colour_vector[idcs.ungated] <- 'black'
-      plot(layout[idcs.ungated, ], col = scales::alpha('black', .4), axes = F, xlab = '', ylab = '', pch = '.', cex = .5, xlim = c(0, 1), ylim = c(0, 1))
+      plot(layout[idcs.ungated, ], col = scales::alpha('black', .4), axes = FALSE, xlab = '', ylab = '', pch = '.', cex = .5, xlim = c(0, 1), ylim = c(0, 1))
       points(layout[-idcs.ungated, 1], layout[-idcs.ungated, 2], col = scales::alpha(gating_colour_vector[-idcs.ungated], 0.4), pch = 20, cex = .18)
     } else {
-      plot(layout, col = scales::alpha(gating_colour_vector, .35), axes = F, xlab = '', ylab = '', pch = 20, cex = .18, xlim = c(0, 1), ylim = c(0, 1))
+      plot(layout, col = scales::alpha(gating_colour_vector, .35), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = .18, xlim = c(0, 1), ylim = c(0, 1))
     }
     # Plot origin and terminal nodes
     points(layout[tv$origin, 1], layout[tv$origin, 2], col = scales::alpha('yellow', .75), cex = 3, pch = 15)
@@ -369,7 +371,7 @@ shiny_server <- function(input, output, session) {
     })
   })
   
-  export_fcs_modal <- function(failed = F) {
+  export_fcs_modal <- function(failed = FALSE) {
     modalDialog(
       textInput('input_export_fcs_name', 'Output FCS file name', placeholder = '', value = 'output.FCS'),
       if (failed) div(tags$b('Field is empty', style = 'colour: red')),
@@ -425,7 +427,7 @@ shiny_server <- function(input, output, session) {
       flowCore::write.FCS(react$output_ff, input$input_export_fcs_name)
       removeModal()
     } else {
-      showModal(export_fcs_modal(failed = T))
+      showModal(export_fcs_modal(failed = TRUE))
     }
   })
     
@@ -498,10 +500,17 @@ shiny_server <- function(input, output, session) {
                        react$trajectories_marked.B,
                        flip_colours = react$layout_trajectories_flip_colours,
                        pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
-                       pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { react$pseudotime })
+                       pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { react$pseudotime },
+                       highlight_in_background = react$layout_trajectories_highlight_in_background)
   })
     
   # Buttons
+  observeEvent(input$btn_layout_trajectories_remove_highlight, {
+    react$pseudotime_highlight_bounds  <- NULL
+  })
+  observeEvent(input$btn_layout_trajectories_highlight_in_background, {
+    react$layout_trajectories_highlight_in_background <- !react$layout_trajectories_highlight_in_background
+  })
   observeEvent(input$btn_layout_trajectories_flip_colours, {
     react$layout_trajectories_flip_colours <- !react$layout_trajectories_flip_colours
   })
@@ -592,7 +601,7 @@ shiny_server <- function(input, output, session) {
                          xvar = 'segment', yvar = 'expression')
     if (nrow(pts) > 0) {
       highlighted_segments <- sort(unique(pts$segment))
-      react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.A[c(min(highlighted_segments), max(highlighted_segments))]
+      react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.A[c(min(highlighted_segments) - 1, max(highlighted_segments))]
     } else {
       react$pseudotime_highlight_bounds <- NULL
     }
@@ -615,7 +624,7 @@ shiny_server <- function(input, output, session) {
   # Plots
   output$plot_tracked_markers.A <- renderPlot({
     if (!is.null(react$trajectories_marked.A) && !is.null(react$tracked_markers.A)) {
-      react$tracked_markers_ready.A <- T
+      react$tracked_markers_ready.A <- TRUE
       p <- .plot_tracked_markers(react$trajectories_random_walks,
                                  react$trajectories_marked.A,
                                  tv,
@@ -627,12 +636,12 @@ shiny_server <- function(input, output, session) {
       react$tracked_markers_pseudotime_bounds.A <- p$pseudotime_bounds
       p$plot
     } else {
-      react$tracked_markers_ready.A <- F
+      react$tracked_markers_ready.A <- FALSE
     }
   })
   output$plot_tracked_markers.B <- renderPlot({
     if (!is.null(react$trajectories_marked.B) && !is.null(react$tracked_markers.B)) {
-      react$tracked_markers_ready.A <- T
+      react$tracked_markers_ready.A <- TRUE
       p <- .plot_tracked_markers(react$trajectories_random_walks,
                                  react$trajectories_marked.B,
                                  tv,
@@ -644,12 +653,15 @@ shiny_server <- function(input, output, session) {
       react$tracked_markers_pseudotime_bounds.B <- p$pseudotime_bounds
       p$plot
     } else {
-      react$tracked_markers_ready.A <- F
+      react$tracked_markers_ready.A <- FALSE
     }
   })
   
   ## Population composition trackers
   # Inputs
+  observeEvent(input$check_tracked_populations_log2_transform, {
+    react$tracked_populations_log2_transform <- input$check_tracked_populations_log2_transform
+  })
   observe({
     updateSelectInput(session, 'input_tracked_populations.A', choices = labels.unique)
     updateSelectInput(session, 'input_tracked_populations.B', choices = labels.unique)
@@ -674,9 +686,10 @@ shiny_server <- function(input, output, session) {
                                      react$trajectories_marked.A,
                                      tv,
                                      react$pseudotime,
-                                     populations = react$tracked_populations.A,
-                                     n.part      = react$trackers_n_segments,
-                                     exp.part    = react$trackers_scaling_exponent)
+                                     populations    = react$tracked_populations.A,
+                                     n.part         = react$trackers_n_segments,
+                                     exp.part       = react$trackers_scaling_exponent,
+                                     log2_transform = react$tracked_populations_log2_transform)
       react$tracked_populations_stats.A <- p$stats
       p$plot
     }
@@ -687,9 +700,10 @@ shiny_server <- function(input, output, session) {
                                      react$trajectories_marked.B,
                                      tv,
                                      react$pseudotime,
-                                     populations = react$tracked_populations.B,
-                                     n.part      = react$trackers_n_segments,
-                                     exp.part    = react$trackers_scaling_exponent)
+                                     populations    = react$tracked_populations.B,
+                                     n.part         = react$trackers_n_segments,
+                                     exp.part       = react$trackers_scaling_exponent,
+                                     log2_transform = react$tracked_populations_log2_transform)
       react$tracked_populations_stats.B <- p$stats
       p$plot
     }

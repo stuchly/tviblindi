@@ -114,11 +114,11 @@ shiny_ui <- fluidPage(
           ),
           fluidRow(
             h4('Selected terminal nodes'),
-            verbatimTextOutput('log_termini_selected', placeholder = T),
+            verbatimTextOutput('log_termini_selected', placeholder = TRUE),
           ),
           fluidRow(
             h4('Terminal nodes marked for further analysis'),
-            verbatimTextOutput('log_termini_marked', placeholder = T)
+            verbatimTextOutput('log_termini_marked', placeholder = TRUE)
           )
         ),
         ## LEFT PANEL TAB: PERSISTENCE SELECTOR (HOMOLOGY CLASSES)
@@ -138,14 +138,14 @@ shiny_ui <- fluidPage(
           actionButton('btn_persistence_mark_classes',  '', icon = icon('glyphicon glyphicon-plus', lib = 'glyphicon')),
           actionButton('btn_persistence_clear_classes', '', icon = icon("glyphicon glyphicon-fire", lib = 'glyphicon')),
           HTML('&nbsp;&nbsp;'),
-          textOutput('log_persistence_available', inline = T),
+          textOutput('log_persistence_available', inline = TRUE),
           fluidRow(
             h4('Selected homology classes'),
-            verbatimTextOutput('log_persistence_selected', placeholder = T)
+            verbatimTextOutput('log_persistence_selected', placeholder = TRUE)
           ),
           fluidRow(
             h4('Marked homology classes'),
-            verbatimTextOutput('log_persistence_marked', placeholder = T)
+            verbatimTextOutput('log_persistence_marked', placeholder = TRUE)
           )
         )
       )
@@ -181,7 +181,7 @@ shiny_ui <- fluidPage(
         choiceNames  = c('A', 'B'),
         selected = 'A', status = 'default',
         size = 'sm', direction = 'horizontal',
-        justified = T, individual = F
+        justified = TRUE, individual = F
       ),
       tags$script("$(\"input:radio[name='btn_trajectories_group'][value='A']\").parent().css('background-color', '#c2dfff');"),
       tags$script("$(\"input:radio[name='btn_trajectories_group'][value='B']\").parent().css('background-color', '#ffb5c9');"),
@@ -204,7 +204,7 @@ shiny_ui <- fluidPage(
       fluidRow(
         width = 12,
         h4('Selected dendrogram nodes by counts'),
-        verbatimTextOutput('log_dendrogram_selected', placeholder = T)
+        verbatimTextOutput('log_dendrogram_selected', placeholder = TRUE)
       ),
       fluidRow(
         style = 'padding-left:  0px;
@@ -223,7 +223,7 @@ shiny_ui <- fluidPage(
             textOutput('log_trajectories_marked_count.A')
           ),
           br(), br(),
-          verbatimTextOutput('log_trajectories_marked.A', placeholder = T)
+          verbatimTextOutput('log_trajectories_marked.A', placeholder = TRUE)
         ),
         column(
           width = 6,
@@ -239,7 +239,7 @@ shiny_ui <- fluidPage(
             textOutput('log_trajectories_marked_count.B')
           ),
           br(), br(),
-          verbatimTextOutput('log_trajectories_marked.B', placeholder = T)
+          verbatimTextOutput('log_trajectories_marked.B', placeholder = TRUE)
         )
       ),
       br(), br(), br(),
@@ -261,6 +261,9 @@ shiny_ui <- fluidPage(
           style = 'text-align:  right;
                    padding-right: 5px;
                    margin-top:   15px',
+          actionButton('btn_layout_trajectories_remove_highlight', label = '', icon = icon('glyphicon glyphicon-remove', lib = 'glyphicon')),
+          actionButton('btn_layout_trajectories_highlight_in_background', label = '', icon = icon('glyphicon glyphicon-sunglasses ', lib = 'glyphicon')),
+          HTML("&nbsp;&nbsp;"),
           actionButton('btn_layout_trajectories_flip_colours', label = '', icon = icon('glyphicon glyphicon-adjust', lib = 'glyphicon'))
         ),
         hr(),
@@ -294,7 +297,7 @@ shiny_ui <- fluidPage(
               column(
                 width = 9,
                 style = 'padding-left: 5px',
-                selectInput('input_tracked_markers.A', label = 'Group A markers of interest', choices = c(), multiple = T, width = '100%')
+                selectInput('input_tracked_markers.A', label = 'Group A markers of interest', choices = c(), multiple = TRUE, width = '100%')
               ),
               column(
                 width = 3,
@@ -322,7 +325,7 @@ shiny_ui <- fluidPage(
               column(
                 width = 9,
                 style = 'padding-left: 5px',
-                selectInput('input_tracked_markers.B', label = 'Group B markers of interest', choices = c(), multiple = T, width = '100%')
+                selectInput('input_tracked_markers.B', label = 'Group B markers of interest', choices = c(), multiple = TRUE, width = '100%')
               ),
               column(
                 width = 3,
@@ -355,9 +358,15 @@ shiny_ui <- fluidPage(
             fluidRow(
               column(
                 width = 12,
+                checkboxInput('check_tracked_populations_log2_transform', label = 'log2', value = FALSE)
+              )
+            ),
+            fluidRow(
+              column(
+                width = 12,
                 style = 'padding-left: 5px;
                          padding-right: 5px',
-                selectInput('input_tracked_populations.A', label = 'Group A populations of interest', choices = c(), multiple = T, width = '100%')
+                selectInput('input_tracked_populations.A', label = 'Group A populations of interest', choices = c(), multiple = TRUE, width = '100%')
               )
             ),
             fluidRow(
@@ -372,7 +381,7 @@ shiny_ui <- fluidPage(
                 width = 12,
                 style = 'padding-left: 5px;
                          padding-right: 5px',
-                selectInput('input_tracked_populations.B', label = 'Group B populations of interest', choices = c(), multiple = T, width = '100%')
+                selectInput('input_tracked_populations.B', label = 'Group B populations of interest', choices = c(), multiple = TRUE, width = '100%')
               )
             ),
             fluidRow(

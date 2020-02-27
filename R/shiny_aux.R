@@ -37,7 +37,7 @@
                                      out.hclust      = NULL,
                                      out.dendro_data = NULL,
                                      out.classif     = NULL) {
-  if (perc == 100) return(F)
+  if (perc == 100) return(FALSE)
   
   R              <- repre.reduced; rm(repre.reduced)
   Ru             <- c(unique(unlist(R)))            # unique simplices
@@ -62,7 +62,7 @@
   N              <- length(Ru)
   K              <- length(Rl.unique)
   
-  pres           <- new.env(hash = T)
+  pres           <- new.env(hash = TRUE)
   pres$R         <- R
   pres$Ru        <- Ru
   pres$ind       <- 0
@@ -230,8 +230,8 @@
 }
 
 .draw_placeholder <- function() {
-  j   <- jpeg::readJPEG(system.file('tree.jpg', package = "tviblindi"), native = T)
-  plot(0:1, 0:1, type = "n", ann = F, axes = F)
+  j   <- jpeg::readJPEG(system.file('tree.jpg', package = "tviblindi"), native = TRUE)
+  plot(0:1, 0:1, type = "n", ann = FALSE, axes = FALSE)
   rasterImage(j, 0, 0, 1, 1)
 }
 
@@ -301,7 +301,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 }
 
 ## Function: plot trajectories for 2D trajectories layout
-.plot_trajectories <- function(X, walks, walk_idcs.A, walk_idcs.B, flip_colours, pseudotime_highlight_bounds, tv, pseudotime, ...) {
+.plot_trajectories <- function(X, walks, walk_idcs.A, walk_idcs.B, flip_colours, pseudotime_highlight_bounds, pseudotime, highlight_in_background, ...) {
   require(scattermore)
   
   col1 <- c(34, 87, 201, 255)
@@ -312,6 +312,18 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   j      <- 0
   sel1   <- walks[walk_idcs.A]
   sel2   <- walks[walk_idcs.B]
+  
+  if (!is.null(pseudotime_highlight_bounds) && highlight_in_background) {
+    p <- pseudotime$res / max(pseudotime$res)
+    a <- which(p >= pseudotime_highlight_bounds[1])
+    b <- which(p <= pseudotime_highlight_bounds[2])
+    idcs.highlight <- intersect(a, b)
+    
+    if (length(idcs.highlight) > 0) {
+      pts <- X[idcs.highlight, ]
+      plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1)), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+    }
+  }
   
   if (flip_colours) {
     tmp <- sel1
@@ -348,7 +360,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     plot(scattermore(pts2, rgba = col2, xlim = c(0, 1), ylim = c(0, 1)), add = TRUE)
   }
   
-  if (!is.null(pseudotime_highlight_bounds)) {
+  if (!is.null(pseudotime_highlight_bounds) && !highlight_in_background) {
     p <- pseudotime$res / max(pseudotime$res)
     a <- which(p >= pseudotime_highlight_bounds[1])
     b <- which(p <= pseudotime_highlight_bounds[2])
@@ -356,7 +368,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, ]
-      plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1)), add = T, xlim = c(0, 1), ylim = c(0, 1))
+      plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1)), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
 }
@@ -420,11 +432,10 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     }
   }
   
-  categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = T))
+  categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
                                               # for each point on walk, which segment does it fall into?
   
-  pseudotime_bounds <- unlist(progress)[which(!duplicated(categs))]
-  
+  pseudotime_bounds <- c(0, unlist(progress)[which(!duplicated(categs))])
   coords <- tv$data[, markers]
   
   stats  <- lapply(1:N, function(i) {
@@ -496,9 +507,9 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     }
   }
   
-  categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = T))
+  categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
   
-  pseudotime_bounds <- unlist(progress)[which(!duplicated(categs))]
+  pseudotime_bounds <- c(0, unlist(progress)[which(!duplicated(categs))])
   
   coords <- tv$data[, markers]
   
@@ -518,7 +529,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
       as.data.frame(v)
     })
   })
-  stats            <- unlist(stats, recursive = F)
+  stats            <- unlist(stats, recursive = FALSE)
   stats            <- do.call(rbind, stats)
   stats$marker     <- as.factor(stats$marker)
   stats$segment    <- as.numeric(stats$segment)
@@ -549,7 +560,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                       breaks = NULL,
                                       n.part = 20,
                                       exp.part = 1,
-                                      larger = FALSE) {
+                                      larger = FALSE,
+                                      log2_transform) {
   pseudotime <- pseudotime$res
   pseudotime <- pseudotime / max(pseudotime)
   
@@ -574,7 +586,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     }
   }
   
-  categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = T))
+  categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
   
   pseudotime_bounds <- unlist(progress)[which(!duplicated(categs))]
   
@@ -587,13 +599,16 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
       which.walks <- unlist(lapply(1:length(walks), function(j) rep(j, length(walks[[j]]))))[inds]
       pts         <- unlist(walks)[unlist(inds)]
       counts      <- sum(tv$labels[pts] == p)
+      if (log2_transform) {
+        counts <- log2(counts)
+      }
       
       v <- cbind(rep(p, length(counts)), rep(i, length(counts)), unlist(counts))
       if (is.null(dim(v))) { names(v) <- c('population', 'segment', 'count') } else { colnames(v) <- c('population', 'segment', 'count') }
       as.data.frame(v)
     })
   })
-  stats            <- unlist(stats, recursive = F)
+  stats            <- unlist(stats, recursive = FALSE)
   stats            <- do.call(rbind, stats)
   stats$population <- as.factor(stats$population)
   stats$segment    <- as.numeric(stats$segment)
@@ -606,6 +621,10 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     labs(subtitle = 'Segmented by pseudotime values. ') +
     theme_light() +
     theme(axis.text.x = element_blank(), axis.ticks = element_blank(), plot.title = element_text(size = 20), legend.title = element_text(size = 16), legend.text = element_text(size = 12))
+  
+  if (log2_transform) {
+    g <- g + ylab('log2 count')
+  }
   
   if (larger) {
     g <- g + theme(base_size = 24)
@@ -636,7 +655,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   
   ## Cluster and triangulate walks
   withProgress(message = 'Contracting trajectories', expr = {
-    walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = F)
+    walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
     
     sel   <- 1:length(walks_clusters$starts)
     ss    <- which(unlist(lapply(tv$filtration$cmplx, FUN = function(x) return(length(x) == 2))))
