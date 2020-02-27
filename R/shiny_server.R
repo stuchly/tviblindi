@@ -19,7 +19,7 @@ shiny_server <- function(input, output, session) {
   markers          <- colnames(tv$data)
   labels.unique <- unique(tv$labels)
   
-  if ((!is.null(event_sel) && nrow(input_ff) != nrow(tv$data)) || (!is.null(event_sel) && length(event_sel) != nrow(tv$data))) {
+  if ((is.null(event_sel) && nrow(input_ff) != nrow(tv$data)) || (!is.null(event_sel) && length(event_sel) != nrow(tv$data))) {
     stop('Number of events in expression matrix incongruent with dimensionality of input FCS file. Did you misuse the event_sel parameter?')
   }
   
