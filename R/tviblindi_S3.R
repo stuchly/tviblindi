@@ -243,7 +243,7 @@ Walks<-function(x,...){
 #' @param base double (default 1.5); penalty of jumping to far ahead in presudotime.
 #' @param K integer (default 30); number of nearest neighbors to computer transition matrix.
 #' @param equinumerous bool (default FALSE); simulate equal number (\code{N} for each) of walks for every potential end (see details).
-#' @param to integer vector; indices of cells - force choice of ends (see details).
+#' @param to integer or character vector; indices of cells or label of target population(s) - force choice of ends (see details).
 #' @param add bool (default FALSE); add the simulated walks to \code{x} instead of replace.
 #' @param kernel character; see \code{knn.adj2spadjsim}.
 #'
