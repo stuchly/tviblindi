@@ -273,14 +273,14 @@ shiny_ui <- fluidPage(
             style = 'text-align:  right;
                      padding-left: 5px;
                      margin-top:   15px',
-            numericInput('input_tracked_markers_scaling_exponent', label = 'Scale exp', min = .1, max = 10, value = 1, step = .1),
+            numericInput('input_trackers_scaling_exponent', label = 'Scale exp', min = .1, max = 10, value = 1, step = .1),
           ),
           column(
             width = 2,
             style = 'text-align:  right;
                      padding-left: 5px;
                      margin-top:   15px',
-            numericInput('input_tracked_markers_n_segments', label = '# segs', min = 3, max = 1000, value = 20, step = 1)
+            numericInput('input_trackers_n_segments', label = '# segs', min = 3, max = 1000, value = 20, step = 1)
           ),
           column(
             width = 8
