@@ -47,6 +47,9 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep.intermedi
     structure(out,class="tviblindi")
 }
 
+print.tviblindi<-function(x){
+    cat("tviblindi object\n","data size: ",nrow(x$data),"\n", "labels: ", levels(x$labels),"\n")
+}
 
 Set_origin<-function(x,...){
     UseMethod("Set_origin",x)
