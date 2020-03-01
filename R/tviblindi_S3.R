@@ -50,7 +50,7 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep.intermedi
 print.tviblindi<-function(x){
     cat("tviblindi object\n",
         "data size: ",nrow(x$data),"\n",
-        "labels: ", levels(x$labels),"\n",
+        "labels: ", levels(x$labels),"\n"
         )
 }
 
