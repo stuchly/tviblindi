@@ -409,6 +409,7 @@ DimRed.tviblindi <-
                                 alpha
                             )
                 x$vae <- layout[[3]]
+                x$vae_structure<-list(config=layout[[4]],weights=layout[[5]])
                 x$layout <- layout[[1]]
             }
 
