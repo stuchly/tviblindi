@@ -319,7 +319,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     b <- which(p <= pseudotime_highlight_bounds[2])
     idcs.highlight <- intersect(a, b)
     if (length(idcs.highlight) > 0) {
-      pts <- X[idcs.highlight, ]
+      pts <- X[idcs.highlight, , drop = FALSE]
       plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1)), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
