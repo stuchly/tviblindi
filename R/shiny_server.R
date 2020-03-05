@@ -605,7 +605,7 @@ shiny_server <- function(input, output, session) {
                          xvar = 'segment', yvar = 'expression')
     if (nrow(pts) > 0) {
       highlighted_segments <- sort(unique(pts$segment))
-      react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.A[c(min(highlighted_segments) - 1, max(highlighted_segments))]
+      react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.A[c(min(highlighted_segments), max(highlighted_segments) + 1)]
     } else {
       react$pseudotime_highlight_bounds <- NULL
     }

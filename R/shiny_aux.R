@@ -318,7 +318,6 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     a <- which(p >= pseudotime_highlight_bounds[1])
     b <- which(p <= pseudotime_highlight_bounds[2])
     idcs.highlight <- intersect(a, b)
-    
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, ]
       plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1)), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
@@ -365,9 +364,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     a <- which(p >= pseudotime_highlight_bounds[1])
     b <- which(p <= pseudotime_highlight_bounds[2])
     idcs.highlight <- intersect(a, b)
-    
     if (length(idcs.highlight) > 0) {
-      pts <- X[idcs.highlight, ]
+      pts <- X[idcs.highlight, , drop = FALSE]
       plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1)), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
@@ -435,7 +433,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
                                               # for each point on walk, which segment does it fall into?
   
-  pseudotime_bounds <- c(0, unlist(progress)[which(!duplicated(categs))])
+  pseudotime_bounds <- c(unlist(progress)[which(!duplicated(categs))], 1)
   coords <- tv$data[, markers]
   
   stats  <- lapply(1:N, function(i) {
@@ -512,7 +510,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   
   categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
   
-  pseudotime_bounds <- c(0, unlist(progress)[which(!duplicated(categs))])
+  pseudotime_bounds <- c(unlist(progress)[which(!duplicated(categs))], 1)
   
   coords <- tv$data[, markers]
   
