@@ -535,12 +535,12 @@ shiny_server <- function(input, output, session) {
     }
   })
   observeEvent(input$input_trackers_scaling_exponent, {
-    if (input$input_trackers_scaling_exponent > 3 && input$input_trackers_scaling_exponent < 1000) {
-      react$trackers_scaling_exponent <- as.integer(input$input_trackers_scaling_exponent)
+    if (is.numeric(input$input_trackers_scaling_exponent) && input$input_trackers_scaling_exponent > 0.0001 && input$input_trackers_scaling_exponent < 1000) {
+      react$trackers_scaling_exponent <- as.numeric(input$input_trackers_scaling_exponent)
     }
   })
   observeEvent(input$input_trackers_n_segments, {
-    if (input$input_trackers_n_segments > 3 && input$input_trackers_n_segments < 1000) {
+    if (is.numeric(input$input_trackers_n_segments) && input$input_trackers_n_segments > 3 && input$input_trackers_n_segments < 1000) {
       react$trackers_n_segments <- as.integer(input$input_trackers_n_segments)
     }
   })
@@ -618,7 +618,7 @@ shiny_server <- function(input, output, session) {
                          xvar = 'segment', yvar = 'expression')
     if (nrow(pts) > 0) {
       highlighted_segments <- sort(unique(pts$segment))
-      react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments))]
+      react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments) + 1)]
     } else {
       react$pseudotime_highlight_bounds <- NULL
     }
