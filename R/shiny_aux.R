@@ -382,7 +382,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                   breaks   = NULL,
                                   n.part   = 10,
                                   exp.part = 1,
-                                  larger = FALSE) {
+                                  large_base_size = FALSE) {
   require(ggplot2)
   
   if (length(markers) == 1) {
@@ -403,7 +403,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                     n.part      = 10,
                                     exp.part    = 1,
                                     show_legend = FALSE,
-                                    larger      = FALSE) {
+                                    large_base_size = FALSE) {
   ## Scale pseudotime
   pseudotime <- pseudotime$res
   pseudotime <- pseudotime/max(pseudotime)
@@ -461,12 +461,15 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     ggtitle(paste0(markers, ' expression per walk: means per segment')) +
     labs(subtitle = 'Segmented by pseudotime values.') +
     theme_light() +
-    theme(axis.text.x = element_blank(), axis.ticks = element_blank(), plot.title = element_text(size = 20), legend.title = element_text(size = 24), legend.text = element_text(size = 24))
+    theme(text          = element_text(size = if (large_base_size) { 24 } else { 11 }),
+          axis.text.x   = element_blank(),
+          axis.ticks    = element_blank(),
+          plot.title    = element_text(size = if (large_base_size) { 20 } else { 18 }),
+          plot.subtitle = element_text(size = if (large_base_size) { 19 } else { 16 }),
+          legend.title  = element_text(size = if (large_base_size) { 24 } else { 16 }),
+          legend.text   = element_text(size = if (large_base_size) { 22 } else { 12 }))
   if (!show_legend) {
     g <- g + theme(legend.position = 'none')
-  }
-  if (larger) {
-    g <- g + theme(base_size = 24)
   }
   list(plot              = g,
        stats             = stats,
@@ -482,7 +485,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                            n.part      = 10,
                                            exp.part    = 1,
                                            show_legend = TRUE,
-                                           larger      = FALSE) {
+                                           large_base_size = FALSE) {
   pseudotime <- pseudotime$res
   pseudotime <- pseudotime/max(pseudotime)
   
@@ -541,12 +544,13 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     ggtitle(paste0('Multiple markers expression')) +
     labs(subtitle = 'Segmented by pseudotime values. ') +
     theme_light() +
-    theme(axis.text.x = element_blank(), axis.ticks = element_blank(), plot.title = element_text(size = 20), legend.title = element_text(size = 16), legend.text = element_text(size = 12))
-  
-  if (larger) {
-    g <- g + theme(base_size = 24)
-  }
-  
+    theme(text          = element_text(size = if (large_base_size) { 24 } else { 11 }),
+          axis.text.x   = element_blank(),
+          axis.ticks    = element_blank(),
+          plot.title    = element_text(size = if (large_base_size) { 20 } else { 18 }),
+          plot.subtitle = element_text(size = if (large_base_size) { 19 } else { 16 }),
+          legend.title  = element_text(size = if (large_base_size) { 24 } else { 16 }),
+          legend.text   = element_text(size = if (large_base_size) { 22 } else { 12 }))
   list(plot              = g,
        stats             = stats,
        pseudotime_bounds = pseudotime_bounds)
@@ -560,7 +564,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                       breaks = NULL,
                                       n.part = 20,
                                       exp.part = 1,
-                                      larger = FALSE,
+                                      large_base_size = FALSE,
                                       log2_transform) {
   pseudotime <- pseudotime$res
   pseudotime <- pseudotime / max(pseudotime)
@@ -620,14 +624,15 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     ggtitle(paste0('Annotated populations composition progression')) +
     labs(subtitle = 'Segmented by pseudotime values. ') +
     theme_light() +
-    theme(axis.text.x = element_blank(), axis.ticks = element_blank(), plot.title = element_text(size = 20), legend.title = element_text(size = 16), legend.text = element_text(size = 12))
-  
+    theme(text          = element_text(size = if (large_base_size) { 24 } else { 11 }),
+          axis.text.x   = element_blank(),
+          axis.ticks    = element_blank(),
+          plot.title    = element_text(size = if (large_base_size) { 20 } else { 18 }),
+          plot.subtitle = element_text(size = if (large_base_size) { 19 } else { 16 }),
+          legend.title  = element_text(size = if (large_base_size) { 24 } else { 16 }),
+          legend.text   = element_text(size = if (large_base_size) { 22 } else { 12 }))
   if (log2_transform) {
     g <- g + ylab('log2 count')
-  }
-  
-  if (larger) {
-    g <- g + theme(base_size = 24)
   }
   
   list(plot              = g,

@@ -266,6 +266,7 @@ shiny_ui <- fluidPage(
           HTML("&nbsp;&nbsp;"),
           actionButton('btn_layout_trajectories_flip_colours', label = '', icon = icon('glyphicon glyphicon-adjust', lib = 'glyphicon'))
         ),
+        ### RIGHT PANEL: TRACKERS
         hr(),
         fluidRow(
           column(
@@ -283,7 +284,11 @@ shiny_ui <- fluidPage(
             numericInput('input_trackers_n_segments', label = '# segs', min = 3, max = 1000, value = 20, step = 1)
           ),
           column(
-            width = 8
+            width = 8,
+            style = 'text-align:  right;
+                     padding-left: 5px;
+                     margin-top:   35px',
+            checkboxInput('check_trackers_large_base_size', label = 'Larger text', value = FALSE)
           )
         ),
         tabsetPanel(

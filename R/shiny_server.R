@@ -50,6 +50,7 @@ shiny_server <- function(input, output, session) {
   # Marker expression and population trackers
   react$trackers_n_segments          <- 20 # number of pseudotime segments in markers tracking
   react$trackers_scaling_exponent    <- 1 # scaling exponent for pseudotime segmentation in markers tracking
+  react$trackers_large_base_size     <- FALSE
   react$tracked_markers.A            <- NULL # names of markers of interest in group A
   react$tracked_markers_stats.A      <- NULL
   react$tracked_markers_stats.B      <- NULL
@@ -543,6 +544,9 @@ shiny_server <- function(input, output, session) {
       react$trackers_n_segments <- as.integer(input$input_trackers_n_segments)
     }
   })
+  observeEvent(input$check_trackers_large_base_size, {
+    react$trackers_large_base_size <- input$check_trackers_large_base_size
+  })
   observeEvent(input$btn_tracked_markers_remove_trajectories.A, {
     if (length(react$tracked_markers.A) == 1) {
       pts <- brushedPoints(react$tracked_markers_stats.A,
@@ -631,7 +635,8 @@ shiny_server <- function(input, output, session) {
                                  react$pseudotime,
                                  markers  = react$tracked_markers.A,
                                  n.part   = react$trackers_n_segments,
-                                 exp.part = react$trackers_scaling_exponent)
+                                 exp.part = react$trackers_scaling_exponent,
+                                 large_base_size = react$trackers_large_base_size)
       react$tracked_markers_stats.A <- p$stats
       react$tracked_markers_pseudotime_bounds.A <- p$pseudotime_bounds
       p$plot
@@ -648,7 +653,8 @@ shiny_server <- function(input, output, session) {
                                  react$pseudotime,
                                  markers  = react$tracked_markers.B,
                                  n.part   = react$trackers_n_segments,
-                                 exp.part = react$trackers_scaling_exponent)
+                                 exp.part = react$trackers_scaling_exponent,
+                                 large_base_size = react$trackers_large_base_size)
       react$tracked_markers_stats.B <- p$stats
       react$tracked_markers_pseudotime_bounds.B <- p$pseudotime_bounds
       p$plot
@@ -689,7 +695,8 @@ shiny_server <- function(input, output, session) {
                                      populations    = react$tracked_populations.A,
                                      n.part         = react$trackers_n_segments,
                                      exp.part       = react$trackers_scaling_exponent,
-                                     log2_transform = react$tracked_populations_log2_transform)
+                                     log2_transform = react$tracked_populations_log2_transform,
+                                     large_base_size = react$trackers_large_base_size)
       react$tracked_populations_stats.A <- p$stats
       p$plot
     }
@@ -703,7 +710,8 @@ shiny_server <- function(input, output, session) {
                                      populations    = react$tracked_populations.B,
                                      n.part         = react$trackers_n_segments,
                                      exp.part       = react$trackers_scaling_exponent,
-                                     log2_transform = react$tracked_populations_log2_transform)
+                                     log2_transform = react$tracked_populations_log2_transform,
+                                     large_base_size = react$trackers_large_base_size)
       react$tracked_populations_stats.B <- p$stats
       p$plot
     }
