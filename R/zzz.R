@@ -18,6 +18,6 @@
     if (!reticulate::py_module_available("numpy")) reticulate::py_install("numpy",pip=TRUE)
     if (!reticulate::py_module_available("vaevictis")) reticulate::py_install("git+https://github.com/stuchly/vaevictis.git@master",pip=TRUE)
   }
-  
+
   return(invisible(TRUE))
 }

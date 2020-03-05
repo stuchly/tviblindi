@@ -2,7 +2,7 @@
 #'
 #' \code{tviblindi}
 #' @param data a numeric matrix; the (transformed and compensated) expression data.
-#' @param labels character or factor vector of the same length as \code{nrow(data)}; 
+#' @param labels character or factor vector of the same length as \code{nrow(data)};
 #' assignment of cells to population, unassigned cells should be labelled as "ungated" for better plotting.
 #' @param fcs_path character (optional); path to fcs file to store the results - typically the fcs file with analysed data.
 #' @param events_sel integer vector (optional); the indices of data in fcs file, defaults to 'code{1:nor(data)}.
@@ -47,6 +47,12 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep.intermedi
     structure(out,class="tviblindi")
 }
 
+print.tviblindi<-function(x){
+    cat("tviblindi object\n",
+        "data size: ",nrow(x$data),"\n",
+        "labels: ", levels(x$labels),"\n"
+        )
+}
 
 Set_origin<-function(x,...){
     UseMethod("Set_origin",x)
@@ -111,9 +117,9 @@ Denoise<-function(x,...){
 #' @param K integer (default K=30); number of neigbors to average (see details).
 #' @param iter integer (default 1); number of iterations (see details).
 #'
-#' @details A simple noise reducution algorithm is applied - every cell coordinates are replaced by the average of \code{K} nearest neigbors. 
+#' @details A simple noise reducution algorithm is applied - every cell coordinates are replaced by the average of \code{K} nearest neigbors.
 #' This process is repeated \code{iter}-times.
-#' 
+#'
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
@@ -203,14 +209,15 @@ Pseudotime<-function(x,...){
 #' \code{Pseudotime}
 #' @param x tviblindi class object.
 #' @param K integer (default K=30); number of nearest neighbors to compute transition matrix.
-#' 
+#'
 #' @details Computes average distance of each cell from the cell-of-origin of all random walks in undirected graph of nearest neigbors.
-#' 
+#'
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
 Pseudotime.tviblindi<-function(x,K=30){
     stopifnot(!is.null(x$origin))
+    if (length(x$origin)==0) stop("Origin not set!")
     if (K>dim(x$KNN$IND)[2]){
         K<-min(K,dim(x$KNN)[2])
         warning("K > dim(KNN)[2]; K<-min(K,dim(x$KNN)[2])")
@@ -242,22 +249,22 @@ Walks<-function(x,...){
 #' @param base double (default 1.5); penalty of jumping to far ahead in presudotime.
 #' @param K integer (default 30); number of nearest neighbors to computer transition matrix.
 #' @param equinumerous bool (default FALSE); simulate equal number (\code{N} for each) of walks for every potential end (see details).
-#' @param to integer vector; indices of cells - force choice of ends (see details).
-#' @param add bool (default FALSE); add the simulated walks to \code{x} instead of replace. 
-#' @param kernel character; see \code{knn.adj2spadjsim}. 
+#' @param to integer or character vector; indices of cells or label of target population(s) - force choice of ends (see details).
+#' @param add bool (default FALSE); add the simulated walks to \code{x} instead of replace.
+#' @param kernel character; see \code{knn.adj2spadjsim}.
 #'
 #' @details This method simulates random walks on directed graph (only edges pointing ahead in pseudotime are kept). To avoid short circuits
 #' the pseudotime (the cells with respect to pseudotime) is divided into \code{breaks} bins and the probability of jump over k-bins ahead is penalized
 #' by \code{base}^-k. Transition matrix is constructed independently of pseudotime estimation using \code{K} nearest neighbors.
-#' If \code{equinumerous==TRUE} the potential ends (vertices in graph with no out-going edge) are identified and for each a subcomponent 
-#' of graph of vertices from which this end could be reached is used for simulation - this could be time consuming for large number of ends. 
-#' The same approach is used when \code{!is.null(to)}.  
+#' If \code{equinumerous==TRUE} the potential ends (vertices in graph with no out-going edge) are identified and for each a subcomponent
+#' of graph of vertices from which this end could be reached is used for simulation - this could be time consuming for large number of ends.
+#' The same approach is used when \code{!is.null(to)}.
 #'
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
 Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL,add=FALSE,kernel="exp"){
-
+    if (length(x$origin)==0) stop("Origin not set!")
     add.walks<-function(x,walks){
         if(is.null(x$walks)) x$walks<-list(starts=NULL,v=NULL)
         x$walks$starts<-c(x$walks$starts,walks$starts+length(x$walks$v))
@@ -285,10 +292,20 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
 
     fates<-NULL
     if (!is.null(to)){
+        if (is.character(to)){
+            to<-to[which(to %in% levels(x$labels))]
+            if (length(to)==0) stop("Populations not in labels!")
+            toc<-to
+            to<-NULL
+            for (tt in toc){
+                p1<-which(x$labels==tt)
+                to <- c(to,p1[which.min(rowSums(t(t(x$data[p1,]) - colMeans(x$data[p1, ]))^2))])
+            }
+        }
         fates <- to
         equinumerous<-TRUE
     }
-    
+
     x$fates <- which(!(1:nrow(x$data) %in% Matrix::summary(oriented.sparseMatrix)$i))
     if (equinumerous){
         if (is.null(fates)) fates<-x$fates
@@ -348,11 +365,11 @@ DimRed<-function(x,...){
 #' \code{DimRed}
 #' @param x tviblindi class object.
 #' @param method character; "vaevictis" - deep (auto)encoder (combination of ideas from different papers - to be eleborated)
-#' or "diffuse" - saparse diffusion maps 
+#' or "diffuse" - saparse diffusion maps
 #' @param layout numeric matrix \code{[nrow(data),2]} (optional); if \code{!is.null(layout)} dimensional reduction is plugged-in.
-#' @param dim integer (default 2); dimension of reduced data (for the moment only resonable value is 2 but the reduction should work for 
+#' @param dim integer (default 2); dimension of reduced data (for the moment only resonable value is 2 but the reduction should work for
 #' any integer value (for "diffuse" \code{< nrow(data)})).
-#' @param vsplit double (default 0.1); percentage of data used as validation step in "vaevictis". 
+#' @param vsplit double (default 0.1); percentage of data used as validation step in "vaevictis".
 #' @param enc_shape integer vector (default \code{c(128,128,128)}); shape (depth and wisth) of the encoder.
 #' @param dec_shape integer vector (default \code{c(128,128,128)}); shape (depth and wisth) of decoder.
 #' @param perplexity double (default 10.); perplexity for tsne regularisation see https://www.nature.com/articles/s41467-018-04368-5.
@@ -364,7 +381,7 @@ DimRed<-function(x,...){
 #' @param t double; time parameter for "diffuse", if \code{t==0} multi-time scale is used (geometric sum).
 #' @param load_model character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied
 #'
-#' @details The pathway analysis visualisation benefits from dimensional reductions which are by definition continuous... to be elaborated 
+#' @details The pathway analysis visualisation benefits from dimensional reductions which are by definition continuous... to be elaborated
 #'
 #' @return  returns an invisible tviblindi class object.
 #'
@@ -441,10 +458,10 @@ DownSample<-function(x,...){
 #' @param method character; deprecated.
 #' @param e double; deprecated.
 #' @param D integer; expected intrinsic dimension of the data - higher dimension underestimates the density of sparse regions.
-#' 
-#' @details Density-based downsampling of the data, should reduce over-abundant dense populations. The labels, events_sel, data and layout are downsampled, 
+#'
+#' @details Density-based downsampling of the data, should reduce over-abundant dense populations. The labels, events_sel, data and layout are downsampled,
 #' the rest is set to \code{NULL}
-#' 
+#'
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
@@ -527,7 +544,7 @@ Copy<-function(x,...){
 #'
 #' \code{Copy}
 #' @param x tviblindi class object.
-#' 
+#'
 #' @return  returns a tviblindi class object.
 #'
 #' @export
@@ -545,9 +562,9 @@ Copy.tviblindi<-function(x){
 #'
 #' \code{Pseudotime}
 #' @param x tviblindi class object.
-#' 
+#'
 #' @details See \code{connectome}
-#' 
+#'
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export

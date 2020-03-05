@@ -533,14 +533,14 @@ shiny_server <- function(input, output, session) {
       updateSelectInput(session, 'input_tracked_markers.A', selected = input$input_tracked_markers.B)
     }
   })
-  observeEvent(input$input_tracked_markers_scaling_exponent, {
-    if (input$input_tracked_markers_scaling_exponent > 3 && input$input_tracked_markers_scaling_exponent < 1000) {
-      react$trackers_scaling_exponent <- as.integer(input$input_tracked_markers_scaling_exponent)
+  observeEvent(input$input_trackers_scaling_exponent, {
+    if (input$input_trackers_scaling_exponent > 3 && input$input_trackers_scaling_exponent < 1000) {
+      react$trackers_scaling_exponent <- as.integer(input$input_trackers_scaling_exponent)
     }
   })
-  observeEvent(input$input_tracked_markers_n_segments, {
-    if (input$input_tracked_markers_n_segments > 3 && input$input_tracked_markers_n_segments < 1000) {
-      react$trackers_n_segments <- as.integer(input$input_tracked_markers_n_segments)
+  observeEvent(input$input_trackers_n_segments, {
+    if (input$input_trackers_n_segments > 3 && input$input_trackers_n_segments < 1000) {
+      react$trackers_n_segments <- as.integer(input$input_trackers_n_segments)
     }
   })
   observeEvent(input$btn_tracked_markers_remove_trajectories.A, {
