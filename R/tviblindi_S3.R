@@ -509,7 +509,7 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
 }
 
 ## Already generic
-plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime"),legend="bottomleft",l_cex=0.5){
+plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime"),legend="bottomleft",l_cex=0.5,...){
     if (is.null(x$layout)) stop("Layout not computed!")
     if (col[1]=="pseudotime"){
         if(is.null(x$pseudotime)) stop("Pseudotime not computed!")
@@ -517,11 +517,11 @@ plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime"),legend="bottomle
         psc  <- psc / max(psc)
         psc  <- psc * 10000 + 1
         col  <- greenred(10500)
-        plot(x$layout,col=col[psc],pch=pch)
+        plot(x$layout,col=col[psc],pch=pch,...)
     } else {
         KK<-length(levels(x$labels))
         palette(rainbow(KK))
-        plot(x$layout,col=x$labels,pch=pch)
+        plot(x$layout,col=x$labels,pch=pch,...)
         legend(legend,legend=levels(x$labels),col=1:KK,pch=19,cex=l_cex)
         palette("default")
     }
