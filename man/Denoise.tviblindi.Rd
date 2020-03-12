@@ -20,6 +20,6 @@ returns an invisible tviblindi class object.
 \code{Denoise}
 }
 \details{
-A simple noise reducution algorithm is applied - every cell coordinates are replaced by the average of \code{K} nearest neigbors. 
+A simple noise reducution algorithm is applied - every cell coordinates are replaced by the average of \code{K} nearest neigbors.
 This process is repeated \code{iter}-times.
 }

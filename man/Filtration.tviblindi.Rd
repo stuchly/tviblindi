@@ -4,7 +4,7 @@
 \alias{Filtration.tviblindi}
 \title{Computes triangulation, boundary matrix and reduced boundary matrix, modifies x}
 \usage{
-\method{Filtration}{tviblindi}(x, method = "witness", K = 30, alpha2 = 10)
+\method{Filtration}{tviblindi}(x, method = "witness", K = 30, alpha2 = NULL)
 }
 \arguments{
 \item{x}{tviblindi class object.}
@@ -13,7 +13,8 @@
 
 \item{K}{integer (default K=30); number of nearest neighbors.}
 
-\item{alpha}{double (default 10); relaxation parameter for witness complex.}
+\item{alpha}{double (default 10); relaxation parameter for witness complex. If \code{NULL} mean distance to 
+Kth nerarest witness is used.}
 }
 \value{
 returns an invisible tviblindi class object.

@@ -30,7 +30,7 @@ or "diffuse" - saparse diffusion maps}
 
 \item{layout}{numeric matrix \code{[nrow(data),2]} (optional); if \code{!is.null(layout)} dimensional reduction is plugged-in.}
 
-\item{dim}{integer (default 2); dimension of reduced data (for the moment only resonable value is 2 but the reduction should work for 
+\item{dim}{integer (default 2); dimension of reduced data (for the moment only resonable value is 2 but the reduction should work for
 any integer value (for "diffuse" \code{< nrow(data)})).}
 
 \item{vsplit}{double (default 0.1); percentage of data used as validation step in "vaevictis".}

@@ -26,6 +26,6 @@ returns an invisible tviblindi class object.
 \code{DownSample}
 }
 \details{
-Density-based downsampling of the data, should reduce over-abundant dense populations. The labels, events_sel, data and layout are downsampled, 
+Density-based downsampling of the data, should reduce over-abundant dense populations. The labels, events_sel, data and layout are downsampled,
 the rest is set to \code{NULL}
 }

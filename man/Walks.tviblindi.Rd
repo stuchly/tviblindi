@@ -29,7 +29,7 @@
 
 \item{equinumerous}{bool (default FALSE); simulate equal number (\code{N} for each) of walks for every potential end (see details).}
 
-\item{to}{integer vector; indices of cells - force choice of ends (see details).}
+\item{to}{integer or character vector; indices of cells or label of target population(s) - force choice of ends (see details).}
 
 \item{add}{bool (default FALSE); add the simulated walks to \code{x} instead of replace.}
 
@@ -45,7 +45,7 @@ returns an invisible tviblindi class object.
 This method simulates random walks on directed graph (only edges pointing ahead in pseudotime are kept). To avoid short circuits
 the pseudotime (the cells with respect to pseudotime) is divided into \code{breaks} bins and the probability of jump over k-bins ahead is penalized
 by \code{base}^-k. Transition matrix is constructed independently of pseudotime estimation using \code{K} nearest neighbors.
-If \code{equinumerous==TRUE} the potential ends (vertices in graph with no out-going edge) are identified and for each a subcomponent 
-of graph of vertices from which this end could be reached is used for simulation - this could be expensive for large number of ends. 
+If \code{equinumerous==TRUE} the potential ends (vertices in graph with no out-going edge) are identified and for each a subcomponent
+of graph of vertices from which this end could be reached is used for simulation - this could be time consuming for large number of ends.
 The same approach is used when \code{!is.null(to)}.
 }

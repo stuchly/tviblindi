@@ -15,7 +15,7 @@ tviblindi(
 \arguments{
 \item{data}{a numeric matrix; the (transformed and compensated) expression data.}
 
-\item{labels}{character or factor vector of the same length as \code{nrow(data)}; 
+\item{labels}{character or factor vector of the same length as \code{nrow(data)};
 assignment of cells to population, unassigned cells should be labelled as "ungated" for better plotting.}
 
 \item{fcs_path}{character (optional); path to fcs file to store the results - typically the fcs file with analysed data.}

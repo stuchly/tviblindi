@@ -170,17 +170,18 @@ Filtration<-function(x,...){
 #' @param x tviblindi class object.
 #' @param K integer (default K=30); number of nearest neighbors.
 #' @param method character (only "witness" complex is implemeted); Uses Gudhi and CGAL libraries to compute witness complex
-#' @param alpha double (default 10); relaxation parameter for witness complex.
+#' @param alpha double (default 10); relaxation parameter for witness complex. If \code{NULL} mean distance to 
+#' Kth nerarest witness is used.
 #'
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Filtration.tviblindi<-function(x,method="witness",K=30,alpha2=10){
+Filtration.tviblindi<-function(x,method="witness",K=30,alpha2=NULL){
     if (method!="witness") stop("Not yet implemented")
     stopifnot(!is.null(x$codes))
 
     xy <- FNN::get.knnx(x$codes, x$denoised, k = K)
-    if (!is.null(alpha2)) alpha2<-mean(xy$nn.dist[,K])
+    if (is.null(alpha2)) alpha2<-mean(xy$nn.dist[,K])
     Ilist           <- split(xy$nn.index, seq(nrow(xy$nn.index)))
     Dlist           <- split(xy$nn.dist, seq(nrow(xy$nn.index)))
     x$filtration           <- witness_from_distances_cliques(Ilist, Dlist, alpha2 = alpha2, maxdimension = 1)
