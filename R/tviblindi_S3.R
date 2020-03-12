@@ -180,6 +180,7 @@ Filtration.tviblindi<-function(x,method="witness",K=30,alpha2=10){
     stopifnot(!is.null(x$codes))
 
     xy <- FNN::get.knnx(x$codes, x$denoised, k = K)
+    if (!is.null(alpha2)) alpha2<-mean(xy$nn.dist[,K])
     Ilist           <- split(xy$nn.index, seq(nrow(xy$nn.index)))
     Dlist           <- split(xy$nn.dist, seq(nrow(xy$nn.index)))
     x$filtration           <- witness_from_distances_cliques(Ilist, Dlist, alpha2 = alpha2, maxdimension = 1)
