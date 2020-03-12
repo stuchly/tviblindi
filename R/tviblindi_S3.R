@@ -170,8 +170,8 @@ Filtration<-function(x,...){
 #' @param x tviblindi class object.
 #' @param K integer (default K=30); number of nearest neighbors.
 #' @param method character (only "witness" complex is implemeted); Uses Gudhi and CGAL libraries to compute witness complex
-#' @param alpha double (default 10); relaxation parameter for witness complex. If \code{NULL} mean distance to 
-#' Kth nerarest witness is used.
+#' @param alpha double (default \code{NULL}); relaxation parameter for witness complex. If \code{NULL} mean distance to 
+#' K-th nerarest witness is used.
 #'
 #' @return  returns an invisible tviblindi class object.
 #'
