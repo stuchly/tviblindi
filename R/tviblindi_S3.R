@@ -171,7 +171,7 @@ Filtration<-function(x,...){
 #' @param K integer (default K=30); number of nearest neighbors.
 #' @param method character (only "witness" complex is implemeted); Uses Gudhi and CGAL libraries to compute witness complex
 #' @param alpha double (default \code{NULL}); relaxation parameter for witness complex. If \code{NULL} mean distance to 
-#' K-th nerarest witness is used.
+#' K-th nearest witness is used.
 #'
 #' @return  returns an invisible tviblindi class object.
 #'
@@ -381,7 +381,8 @@ DimRed<-function(x,...){
 #' @param batch_size integer (default 512); batch size for "vaevictis" training.
 #' @param epochs integer; maximum number of epochs for "vaevictis" training.
 #' @param patience integer; maxim patience for for "vaevictis" training (early stopping).
-#' @param alpha double; pnealty for tsne regularisation.
+#' @param ww vector double; weights for vaevictis in this order - tsne_regularisations, ivis pn loss, reconstruction error, KL divergence
+#' @param margin double; ivis pn loss margin
 #' @param neigen integer; for "diffuse" number of eigen vectors to compute.
 #' @param t double; time parameter for "diffuse", if \code{t==0} multi-time scale is used (geometric sum).
 #' @param load_model character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied
@@ -403,7 +404,9 @@ DimRed.tviblindi <-
              batch_size = 512L,
              epochs = 100L,
              patience = 0L,
-             alpha = 10.,
+             ivis_pretrain=0,
+             ww=c(10.,10.,1.,1.),
+             margin=1.,
              neigen = 2,
              t = 0,
              load_model=NULL) {
@@ -428,7 +431,12 @@ DimRed.tviblindi <-
                                 as.integer(batch_size),
                                 as.integer(epochs),
                                 as.integer(patience),
-                                alpha
+                                as.integer(ivis_pretrain),
+                                ww,
+                                "euclidean",
+                                margin,
+                                ncol(x$KNN$IND),
+                                x$KNN$IND
                             )
                 x$vae <- layout[[3]]
                 x$vae_structure<-list(config=layout[[4]],weights=layout[[5]])
