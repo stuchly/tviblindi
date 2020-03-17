@@ -439,7 +439,7 @@ DimRed.tviblindi <-
                                 x$KNN$IND
                             )
                 x$vae <- layout[[3]]
-                x$vae_structure<-list(config=layout[[4]],weights=layout[[5]])
+                #x$vae_structure<-list(config=layout[[3]]$get_config(),weights=layout[[3]]$get_weights())
                 x$layout <- layout[[1]]
             }
 
