@@ -7,30 +7,6 @@
 
 using namespace Rcpp;
 
-// computeGCD
-int computeGCD(int a, int b);
-RcppExport SEXP _tviblindi_computeGCD(SEXP aSEXP, SEXP bSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type a(aSEXP);
-    Rcpp::traits::input_parameter< int >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeGCD(a, b));
-    return rcpp_result_gen;
-END_RCPP
-}
-// computeLCM
-int computeLCM(int a, int b);
-RcppExport SEXP _tviblindi_computeLCM(SEXP aSEXP, SEXP bSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type a(aSEXP);
-    Rcpp::traits::input_parameter< int >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeLCM(a, b));
-    return rcpp_result_gen;
-END_RCPP
-}
 // bicgSparse
 RcppExport SEXP bicgSparse(const Eigen::Map<Eigen::SparseMatrix<double> > A, const Eigen::VectorXd b, const Eigen::Index nb_iter, const double err);
 RcppExport SEXP _tviblindi_bicgSparse(SEXP ASEXP, SEXP bSEXP, SEXP nb_iterSEXP, SEXP errSEXP) {
@@ -655,8 +631,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_tviblindi_computeGCD", (DL_FUNC) &_tviblindi_computeGCD, 2},
-    {"_tviblindi_computeLCM", (DL_FUNC) &_tviblindi_computeLCM, 2},
     {"_tviblindi_bicgSparse", (DL_FUNC) &_tviblindi_bicgSparse, 4},
     {"_tviblindi_build_boundary_C", (DL_FUNC) &_tviblindi_build_boundary_C, 2},
     {"_tviblindi_cgSparse", (DL_FUNC) &_tviblindi_cgSparse, 5},
