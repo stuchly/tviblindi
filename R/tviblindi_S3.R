@@ -40,6 +40,7 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep.intermedi
     out$clusters<-NULL
     out$metaclusters<-NULL
     out$codes<-NULL
+    out$sominfo<-NULL
     out$layout<-NULL
     out$vae=NULL
     out$events_sel=events_sel
@@ -157,6 +158,7 @@ Som.tviblindi<-function(x,xdim=25,ydim=25){
     som<-FlowSOM::SOM(x$denoised,codes=codes, xdim = xdim, ydim = ydim)
     x$clusters<-som$mapping[, 1]
     x$codes<-som$codes
+    x$sominfo<-c(xdim,ydim)
     return(invisible(x))
 }
 
@@ -170,25 +172,32 @@ Filtration<-function(x,...){
 #' @param x tviblindi class object.
 #' @param K integer (default K=30); number of nearest neighbors.
 #' @param method character (only "witness" complex is implemeted); Uses Gudhi and CGAL libraries to compute witness complex
-#' @param alpha double (default \code{NULL}); relaxation parameter for witness complex. If \code{NULL} mean distance to 
+#' @param alpha double (default \code{NULL}); relaxation parameter for witness complex. If \code{NULL} mean distance to
 #' K-th nearest witness is used.
 #'
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
 Filtration.tviblindi<-function(x,method="witness",K=30,alpha2=NULL){
-    if (method!="witness") stop("Not yet implemented")
+    if (!(method %in% c("traingulation","witness"))) stop("Not yet implemented")
     stopifnot(!is.null(x$codes))
 
-    xy <- FNN::get.knnx(x$codes, x$denoised, k = K)
-    if (is.null(alpha2)){
-        alpha2<-mean(xy$nn.dist[,K])
-        cat("alpha2 = ",alpha2,"\n")
+    if (method=="witness"){
+        xy <- FNN::get.knnx(x$codes, x$denoised, k = K)
+        if (is.null(alpha2)){
+            alpha2<-mean(xy$nn.dist[,K])
+            cat("alpha2 = ",alpha2,"\n")
+        }
+        Ilist           <- split(xy$nn.index, seq(nrow(xy$nn.index)))
+        Dlist           <- split(xy$nn.dist, seq(nrow(xy$nn.index)))
+        x$filtration           <- witness_from_distances_cliques(Ilist, Dlist, alpha2 = alpha2, maxdimension = 1)
+        x$filtration           <- create_k_skeleton(coordinates = x$codes, filtration = x$filtration, k = 2)
     }
-    Ilist           <- split(xy$nn.index, seq(nrow(xy$nn.index)))
-    Dlist           <- split(xy$nn.dist, seq(nrow(xy$nn.index)))
-    x$filtration           <- witness_from_distances_cliques(Ilist, Dlist, alpha2 = alpha2, maxdimension = 1)
-    x$filtration           <- create_k_skeleton(coordinates = x$codes, filtration = x$filtration, k = 2)
+
+    if (method=="traingulation"){
+        x$filtration<-traingulation(x$codes,x$sominfo[1],x$sominfo[2])
+    }
+
     x$boundary<-build_boundaryC(x$filtration)
     x$reduced_boundary<-reduce_boundary(x$boundary)
     return(invisible(x))
@@ -514,6 +523,7 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
     x$clusters<-NULL
     x$metaclusters<-NULL
     x$codes<-NULL
+    x$sominfo<-NULL
     x$layout<-x$layout[ss,]
     x$labels<-x$labels[ss]
     x$data<-x$data[ss,]
