@@ -1,6 +1,11 @@
-#### Shiny interface for tviblindi: UI layout
+## Shiny interface module
+## UI layout
+
+require(shiny)
+require(shinyWidgets)
 
 shiny_ui <- fluidPage(
+  title = 'tviblindi',
   ## CSS tags
   # STYLE: tviblindi title font
   tags$style(HTML('#app_title {
@@ -110,6 +115,7 @@ shiny_ui <- fluidPage(
             width = 4,
             style = 'text-align:    right;
                      padding-bottom: 10px',
+            actionButton('btn_termini_export_svg',           '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon')),
             actionButton('btn_left_show_gating',             '', icon = icon('glyphicon glyphicon-fullscreen', lib = 'glyphicon'))
           ),
           fluidRow(
@@ -137,6 +143,8 @@ shiny_ui <- fluidPage(
           ),
           actionButton('btn_persistence_mark_classes',  '', icon = icon('glyphicon glyphicon-plus', lib = 'glyphicon')),
           actionButton('btn_persistence_clear_classes', '', icon = icon("glyphicon glyphicon-fire", lib = 'glyphicon')),
+          HTML("&nbsp;&nbsp;&nbsp;&nbsp;"),
+          actionButton('btn_persistence_export_svg',    '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon')),
           HTML('&nbsp;&nbsp;'),
           textOutput('log_persistence_available', inline = TRUE),
           fluidRow(
@@ -187,11 +195,12 @@ shiny_ui <- fluidPage(
       tags$script("$(\"input:radio[name='btn_trajectories_group'][value='B']\").parent().css('background-color', '#ffb5c9');"),
       column(
         width = 6,
-        actionButton('btn_dendrogram_mark_leaves',         '', icon = icon('glyphicon glyphicon-plus',  lib = 'glyphicon')),
-        actionButton('btn_dendrogram_clear_marked_leaves', '', icon = icon('glyphicon glyphicon-fire',  lib = 'glyphicon')),
+        actionButton('btn_dendrogram_mark_leaves',                 '', icon = icon('glyphicon glyphicon-plus',       lib = 'glyphicon')),
+        actionButton('btn_dendrogram_clear_marked_leaves',         '', icon = icon('glyphicon glyphicon-fire',       lib = 'glyphicon')),
         HTML('&nbsp;&nbsp;&nbsp;&nbsp;'),
-        actionButton('btn_trajectories_export_fcs',          '', icon = icon('glyphicon glyphicon-save',  lib = 'glyphicon')),
-        actionButton('btn_trajectories_clear_pinned_trajectories', '', icon = icon('glyphicon glyphicon-trash', lib = 'glyphicon'))
+        actionButton('btn_trajectories_export_fcs',                '', icon = icon('glyphicon glyphicon-save',       lib = 'glyphicon')),
+        actionButton('btn_trajectories_clear_pinned_trajectories', '', icon = icon('glyphicon glyphicon-trash',      lib = 'glyphicon')),
+        actionButton('btn_dendrogram_export_svg',                  '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon'))
       ),
       column(
         width = 6,
@@ -223,7 +232,8 @@ shiny_ui <- fluidPage(
             textOutput('log_trajectories_marked_count.A')
           ),
           br(), br(),
-          verbatimTextOutput('log_trajectories_marked.A', placeholder = TRUE)
+          #verbatimTextOutput('log_trajectories_marked.A', placeholder = TRUE)
+          htmlOutput('log_trajectories_marked.A', placeholder = TRUE, style = 'padding-right: 5px')
         ),
         column(
           width = 6,
@@ -239,7 +249,8 @@ shiny_ui <- fluidPage(
             textOutput('log_trajectories_marked_count.B')
           ),
           br(), br(),
-          verbatimTextOutput('log_trajectories_marked.B', placeholder = TRUE)
+          #verbatimTextOutput('log_trajectories_marked.B', placeholder = TRUE)
+          htmlOutput('log_trajectories_marked.B', placeholder = TRUE, style = 'padding-left: 5px')
         )
       ),
       br(), br(), br(),
@@ -264,9 +275,9 @@ shiny_ui <- fluidPage(
           actionButton('btn_layout_trajectories_remove_highlight', label = '', icon = icon('glyphicon glyphicon-remove', lib = 'glyphicon')),
           actionButton('btn_layout_trajectories_highlight_in_background', label = '', icon = icon('glyphicon glyphicon-sunglasses ', lib = 'glyphicon')),
           HTML("&nbsp;&nbsp;"),
-          actionButton('btn_layout_trajectories_flip_colours', label = '', icon = icon('glyphicon glyphicon-adjust', lib = 'glyphicon'))
+          actionButton('btn_layout_trajectories_flip_colours', label = '', icon = icon('glyphicon glyphicon-adjust', lib = 'glyphicon')),
+          actionButton('btn_layout_trajectories_export_svg',           '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon'))
         ),
-        ### RIGHT PANEL: TRACKERS
         hr(),
         fluidRow(
           column(
@@ -288,7 +299,7 @@ shiny_ui <- fluidPage(
             style = 'text-align:  right;
                      padding-left: 5px;
                      margin-top:   35px',
-            checkboxInput('check_trackers_large_base_size', label = 'Larger text', value = FALSE)
+            checkboxInput('check_trackers_large_base_size', label = 'Larger text', value = FALSE),
           )
         ),
         tabsetPanel(
@@ -300,18 +311,19 @@ shiny_ui <- fluidPage(
             ## A
             fluidRow(
               column(
-                width = 9,
+                width = 8,
                 style = 'padding-left: 5px',
                 selectInput('input_tracked_markers.A', label = 'Group A markers of interest', choices = c(), multiple = TRUE, width = '100%')
               ),
               column(
-                width = 3,
+                width = 4,
                 style = 'padding-left:2px;
                      margin-top: 26px;
                     text-align: right',
                 actionButton('btn_tracked_markers_remove_trajectories.A', label = '',      icon = icon('glyphicon glyphicon-flash',          lib = 'glyphicon')),
                 actionButton('btn_tracked_markers_undo_remove_trajectories.A', label = '', icon = icon('glyphicon glyphicon-step-backward',  lib = 'glyphicon')),
-                actionButton('btn_tracked_markers_highlight_segments.A',  label = '',      icon = icon('glyphicon glyphicon-flag',           lib = 'glyphicon'))
+                actionButton('btn_tracked_markers_highlight_segments.A',  label = '',      icon = icon('glyphicon glyphicon-flag',           lib = 'glyphicon')),
+                actionButton('btn_tracked_markers_export_svg.A',                   '',      icon = icon('glyphicon glyphicon-save-file',      lib = 'glyphicon'))
               )
             ),
             fluidRow(
@@ -328,18 +340,19 @@ shiny_ui <- fluidPage(
             ## B
             fluidRow(
               column(
-                width = 9,
+                width = 8,
                 style = 'padding-left: 5px',
                 selectInput('input_tracked_markers.B', label = 'Group B markers of interest', choices = c(), multiple = TRUE, width = '100%')
               ),
               column(
-                width = 3,
+                width = 4,
                 style = 'padding-left: 2px;
                    margin-top:  26px;
                    text-align: right',
                 actionButton('btn_tracked_markers_remove_trajectories.B', label = '',      icon = icon('glyphicon glyphicon-flash',          lib = 'glyphicon')),
                 actionButton('btn_tracked_markers_undo_remove_trajectories.B', label = '', icon = icon('glyphicon glyphicon-step-backward',  lib = 'glyphicon')),
-                actionButton('btn_tracked_markers_highlight_segments.B', label = '',       icon = icon('glyphicon glyphicon-flag',           lib = 'glyphicon'))
+                actionButton('btn_tracked_markers_highlight_segments.B', label = '',       icon = icon('glyphicon glyphicon-flag',           lib = 'glyphicon')),
+                actionButton('btn_tracked_markers_export_svg.B',                  '',      icon = icon('glyphicon glyphicon-save-file',      lib = 'glyphicon'))
               )
             ),
             fluidRow(
@@ -354,7 +367,6 @@ shiny_ui <- fluidPage(
               )
             )
           ),
-          br(),
           tabPanel(
             title = 'Population tracking',
             br(),
@@ -368,10 +380,17 @@ shiny_ui <- fluidPage(
             ),
             fluidRow(
               column(
-                width = 12,
+                width = 10,
                 style = 'padding-left: 5px;
                          padding-right: 5px',
                 selectInput('input_tracked_populations.A', label = 'Group A populations of interest', choices = c(), multiple = TRUE, width = '100%')
+              ),
+              column(
+                width = 2,
+                style = 'padding-left: 2px;
+                   margin-top:  26px;
+                   text-align: right',
+                actionButton('btn_tracked_populations_save_svg.A',  label = '', icon = icon('glyphicon glyphicon-picture', lib = 'glyphicon'))
               )
             ),
             fluidRow(
@@ -383,10 +402,17 @@ shiny_ui <- fluidPage(
             ## B
             fluidRow(
               column(
-                width = 12,
+                width = 10,
                 style = 'padding-left: 5px;
                          padding-right: 5px',
                 selectInput('input_tracked_populations.B', label = 'Group B populations of interest', choices = c(), multiple = TRUE, width = '100%')
+              ),
+              column(
+                width = 2,
+                style = 'padding-left: 2px;
+                   margin-top:  26px;
+                   text-align: right',
+                actionButton('btn_tracked_populations_save_svg.B',  label = '', icon = icon('glyphicon glyphicon-picture', lib = 'glyphicon'))
               )
             ),
             fluidRow(
@@ -397,6 +423,6 @@ shiny_ui <- fluidPage(
             )
           )
         )
+      )
     )
-  )
-))
+  ))

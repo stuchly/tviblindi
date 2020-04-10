@@ -30,145 +30,253 @@
   vals
 }
 
-## Function: create ggplot2 trajectories dendrogram & (optionally) output an hclust object
-.trajectories_dendrogram <- function(pers,
-                                     repre.reduced,
-                                     perc,
-                                     out.hclust      = NULL,
-                                     out.dendro_data = NULL,
-                                     out.classif     = NULL) {
-  if (perc == 100) return(FALSE)
-  
-  R              <- repre.reduced; rm(repre.reduced)
-  Ru             <- c(unique(unlist(R)))            # unique simplices
-  
-  threshold      <- ceiling(length(R) / 100 * perc) # lower bound of num trajectories per leaf
-  H <- lapply(Ru, function(u) {                     # idcs of simplices corresponding to deaths of relevant homology classes
-    idcs <- which(pers$inds$death == u)
-    if (length(idcs) == 0) return()
-    idcs
-  })
-  H              <- unlist(H)
-  H.vals         <- sort(pers$vals$death[H])        # filtration values associated with deaths of relevant homology classes
-  Ru             <- Ru[order(H)]                    # sort simplex idcs by corresponding filtration values
-  Rl             <- .label(R)                       # string hashes for reduced trajectory representations
-  R.unique_idcs  <- sapply(unique(Rl), function(r) which(Rl == r)[1])
-                                                    # idcs of unique reduced trajectory representations
-  R.unique       <- R[R.unique_idcs]                # only keep those unique representations
-  Rl.unique      <- Rl[R.unique_idcs]
-  
-  ## Build binary tree
-  M              <- do.call(rbind, lapply(R.unique, function(r) Ru %in% r))
-  N              <- length(Ru)
-  K              <- length(Rl.unique)
-  
-  pres           <- new.env(hash = TRUE)
-  pres$R         <- R
-  pres$Ru        <- Ru
-  pres$ind       <- 0
-  pres$leafcount <- 0
-  pres$leaves    <- list()
-  pres$mcount    <- 0
-  pres$merges    <- list()
-  pres$hcount    <- 0
-  pres$heights   <- list()
-  
-  ## Establish binary tree branching recursively
-  .recurse(pres, 1:length(pres$R), length(pres$Ru), 'NULL', 'ROOT', 'NULL', th = threshold)
-  
-  leaves  <- pres$leaves
-  h       <- unlist(pres$heights)
-  m       <- do.call(rbind, pres$merges)[order(h), ]
-  h       <- sort(h)
-  
-  if (is.null(dim(m))) return(FALSE)
-  
-  ## Create hclust merging pattern
-  l                        <- lapply(leaves, function(leaf) which(apply(m, 1, function(x) leaf %in% x))); names(l) <- leaves
-  mm                       <- as.vector(t(m))
-  M                        <- rep(0, length(mm))
-  M[which(mm %in% leaves)] <- -(1:length(leaves))
-  M                        <- matrix(M, nc = 2, byrow = TRUE)
-  
-  for (i in 1:nrow(M)) {
-    for (j in 1:2) {
-      if (M[i, j] == 0) {
-        node      <- m[i, j]
-        child     <- get(node, pres)[[5]]
-        M[i, j]   <- l[[child]]
-        l[[node]] <- i
+trajectories_dendrogram <- function(precomputed_dendrogram = NULL,
+                                    precomputed_dendrogram_labels = NULL,
+                                    leaves_to_highlight.A  = NULL,
+                                    leaves_to_highlight.B  = NULL,
+                                    pers                   = NULL,
+                                    repre.reduced          = NULL,
+                                    perc                   = NULL,
+                                    out.hclust             = NULL,
+                                    out.classif            = NULL,
+                                    out.labels             = NULL,
+                                    out.dendrogram         = NULL) {
+  ## Create ggplot2 trajectories dendrogram & (optionally) output an hclust object
+  if (is.null(precomputed_dendrogram)) {
+    if (perc == 100) return(FALSE)
+    R              <- repre.reduced; rm(repre.reduced)
+    Ru             <- c(unique(unlist(R)))            # unique simplices
+    
+    threshold      <- ceiling(length(R) / 100 * perc) # lower bound of num trajectories per leaf
+    H <- lapply(Ru, function(u) {                     # idcs of simplices corresponding to deaths of relevant homology classes
+      idcs <- which(pers$inds$death == u)
+      if (length(idcs) == 0) return()
+      idcs
+    })
+    H              <- unlist(H)
+    H.vals         <- sort(pers$vals$death[H])        # filtration values associated with deaths of relevant homology classes
+    Ru             <- Ru[order(H)]                    # sort simplex idcs by corresponding filtration values
+    Rl             <- .label(R)                       # string hashes for reduced trajectory representations
+    R.unique_idcs  <- sapply(unique(Rl), function(r) which(Rl == r)[1])
+    # idcs of unique reduced trajectory representations
+    R.unique       <- R[R.unique_idcs]                # only keep those unique representations
+    Rl.unique      <- Rl[R.unique_idcs]
+    
+    ## Build binary tree
+    M              <- do.call(rbind, lapply(R.unique, function(r) Ru %in% r))
+    N              <- length(Ru)
+    K              <- length(Rl.unique)
+    
+    pres           <- new.env(hash = TRUE)
+    pres$R         <- R
+    pres$Ru        <- Ru
+    pres$ind       <- 0
+    pres$leafcount <- 0
+    pres$leaves    <- list()
+    pres$mcount    <- 0
+    pres$merges    <- list()
+    pres$hcount    <- 0
+    pres$heights   <- list()
+    
+    ## Establish binary tree branching recursively
+    .recurse(pres, 1:length(pres$R), length(pres$Ru), 'NULL', 'ROOT', 'NULL', th = threshold)
+    
+    leaves  <- pres$leaves
+    h       <- unlist(pres$heights)
+    m       <- do.call(rbind, pres$merges)[order(h), ]
+    h       <- sort(h)
+    
+    if (is.null(dim(m))) return(FALSE)
+    
+    ## Create hclust merging pattern
+    l                        <- lapply(leaves, function(leaf) which(apply(m, 1, function(x) leaf %in% x))); names(l) <- leaves
+    mm                       <- as.vector(t(m))
+    M                        <- rep(0, length(mm))
+    M[which(mm %in% leaves)] <- -(1:length(leaves))
+    M                        <- matrix(M, nc = 2, byrow = TRUE)
+    
+    for (i in 1:nrow(M)) {
+      for (j in 1:2) {
+        if (M[i, j] == 0) {
+          node      <- m[i, j]
+          child     <- get(node, pres)[[5]]
+          M[i, j]   <- l[[child]]
+          l[[node]] <- i
+        }
       }
     }
-  }
-  
-  merge <- M; rm(M)
-  
-  ## Resolve leaf ordering for a valid dendrogram
-  o <- as.list(1:length(leaves))
-  for (i in 1:nrow(merge)) {
     
-    p <- merge[i, ]
+    merge <- M; rm(M)
     
-    if (sum(p < 0) == 2) {
+    ## Resolve leaf ordering for a valid dendrogram
+    o <- as.list(1:length(leaves))
+    for (i in 1:nrow(merge)) {
       
-      idx1         <- .find(abs(p[1]), o)
-      idx2         <- .find(abs(p[2]), o)
-      tmp          <- o[[idx2]]
-      o[[idx2]]    <- integer(0)
-      o[[idx1]]    <- c(o[[idx1]], tmp)
+      p <- merge[i, ]
       
-    } else if (sum(p < 0) == 1) {
-      
-      which.ref    <- which(p > 0)
-      ref          <- p[which.ref]
-      val          <- -p[3 - which.ref]
-      idx.ref      <- .find(.ref_to_vals(p[which.ref], merge), o)
-      idx.val      <- .find(val, o)
-      tmp          <- o[[idx.val]]
-      o[[idx.val]] <- integer(0)
-      o[[idx.ref]] <- c(o[[idx.ref]], tmp)
-      
-    } else if (sum(p < 0) == 0) {
-      
-      idx1         <- .find(.ref_to_vals(p[1], merge), o)
-      idx2         <- .find(.ref_to_vals(p[2], merge), o)
-      tmp          <- o[[idx2]]
-      o[[idx2]]    <- integer(0)
-      o[[idx1]]    <- c(o[[idx1]], tmp)
+      if (sum(p < 0) == 2) {
+        
+        idx1         <- .find(abs(p[1]), o)
+        idx2         <- .find(abs(p[2]), o)
+        tmp          <- o[[idx2]]
+        o[[idx2]]    <- integer(0)
+        o[[idx1]]    <- c(o[[idx1]], tmp)
+        
+      } else if (sum(p < 0) == 1) {
+        
+        which.ref    <- which(p > 0)
+        ref          <- p[which.ref]
+        val          <- -p[3 - which.ref]
+        idx.ref      <- .find(.ref_to_vals(p[which.ref], merge), o)
+        idx.val      <- .find(val, o)
+        tmp          <- o[[idx.val]]
+        o[[idx.val]] <- integer(0)
+        o[[idx.ref]] <- c(o[[idx.ref]], tmp)
+        
+      } else if (sum(p < 0) == 0) {
+        
+        idx1         <- .find(.ref_to_vals(p[1], merge), o)
+        idx2         <- .find(.ref_to_vals(p[2], merge), o)
+        tmp          <- o[[idx2]]
+        o[[idx2]]    <- integer(0)
+        o[[idx1]]    <- c(o[[idx1]], tmp)
+      }
     }
+    
+    ## Create a valid hclust object
+    o           <- unlist(o)
+    tree        <- list()
+    tree$merge  <- merge
+    tree$order  <- o
+    tree$height <- H.vals[h]
+    nodes       <- as.vector(t(m))
+    labs        <- nodes[nodes %in% leaves]
+    tree$labels <- labs
+    class(tree) <- 'hclust'
+    
+    d                 <- as.dendrogram(tree)
+    data              <- dendro_data(d, type = 'rectangle')
+    labs              <- as.character(data$labels$label)
+    tree_data         <- data
+    leaves            <- labs
+    labs_per_leaf     <- as.character(sapply(as.character(data$labels$label), function(leaf) get(leaf, pres)[[2]]))
+    data$labels$label <- labs_per_leaf
+    
+    if (!is.null(out.hclust)) eval.parent(substitute(out.hclust <- tree))
+    if (!is.null(out.labels)) eval.parent(substitute(out.labels <- list(labs,
+                                                                        labs_per_leaf)))
+    if (!is.null(out.dendrogram)) eval.parent(substitute(out.dendrogram <- d))
+    
+    cl          <- lapply(labs, function(leaf) get(leaf, pres)[[3]]) # walk indices per leaf
+    names(cl)   <- labs
+    if (!is.null(out.classif)) eval.parent(substitute(out.classif <- cl))
+  } else { # !is.null(precomputed_dendrogram)
+    d             <- precomputed_dendrogram
+    labs          <- precomputed_dendrogram_labels[[1]]
+    labs_per_leaf <- precomputed_dendrogram_labels[[2]]
+    data              <- dendro_data(d, type = 'rectangle')
+    tree_data         <- data
+    leaves            <- labs
+    data$labels$label <- labs_per_leaf
   }
   
-  ## Create a valid hclust object
-  o           <- unlist(o)
-  tree        <- list()
-  tree$merge  <- merge
-  tree$order  <- o
-  tree$height <- H.vals[h]
-  nodes       <- as.vector(t(m))
-  labs        <- nodes[nodes %in% leaves]
-  tree$labels <- labs
-  class(tree) <- 'hclust'
-  
-  d           <- as.dendrogram(tree)
-  data        <- dendro_data(d, type = 'rectangle')
-  leaves      <- labs
-  
-  labs              <- as.character(data$labels$label)
-  data$labels$label <- as.character(sapply(as.character(data$labels$label), function(leaf) get(leaf, pres)[[2]]))
-  cl                <- lapply(labs, function(leaf) get(leaf, pres)[[3]]) # walk indices per leaf
-  names(cl)         <- labs
-  
-  if (!is.null(out.classif))        eval.parent(substitute(out.classif     <- cl))
-  if (!is.null(out.hclust))         eval.parent(substitute(out.hclust      <- tree))
-  if (!is.null(out.dendro_data))    eval.parent(substitute(out.dendro_data <- data))
-  
-  p <- ggplot(data$segments) +
-    geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) +
+  p <- ggplot(data$segments) + geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) +
     geom_text(data = data$labels, aes(x, y, label = label), hjust = 1, angle = 0, size = 3.4) +
-    #ylim(min(tree$height) -0.3, max(tree$height)) +
     cowplot::theme_nothing() +
-    #labs(x = NULL, y = NULL) + #scale_x_continuous(expand = c(.01, .01)) +
     coord_flip()
+  
+  if (!is.null(leaves_to_highlight.A) || !is.null(leaves_to_highlight.B)) {
+    
+    branches           <- data.frame(tree_data$segments[tree_data$segments$yend == 0, ], label = tree_data$labels$label)
+    colnames(branches) <- c('xmin', 'ymin', 'xmax', 'ymax', 'label')
+    
+    divide_leaves_by_subtrees <- function(leaf_idcs) {
+      subtrees <- vector(mode = 'list')
+      n_leaves <- 0
+      tmp <- c(leaf_idcs[1])
+      idx <- 2
+      while (idx <= length(leaf_idcs)) {
+        this <- leaf_idcs[idx]
+        if (this == tmp[length(tmp)] + 1) {
+          tmp <- c(tmp, this)
+          if (idx == length(leaf_idcs)) {
+            subtrees[[length(subtrees) + 1]] <- tmp
+          }
+        } else {
+          subtrees[[length(subtrees) + 1]] <- tmp
+          tmp <- c(this)
+        }
+        idx <- idx + 1
+      }
+      return(subtrees)
+    }
+    # 
+    # segs           <- tree_data$segments
+    # flip_x         <- segs[, 1] > segs[, 3]
+    # if (any(flip_x)) {
+    #   segs[flip_x, ] <- segs[flip_x, c(3, 2, 1, 4)]
+    # }
+    # flip_y         <- segs[, 2] > segs[, 4]
+    # if (any(flip_y)) {
+    #   segs[flip_y, ] <- segs[flip_y, c(1, 4, 3, 2)]
+    # }
+    # 
+    # if (!is.null(leaves_to_highlight.A)) {
+    #   idcs     <- which(branches$label %in% leaves_to_highlight.A)
+    #   X        <- branches$x[idcs]
+    #   Y       <- c(branches$yend[idcs], branches$y[idcs])
+    #   subtrees <- divide_leaves_by_subtrees(X)
+    #   for (X in subtrees) {
+    #     lowerbound <- min(X)
+    #     upperbound <- max(X)
+    #     C          <- data.frame(segs[segs[, 1] >= lowerbound & segs[, 3] <= upperbound, ])
+    #     lowerbound <- min(Y)
+    #     upperbound <- max(Y)
+    #     C          <- C[C[, 2] >= lowerbound & C[, 4] <= upperbound, ]
+    #     p <- p + geom_segment(data = C, aes(x = x, y = y, xend = xend, yend = yend), lineend = 'round', col = 'blue', alpha = .5, size = 1)
+    #   }
+    # }
+    
+    ymax <- max(tree_data$segments[, c(2, 4)])
+    
+    if (!is.null(leaves_to_highlight.A)) {
+      idcs     <- which(branches$label %in% leaves_to_highlight.A)
+      X        <- branches$xmin[idcs]
+      subtrees <- divide_leaves_by_subtrees(X)
+      for (X in subtrees) {
+        lowerbound <- min(X)
+        upperbound <- max(X)
+        p <- p + geom_rect(xmin = lowerbound - 0.2, xmax = upperbound + 0.2, ymin = 0, ymax = ymax, fill = '#c2daff', alpha = .01)
+      }
+    }
+    if (!is.null(leaves_to_highlight.B)) {
+      idcs     <- which(branches$label %in% leaves_to_highlight.B)
+      X        <- branches$xmin[idcs]
+      subtrees <- divide_leaves_by_subtrees(X)
+      for (X in subtrees) {
+        lowerbound <- min(X)
+        upperbound <- max(X)
+        p <- p + geom_rect(xmin = lowerbound - 0.2, xmax = upperbound + 0.2, ymin = 0, ymax = ymax, fill = 'pink', alpha = .01)
+      }
+    }
+    
+    # if (!is.null(leaves_to_highlight.A)) {
+    #   for (leaf in leaves_to_highlight.A) {
+    #     x    <- branches$xmin[branches$label == leaf]
+    #     ymax <- branches$ymin[branches$label == leaf]
+    #     p <- p + geom_rect(xmin = x - 0.2, xmax = x + 0.2, ymin = 0, ymax = ymax, fill = 'lightblue', alpha = .02)
+    #   }
+    # }
+    # if (!is.null(leaves_to_highlight.B)) {
+    #   for (leaf in leaves_to_highlight.B) {
+    #     x <- branches$xmin[branches$label == leaf]
+    #     ymax <- branches$ymin[branches$label == leaf]
+    #     p <- p + geom_rect(xmin = x - 0.2, xmax = x + 0.2, ymin = 0, ymax = ymax, fill = 'pink', alpha = .02)
+    #   }
+    # }
+  }
+  
+  return(p)
 }
 
 ## Function: resolve binary tree branching (recursive)
@@ -230,7 +338,8 @@
 }
 
 .draw_placeholder <- function() {
-  j   <- jpeg::readJPEG(system.file('tree.jpg', package = "tviblindi"), native = TRUE)
+  par(mar = c(0, 0, 0, 0))
+  j   <- jpeg::readJPEG(system.file('tree.jpg', package = "tviblindiTI"), native = TRUE)
   plot(0:1, 0:1, type = "n", ann = FALSE, axes = FALSE)
   rasterImage(j, 0, 0, 1, 1)
 }
@@ -300,14 +409,21 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   ff.mod
 }
 
-## Function: plot trajectories for 2D trajectories layout
-.plot_trajectories <- function(X, walks, walk_idcs.A, walk_idcs.B, flip_colours, pseudotime_highlight_bounds, pseudotime, highlight_in_background, ...) {
-  require(scattermore)
+.plot_trajectories <- function(X,
+                               walks,
+                               walk_idcs.A,
+                               walk_idcs.B,
+                               flip_colours,
+                               pseudotime_highlight_bounds,
+                               pseudotime,
+                               highlight_in_background,
+                               ...) {
+  ## Plot trajectories over a 2D layout
   
   col1 <- c(34, 87, 201, 255)
   col2 <- c(194, 45, 55, 255)
   
-  plot(scattermore(X, rgba = c(200, 200, 200, 150)))
+  plot(scattermore(X, rgba = c(200, 200, 200, 150), cex = 1.2))
   
   j      <- 0
   sel1   <- walks[walk_idcs.A]
@@ -318,9 +434,10 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     a <- which(p >= pseudotime_highlight_bounds[1])
     b <- which(p <= pseudotime_highlight_bounds[2])
     idcs.highlight <- intersect(a, b)
+    
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, , drop = FALSE]
-      plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1)), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+      plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 1.2), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
   
@@ -364,9 +481,83 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     a <- which(p >= pseudotime_highlight_bounds[1])
     b <- which(p <= pseudotime_highlight_bounds[2])
     idcs.highlight <- intersect(a, b)
+    
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, , drop = FALSE]
-      plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1)), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+      plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 1.2), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+    }
+  }
+}
+
+.plot_trajectories_full <- function(X,
+                                    walks,
+                                    walk_idcs.A,
+                                    walk_idcs.B,
+                                    flip_colours,
+                                    pseudotime_highlight_bounds,
+                                    pseudotime,
+                                    highlight_in_background,
+                                    ...) {
+  cols <- c('blue', 'darkred')
+  j      <- 0
+  sel1   <- walks[walk_idcs.A]
+  sel2   <- walks[walk_idcs.B]
+  
+  plot(X, pch = 20, cex = 0.2, col = 'darkgrey', xlim = c(0, 1), ylim = c(0, 1), axes = FALSE, xlab = '', ylab = '')
+  
+  if (!is.null(pseudotime_highlight_bounds) && highlight_in_background) {
+    p <- pseudotime$res / max(pseudotime$res)
+    a <- which(p >= pseudotime_highlight_bounds[1])
+    b <- which(p <= pseudotime_highlight_bounds[2])
+    idcs.highlight <- intersect(a, b)
+    
+    if (length(idcs.highlight) > 0) {
+      pts <- X[idcs.highlight, , drop = FALSE]
+      points(pts, col = 'lightgreen', pch = 20, cex = 0.2)
+    }
+  }
+  
+  if (flip_colours) {
+    tmp <- sel1
+    sel1 <- sel2
+    sel2 <- tmp
+    cols <- cols[c(2, 1)]
+  }
+  i <- c(walk_idcs.A, walk_idcs.B)
+  a.idcs <- if (is.null(i)) { (1:length(walks)) } else { (1:length(walks))[-i] }
+  
+  rest   <- if (length(a.idcs) > 0) { walks[a.idcs] } else { NULL }
+  for (i in rest) {
+    j   <- j + 1
+    pts <- X[i, ]
+    lines(pts, lty = 1, col = alpha('darkgrey', 0.02), ...)
+    points(pts[, 1], pts[, 2], pch = 20, cex = 0.2, col = alpha('darkgrey', 0.02))
+  }
+  if (length(sel1) > 0) {
+    for (i in sel1) {
+      j   <- j + 1
+      pts <- X[i, ]
+      lines(pts, lty = 1, col = alpha(cols[1], 0.3), ...)
+      points(pts[, 1], pts[, 2], pch = 20, cex = 0.2, col = alpha(cols[1], 0.3))
+    }
+  }
+  if (length(sel1) > 0) {
+    for (i in sel2) {
+      j   <- j + 1
+      pts <- X[i, ]
+      lines(pts, lty = 1, col = alpha(cols[2], 0.3), ...)
+      points(pts[, 1], pts[, 2], pch = 20, cex = 0.2, col = alpha(cols[2], 0.3))
+    }
+  }
+  if (!is.null(pseudotime_highlight_bounds) && !highlight_in_background) {
+    p <- pseudotime$res / max(pseudotime$res)
+    a <- which(p >= pseudotime_highlight_bounds[1])
+    b <- which(p <= pseudotime_highlight_bounds[2])
+    idcs.highlight <- intersect(a, b)
+    
+    if (length(idcs.highlight) > 0) {
+      pts <- X[idcs.highlight, , drop = FALSE]
+      points(pts, col = 'lightgreen', pch = 20, cex = 0.2)
     }
   }
 }
@@ -638,8 +829,10 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
        pseudotime_bounds = pseudotime_bounds)
 }
 
-.update_walks_by_termini <- function(tv, pseudotime, marked_termini, termini_per_path) {
-  
+.update_walks_by_termini <- function(tv,
+                                     pseudotime,
+                                     marked_termini,
+                                     termini_per_path) {
   ## Identify chosen walks
   idcs <- which(termini_per_path %in% marked_termini)
   
@@ -658,18 +851,20 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   
   ## Cluster and triangulate walks
   withProgress(message = 'Contracting trajectories', expr = {
-    walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
+    walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters))
     
-    sel   <- 1:length(walks_clusters$starts)
-    ss    <- which(unlist(lapply(tv$filtration$cmplx, FUN = function(x) return(length(x) == 2))))
-    cmplx <- tv$filtration$cmplx[ss]
-    hc    <- hash_cmplx(cmplx)
-    edges <- do.call('rbind',lapply(cmplx, FUN = function(sim,XX) return(c(sim,dist(tv$codes[sim,]))), XX = tv$codes))
+    sel          <- 1:length(walks_clusters$starts)
+    s2           <- which(unlist(lapply(tv$filtration$cmplx, function(x) length(x) == 2))) # 2-simplex idcs
+    cmplx        <- tv$filtration$cmplx[s2]                                        # 2-simplices
+    cmplx_hashed <- hash_cmplx(cmplx)                                              # hash the simplices list for faster look-up
+    edges        <- do.call(rbind, lapply(cmplx, function(sim, XX) return(c(sim,
+                                                                            dist(tv$codes[sim,]))),
+                                          XX = tv$codes))
     colnames(edges) <-c('from', 'to', 'weight')
     
-    g             <- graph_from_edgelist(edges[, 1:2])
-    E(g)$weight   <- edges[, 3]
-    triangulation <-list()[1:length(sel)]
+    graph           <- igraph::graph_from_edgelist(edges[, 1:2])
+    E(graph)$weight <- edges[, 3]
+    triangulation   <- list()[1:length(sel)]
     
     j <- 0
   })
@@ -677,9 +872,9 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   withProgress(message = 'Triangulating paths', expr = {
     for (i in sel) {
       j <- j + 1
-      triangulation[[j]] <- ss[onepath_triangulation(select_paths_points(walks_clusters, i), tv$codes, hc, g)]
+      triangulation[[j]] <- s2[onepath_triangulation(select_paths_points(walks_clusters, i),
+                                                      tv$codes, cmplx_hashed, graph)]
     }
-    #triangulation  <- triangulate_pathways(walks_clusters, tv$codes, tv$filtration$cmplx)
   })
   
   N <- length(idcs)
@@ -702,7 +897,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   
   walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
   
-  pers <- pers_diagram(dBr = tv$reduced_boundary, plot = FALSE, repre = repre)
+  pers <- pers_diagram(dBr = tv$reduced_boundary, repre = repre, plot = FALSE)
   pd   <- data.frame(Dimension    = pers$vals$dim,
                      Birth        = pers$vals$birth,
                      Death        = pers$vals$death,
@@ -712,8 +907,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                      yplot        = (pers$vals$death - pers$vals$birth) / 2)
   pd   <- pd[pd$Dimension > 0, ]
   
-  list(random_walks = walks,
-       repre        = repre,
-       pers         = pers,
-       pd           = pd)
+  return(list(random_walks = walks,
+              repre        = repre,
+              pers         = pers,
+              pers_diag    = pd))
 }

@@ -1,3 +1,7 @@
+## tviblindi
+## Shiny interface module
+## Server function
+
 #### Shiny interface for tviblindi: server function
 
 shiny_server <- function(input, output, session) {
@@ -17,7 +21,7 @@ shiny_server <- function(input, output, session) {
   layout           <- tv$layout
   event_sel        <- tv$events_sel # selected events from input FCS file
   markers          <- colnames(tv$data)
-  labels.unique <- unique(tv$labels)
+  labels.unique    <- unique(tv$labels)
   
   if ((is.null(event_sel) && nrow(input_ff) != nrow(tv$data)) || (!is.null(event_sel) && length(event_sel) != nrow(tv$data))) {
     stop('Number of events in expression matrix incongruent with dimensionality of input FCS file. Did you misuse the event_sel parameter?')
@@ -38,12 +42,17 @@ shiny_server <- function(input, output, session) {
   react$persistence_marked           <- NULL # marked homology classes idcs
   # Trajectories dendrogram
   react$dendrogram                   <- NA   # dendrogram for clustering of trajectories by homology classes
+  react$dendrogram_hclust            <- NA
   react$dendrogram_ready             <- FALSE
   react$dendrogram_selection         <- NULL
-  react$dendrogram_selected_leaves   <- NULL 
+  react$dendrogram_selected_leaves   <- NULL
   react$dendrogram_selected_idcs     <- NULL
+  react$dendrogram_marked_leaves.A   <- NULL
+  react$dendrogram_marked_leaves.B   <- NULL
+  react$dendrogram_redraw_highlights <- FALSE
   react$dendrogram_leaf_perc_cutoff  <- NULL
   react$dendrogram_classes           <- list()
+  react$dendrogram_labels            <- NA
   # 2D trajectories layout
   react$layout_trajectories_flip_colours            <- FALSE
   react$layout_trajectories_highlight_in_background <- FALSE
@@ -70,9 +79,9 @@ shiny_server <- function(input, output, session) {
   react$tracked_populations_log2_transform <- FALSE
   # Marked trajectories manipulation & export
   react$trajectories_marked.A        <- NULL
-  react$trajectories_marked_leaves.A <- NULL
+  react$dendrogram_marked_leaves.A <- NULL
   react$trajectories_marked.B        <- NULL
-  react$trajectories_marked_leaves.B <- NULL
+  react$dendrogram_marked_leaves.B <- NULL
   react$trajectories_junk.A          <- integer(0)
   react$trajectories_junk.B          <- integer(0)
   react$trajectories_group           <- 'A'
@@ -81,6 +90,13 @@ shiny_server <- function(input, output, session) {
   react$trajectories_random_walks    <- NULL
   react$trajectories_to_pin          <- NULL
   react$trajectories_pinned          <- NULL
+  # Export SVGs of plot on the go
+  react$svg_export.termini           <- FALSE
+  react$svg_export.persistence       <- FALSE
+  react$svg_export.dendrogram        <- FALSE
+  react$svg_export.trajectories      <- FALSE
+  react$svg_export.tracked_markers.A <- FALSE
+  react$svg_export.tracked_markers.B <- FALSE
   
   ## Scale 2D projection
   layout[, 1]         <- layout[, 1] - min(layout[, 1]); layout[, 1] <- layout[, 1] / max(layout[, 1])
@@ -103,7 +119,7 @@ shiny_server <- function(input, output, session) {
   ## Help pop-up
   observeEvent(input$btn_help, {
     showModal(modalDialog(
-      title = HTML('<h3>How to use the <i>tviblindi</i> Shiny interface</h3>'),
+      title = HTML('<h3>How to use the <i>tviblindiTI</i> Shiny interface</h3>'),
       size = 'l',
       HTML("This interface is a tool to allow for discrimination within a set of canonical developmental trajectories in input data, as well as between canonical and aberrant trajectories. Some trajectories will be biologically relevant, whereas others might not reflect the underlying biology.
              <br><br>
@@ -120,8 +136,10 @@ shiny_server <- function(input, output, session) {
              <br><br>
              Sixth, inspect the counts of select annotated cell populations in each pseudotime segment by selecting the <i>Population tracking</i> tab. This is analogical to the marker tracking part. If you wish to display log2 of cell counts, check the <i>log2</i> checkbox.
              <br><br>
-             Seventh, export an enhanced FCS file. In the simplest use-case, you can press the <b>SAVE</b> button in the middle pane straightaway (without following any of the above steps) to append two artificial channels to your FCS, containing the 2D layout coordinates displayed in the left and right panes. If you want to append marked trajectories in either of the categories, along with pseudotime values, press the <b>PIN</b> button next to the header for either category. Then, press the <b>SAVE</b> button. To un-pin all the batches of vertices pinned so far, press the <b>GARBARGE</b> button next to it."
-    )))
+             Seventh, export an enhanced FCS file. In the simplest use-case, you can press the <b>SAVE</b> button in the middle pane straightaway (without following any of the above steps) to append two artificial channels to your FCS, containing the 2D layout coordinates displayed in the left and right panes. If you want to append marked trajectories in either of the categories, along with pseudotime values, press the <b>PIN</b> button next to the header for either category. Then, press the <b>SAVE</b> button. To un-pin all the batches of vertices pinned so far, press the <b>GARBAGE</b> button next to it.
+             <br><br>
+             Eighth, use the <b>DOWNLOAD FILE</b> buttons under the pseuodotime layout, modified persistence diagram, dendrogram, trajectory layout or tracked marker expression diagrams to generate SVG images in the working directory. This way, you can document your analysis and create a report."
+      )))
   })
   
   ## Terminal nodes picker
@@ -133,8 +151,12 @@ shiny_server <- function(input, output, session) {
     psc   <- psc * 10000 + 1
     cols  <- gplots::greenred(10500)[psc]
     
+    if (react$svg_export.termini) {
+      svg(filename = paste0('Termini_', Sys.time(), '.svg'))
+    }
+    
     par(mar = c(1, 1, 1, 1))
-    plot(layout, col = scales::alpha(cols, .05), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = .3, xlim = c(0, 1), ylim = c(0, 1))
+    plot(layout, col = scales::alpha(cols, if (nrow(layout) > 20000) { .05 } else { .2 }), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = .3, xlim = c(0, 1), ylim = c(0, 1))
     # Plot origin and terminal nodes
     points(layout[tv$origin, 1], layout[tv$origin, 2], col = scales::alpha('yellow', .75), cex = 3, pch = 15)
     if (!is.null(tv$ShowAllFates) && tv$ShowAllFates) {
@@ -148,6 +170,10 @@ shiny_server <- function(input, output, session) {
       points(layout[termini.unique, 1], layout[termini.unique, 2], col = scales::alpha('purple', .75), cex = 3, pch = 20) 
     } else {
       points(layout[termini.unique, ], col = scales::alpha('purple', .75), cex = 3, pch = 20)
+    }
+    if (react$svg_export.termini) {
+      dev.off()
+      react$svg_export.termini <- FALSE
     }
   })
   
@@ -166,16 +192,20 @@ shiny_server <- function(input, output, session) {
       react$trajectories_random_walks <- updated$random_walks
       react$representations           <- updated$repre
       react$persistence               <- updated$pers
-      react$persistence_diagram       <- updated$pd
+      react$persistence_diagram       <- updated$pers_diag
       react$dendrogram_ready          <- TRUE
       react$persistence_selected      <- NULL
       react$persistence_marked        <- NULL
-      output$log_persistence_marked   <- renderPrint({ cat('Termini were reset\n') })
+      output$log_persistence_marked   <- renderPrint({ cat('Freshly marked terminal nodes. No homology classes marked yet\n') })
       react$trajectories_marked.A     <- NULL
       react$trajectories_marked.B     <- NULL
       react$tracked_markers_last_removed.A <- NULL
       react$tracked_markers_last_removed.B <- NULL
     }
+  })
+  
+  observeEvent(input$btn_termini_export_svg, {
+    react$svg_export.termini <- TRUE
   })
   
   # Logs
@@ -209,7 +239,7 @@ shiny_server <- function(input, output, session) {
     par(xpd = TRUE, mar = c(2, 2, 2, 50))
     
     # Plot ungated events distinctly
-    which.ungated <- which(labels.aligned %in% c('ungated', '*ungated*', 'nic'))
+    which.ungated <- which(labels.aligned %in% c('ungated', '*ungated*'))
     if (length(which.ungated) == 1) {
       label.ungated                  <- labels.aligned[which.ungated]
       idcs.ungated                   <- which(tv$labels == label.ungated)
@@ -234,18 +264,27 @@ shiny_server <- function(input, output, session) {
   # Layout
   output$plot_persistence <- renderPlot({
     if (!is.null(react$persistence)) {
+      if (react$svg_export.persistence) {
+        svg(filename = paste0('Persistence_', Sys.time(), '.svg'))
+        plot(ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot)) +
+               scale_colour_gradientn(colours = rainbow(5)) +
+               geom_point(size = 3.5, alpha = .7) +
+               theme_light() + theme(legend.position = 'none') +
+               xlab('(Birth + Death) / 2') + ylab('(Death - Birth) / 2'))
+        dev.off()
+        react$svg_export.persistence <- FALSE
+      }
       ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot)) +
         scale_colour_gradientn(colours = rainbow(5)) +
-        geom_point(size = .8 + react$persistence_diagram$yplot * 5, alpha = .7) +
+        geom_point(size = 3.5, alpha = .7) +
         theme_light() + theme(legend.position = 'none') +
         xlab('(Birth + Death) / 2') + ylab('(Death - Birth) / 2')
     }
   })
-  
   # Buttons & logs
   output$log_persistence_selected <- renderPrint({
     if (!is.null(react$persistence)) {
-      react$persistence_selected <- brushedPoints(react$persistence_diagram, input$selector_persistence)
+      react$persistence_selected <- brushedPoints(react$persistence_diagram, input$selector_persistence, xvar = 'xplot', yvar = 'yplot')
       graphical_columns          <- which(colnames(react$persistence_selected) %in% c('xplot', 'yplot'))
       if (nrow(react$persistence_selected) < 16) {
         print(react$persistence_selected[, -graphical_columns])
@@ -280,30 +319,55 @@ shiny_server <- function(input, output, session) {
     react$trajectories_marked.B   <- NULL
     session$resetBrush('selector_dendrogram')
   })
+  observeEvent(input$btn_persistence_export_svg, {
+    react$svg_export.persistence <- TRUE
+  })
   
   ## Trajectories dendrogram
   # Plot
   output$plot_dendrogram <- renderPlot({
-    par(mar = c(0, 0, 0, 0))
+    perc <- react$dendrogram_leaf_perc_cutoff
+    dendrogram_plotted <- FALSE
+    dendrogram_plot    <- NULL
+    highlights.A       <- react$dendrogram_marked_leaves.A
+    highlights.B       <- react$dendrogram_marked_leaves.B
     if (react$dendrogram_ready) {
       idcs_selected <- as.numeric(unlist(rownames(react$persistence_marked))) # selected homology classes idcs
-      perc          <- react$dendrogram_leaf_perc_cutoff
       isolate({
         if (length(idcs_selected) > 0 && !is.null(react$representations)) {
+          dendrogram_plotted <- TRUE # if TRUE and SVG export button was clicked, also export the SVG
           simplices_selected            <- react$persistence$inds$death[idcs_selected]
           react$representations.reduced <- lapply(react$representations, function(x) x[x %in% simplices_selected])
-          dendrogram_plot               <- .trajectories_dendrogram(pers          = react$persistence,
-                                                                    repre.reduced = react$representations.reduced,
-                                                                    perc          = perc,
-                                                                    out.hclust    = react$dendrogram,
-                                                                    out.classif   = react$dendrogram_classes)
           
+          if ((!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B)) && react$dendrogram_redraw_highlights) {
+            dendrogram_plot               <- trajectories_dendrogram(precomputed_dendrogram = react$dendrogram,
+                                                                     precomputed_dendrogram_labels = react$dendrogram_labels,
+                                                                     leaves_to_highlight.A  = highlights.A,
+                                                                     leaves_to_highlight.B  = highlights.B)
+            react$dendrogram_redraw_highlights <- FALSE
+          } else {
+            dendrogram_plot               <- trajectories_dendrogram(pers           = react$persistence,
+                                                                     repre.reduced  = react$representations.reduced,
+                                                                     perc           = perc,
+                                                                     out.dendrogram = react$dendrogram,
+                                                                     out.hclust     = react$dendrogram_hclust,
+                                                                     out.classif    = react$dendrogram_classes,
+                                                                     out.labels     = react$dendrogram_labels)
+          }
           plot(dendrogram_plot)
-          return()
         }
       })
+      if (dendrogram_plotted && react$svg_export.dendrogram) {
+        svg(filename = paste0('Dendrogram_', Sys.time(), '.svg'))
+        plot(dendrogram_plot)
+        dev.off()
+        react$dendrogram_redraw_highlights <- TRUE
+        react$svg_export.dendrogram <- FALSE
+      }
     }
-    .draw_placeholder()
+    if (!dendrogram_plotted) {
+      .draw_placeholder()
+    }
   })
   
   # Leaf magnitude cutoff slider (in percentages)
@@ -315,24 +379,28 @@ shiny_server <- function(input, output, session) {
   observeEvent(input$btn_dendrogram_mark_leaves, {
     if (react$trajectories_group == 'A') {
       react$trajectories_marked.A        <- unique(unlist(c(react$trajectories_marked.A,        react$dendrogram_selection)))
-      react$trajectories_marked_leaves.A <- unique(unlist(c(react$trajectories_marked_leaves.A, react$dendrogram_selected_leaves.A)))
-      react$trajcetories_marked_idcs.A   <- unique(unlist(c(react$trajectories_marked_idcs.A),  react$dendrogram_selected_idcs.A))
+      react$dendrogram_marked_leaves.A   <- unique(unlist(c(react$dendrogram_marked_leaves.A,   react$dendrogram_selected_leaves)))
+      react$dendrogram_redraw_highlights <- TRUE
+      react$trajectories_marked_idcs.A   <- unique(unlist(c(react$trajectories_marked_idcs.A),  react$dendrogram_selected_idcs))
     } else if (react$trajectories_group == 'B') {
       react$trajectories_marked.B        <- unique(unlist(c(react$trajectories_marked.B,        react$dendrogram_selection)))
-      react$trajectories_marked_leaves.B <- unique(unlist(c(react$trajectories_marked_leaves.B, react$dendrogram_selected_leaves.B)))
-      react$trajcetories_marked_idcs.B   <- unique(unlist(c(react$trajectories_marked_idcs.B),  react$dendrogram_selected_idcs.B))
+      react$dendrogram_marked_leaves.B   <- unique(unlist(c(react$dendrogram_marked_leaves.B, react$dendrogram_selected_leaves)))
+      react$dendrogram_redraw_highlights <- TRUE
+      react$trajectories_marked_idcs.B   <- unique(unlist(c(react$trajectories_marked_idcs.B),  react$dendrogram_selected_idcs))
     }
   })
   
   observeEvent(input$btn_dendrogram_clear_marked_leaves, {
     if (react$trajectories_group == 'A') {
-      react$trajectories_marked.A          <- react$trajectories_marked_leaves.A <- react$trajcetories_marked_idcs.A <- NULL
+      react$trajectories_marked.A          <- react$dendrogram_marked_leaves.A <- react$trajcetories_marked_idcs.A <- NULL
       react$trajectories_junk.A            <- integer(0)
       react$tracked_markers_last_removed.A <- NULL
+      react$dendrogram_redraw_highlights   <- TRUE
     } else if (react$trajectories_group == 'B') {
-      react$trajectories_marked.B          <- react$trajectories_marked_leaves.B <- react$trajcetories_marked_idcs.B <- NULL
+      react$trajectories_marked.B          <- react$dendrogram_marked_leaves.B <- react$trajcetories_marked_idcs.B <- NULL
       react$trajectories_junk.B            <- integer(0)
       react$tracked_markers_last_removed.B <- NULL
+      react$dendrogram_redraw_highlights   <- TRUE
     }
   })
   
@@ -341,16 +409,23 @@ shiny_server <- function(input, output, session) {
       if (is.null(event_sel)) {
         layout_X <- layout.df$X * 100
         layout_Y <- layout.df$Y * 100
+        ps       <- react$pseudotime$res
       } else {
         layout_X <- layout_Y <- rep(-100, nrow(input_ff))
         layout_X[event_sel] <- layout.df$X * 100
         layout_Y[event_sel] <- layout.df$Y * 100
+        ps           <- rep(-100, nrow(input_ff))
+        ps[evet_sel] <- react$pseudotime$res
       }
       react$output_ff <- fcs.add_col(
         fcs.add_col(
-          input_ff, layout_X, colname = 'dimension_reduction_1'
+          fcs.add_col(
+            input_ff, layout_X, colname = 'dimension_reduction_1'
+          ),
+          layout_Y, colname = 'dimension_reduction_2'
         ),
-        layout_Y, colname = 'dimension_reduction_2'
+        ps,
+        colname = 'total_pseudotime'
       )
     }
     react$trajectories_pinned_batches_count <- react$trajectories_pinned_batches_count + 1
@@ -388,16 +463,23 @@ shiny_server <- function(input, output, session) {
       if (is.null(event_sel)) {
         layout_X <- layout.df$X * 100
         layout_Y <- layout.df$Y * 100
+        ps       <- react$pseudotime$res
       } else {
         layout_X <- layout_Y <- rep(-100, nrow(input_ff))
         layout_X[event_sel] <- layout.df$X * 100
         layout_Y[event_sel] <- layout.df$Y * 100
+        ps           <- rep(-100, nrow(input_ff))
+        ps[evet_sel] <- react$pseudotime$res
       }
       react$output_ff <- fcs.add_col(
         fcs.add_col(
-          input_ff, layout_X, colname = 'dimension_reduction_1'
+          fcs.add_col(
+            input_ff, layout_X, colname = 'dimension_reduction_1'
+          ),
+          layout_Y, colname = 'dimension_reduction_2'
         ),
-        layout_Y, colname = 'dimension_reduction_2'
+        ps,
+        colname = 'total_pseudotime'
       )
     }
     showModal(export_fcs_modal())
@@ -408,16 +490,23 @@ shiny_server <- function(input, output, session) {
       if (is.null(event_sel)) {
         layout_X <- layout.df$X * 100
         layout_Y <- layout.df$Y * 100
+        ps       <- react$pseudotime$res
       } else {
         layout_X <- layout_Y <- rep(-100, nrow(input_ff))
         layout_X[event_sel] <- layout.df$X * 100
         layout_Y[event_sel] <- layout.df$Y * 100
+        ps           <- rep(-100, nrow(input_ff))
+        ps[evet_sel] <- react$pseudotime$res
       }
       react$output_ff <- fcs.add_col(
         fcs.add_col(
-          input_ff, layout_X, colname = 'dimension_reduction_1'
+          fcs.add_col(
+            input_ff, layout_X, colname = 'dimension_reduction_1'
+          ),
+          layout_Y, colname = 'dimension_reduction_2'
         ),
-        layout_Y, colname = 'dimension_reduction_2'
+        ps,
+        colname = 'total_pseudotime'
       )
     }
     react$trajectories_pinned_batches_count <- 0
@@ -431,11 +520,15 @@ shiny_server <- function(input, output, session) {
       showModal(export_fcs_modal(failed = TRUE))
     }
   })
-    
+  
+  observeEvent(input$btn_dendrogram_export_svg, {
+    react$svg_export.dendrogram <- TRUE
+  })
+  
   observeEvent(input$btn_trajectories_group, {
     react$trajectories_group <- input$btn_trajectories_group
   })
-    
+  
   observeEvent(input$btn_trajectories_pin_trajectories.A, {
     react$trajectories_to_pin <- sort(unique(react$trajectories_marked.A))
   })
@@ -445,22 +538,22 @@ shiny_server <- function(input, output, session) {
   })
   
   output$log_dendrogram_selected <- renderPrint({
-    if (any(!is.na(react$dendrogram))) {
+    if (any(!is.na(react$dendrogram_hclust))) {
       df  <- data.frame(y = seq(0, 1, length.out = length(react$dendrogram_classes)))
       pts <- brushedPoints(df, input$selector_dendrogram, yvar = 'y')
       pts <- rev(as.numeric(rownames(pts)))
-
+      
       react$dendrogram_selected_leaves <- names(react$dendrogram_classes)[pts]
       react$dendrogram_selected_idcs   <- as.vector(unlist(react$dendrogram_classes[pts]))
       react$dendrogram_selection       <- as.numeric(unlist(react$dendrogram_classes[pts]))
-
+      
       sizes <- sapply(react$dendrogram_classes[pts], length)
       cat(sizes, sep = ', ')
     }
   })
-    
+  
   output$log_dendrogam_marked.A <- output$log_dendrogam_marked.B <- renderPrint({ cat('(none)') })
-    
+  
   observeEvent(react$trajectories_marked.A, {
     react$trajectories_junk.A <- react$trajectories_junk.A[!react$trajectories_junk.A %in% react$trajectories_marked.A]
     junk_count                <- length(react$trajectories_junk.A)
@@ -475,7 +568,7 @@ shiny_server <- function(input, output, session) {
       output$log_trajectories_marked.A <- renderPrint({ cat('(none)\n') })
     }
   })
-    
+  
   observeEvent(react$trajectories_marked.B, {
     react$trajectories_junk.B <- react$trajectories_junk.B[!react$trajectories_junk.B %in% react$trajectories_marked.B]
     junk_count                <- length(react$trajectories_junk.B)
@@ -490,21 +583,35 @@ shiny_server <- function(input, output, session) {
       output$log_trajectories_marked.B <- renderPrint({ cat('(none)\n') })
     }
   })
-    
+  
   ## Trajectories layout
   # Plot
   output$plot_layout_trajectories <- renderPlot({
-    par(mar = c(0, 0, 0, 0))
-    .plot_trajectories(layout,
-                       react$trajectories_random_walks,
-                       react$trajectories_marked.A,
-                       react$trajectories_marked.B,
-                       flip_colours = react$layout_trajectories_flip_colours,
-                       pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
-                       pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { react$pseudotime },
-                       highlight_in_background = react$layout_trajectories_highlight_in_background)
+    if (react$svg_export.trajectories) {
+      svg(filename = paste0('Trajectories_', Sys.time(), '.svg'))
+      .plot_trajectories_full(layout,
+                              react$trajectories_random_walks,
+                              react$trajectories_marked.A,
+                              react$trajectories_marked.B,
+                              flip_colours = react$layout_trajectories_flip_colours,
+                              pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
+                              pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { react$pseudotime },
+                              highlight_in_background = react$layout_trajectories_highlight_in_background)
+      dev.off()
+      react$svg_export.trajectories <- FALSE
+    } else {
+      par(mar = c(0, 0, 0, 0))
+      .plot_trajectories(layout,
+                         react$trajectories_random_walks,
+                         react$trajectories_marked.A,
+                         react$trajectories_marked.B,
+                         flip_colours = react$layout_trajectories_flip_colours,
+                         pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
+                         pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { react$pseudotime },
+                         highlight_in_background = react$layout_trajectories_highlight_in_background)
+    }
   })
-    
+  
   # Buttons
   observeEvent(input$btn_layout_trajectories_remove_highlight, {
     react$pseudotime_highlight_bounds  <- NULL
@@ -515,7 +622,10 @@ shiny_server <- function(input, output, session) {
   observeEvent(input$btn_layout_trajectories_flip_colours, {
     react$layout_trajectories_flip_colours <- !react$layout_trajectories_flip_colours
   })
-    
+  observeEvent(input$btn_layout_trajectories_export_svg, {
+    react$svg_export.trajectories <- TRUE
+  })
+  
   ## Marker expression trackers
   # Inputs
   observe({
@@ -535,13 +645,17 @@ shiny_server <- function(input, output, session) {
     }
   })
   observeEvent(input$input_trackers_scaling_exponent, {
-    if (is.numeric(input$input_trackers_scaling_exponent) && input$input_trackers_scaling_exponent > 0.0001 && input$input_trackers_scaling_exponent < 1000) {
-      react$trackers_scaling_exponent <- as.numeric(input$input_trackers_scaling_exponent)
+    if (is.numeric(input$input_trackers_scaling_exponent)) {
+      if (input$input_trackers_scaling_exponent > 0.001 && input$input_trackers_scaling_exponent < 5) {
+        react$trackers_scaling_exponent <- input$input_trackers_scaling_exponent
+      }
     }
   })
   observeEvent(input$input_trackers_n_segments, {
-    if (is.numeric(input$input_trackers_n_segments) && input$input_trackers_n_segments > 3 && input$input_trackers_n_segments < 1000) {
-      react$trackers_n_segments <- as.integer(input$input_trackers_n_segments)
+    if (is.numeric(input$input_trackers_n_segments)) {
+      if (input$input_trackers_n_segments > 3 && input$input_trackers_n_segments < 1000) {
+        react$trackers_n_segments <- as.integer(input$input_trackers_n_segments)
+      }
     }
   })
   observeEvent(input$check_trackers_large_base_size, {
@@ -600,29 +714,40 @@ shiny_server <- function(input, output, session) {
   })
   
   observeEvent(input$btn_tracked_markers_highlight_segments.A, {
-    pts <- brushedPoints(react$tracked_markers_stats.A,
-                         input$selector_tracked_markers.A,
-                         xvar = 'segment', yvar = 'expression')
-    if (nrow(pts) > 0) {
-      highlighted_segments <- sort(unique(pts$segment))
-      react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.A[c(min(highlighted_segments), max(highlighted_segments) + 1)]
-    } else {
-      react$pseudotime_highlight_bounds <- NULL
+    if (!is.null(react$tracked_markers.A)) {
+      pts <- brushedPoints(react$tracked_markers_stats.A,
+                           input$selector_tracked_markers.A,
+                           xvar = 'segment', yvar = 'expression')
+      if (nrow(pts) > 0) {
+        highlighted_segments <- sort(unique(pts$segment))
+        react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.A[c(min(highlighted_segments), max(highlighted_segments) + 1)]
+      } else {
+        react$pseudotime_highlight_bounds <- NULL
+      }
+      session$resetBrush('selector_tracked_markers.A')
     }
-    session$resetBrush('selector_tracked_markers.A')
   })
   
   observeEvent(input$btn_tracked_markers_highlight_segments.B, {
-    pts <- brushedPoints(react$tracked_markers_stats.B,
-                         input$selector_tracked_markers.B,
-                         xvar = 'segment', yvar = 'expression')
-    if (nrow(pts) > 0) {
-      highlighted_segments <- sort(unique(pts$segment))
-      react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments) + 1)]
-    } else {
-      react$pseudotime_highlight_bounds <- NULL
+    if (!is.null(react$tracked_markers.B)) {
+      pts <- brushedPoints(react$tracked_markers_stats.B,
+                           input$selector_tracked_markers.B,
+                           xvar = 'segment', yvar = 'expression')
+      if (nrow(pts) > 0) {
+        highlighted_segments <- sort(unique(pts$segment))
+        react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments) + 1)]
+      } else {
+        react$pseudotime_highlight_bounds <- NULL
+      }
+      session$resetBrush('selector_tracked_markers.B')
     }
-    session$resetBrush('selector_tracked_markers.B')
+  })
+  
+  observeEvent(input$btn_tracked_markers_export_svg.A, {
+    react$svg_export.tracked_markers.A <- TRUE
+  })
+  observeEvent(input$btn_tracked_markers_export_svg.B, {
+    react$svg_export.tracked_markers.B <- TRUE
   })
   
   # Plots
@@ -639,14 +764,21 @@ shiny_server <- function(input, output, session) {
                                  large_base_size = react$trackers_large_base_size)
       react$tracked_markers_stats.A <- p$stats
       react$tracked_markers_pseudotime_bounds.A <- p$pseudotime_bounds
-      p$plot
+      if (react$svg_export.tracked_markers.A) {
+        svg(filename = paste0('Markers_A_', Sys.time(), '.svg'), width = 10, height = 6)
+        plot(p$plot)
+        dev.off()
+        react$svg_export.tracked_markers.A <- FALSE
+      } else {
+        p$plot
+      }
     } else {
       react$tracked_markers_ready.A <- FALSE
     }
   })
   output$plot_tracked_markers.B <- renderPlot({
     if (!is.null(react$trajectories_marked.B) && !is.null(react$tracked_markers.B)) {
-      react$tracked_markers_ready.A <- TRUE
+      react$tracked_markers_ready.B <- TRUE
       p <- .plot_tracked_markers(react$trajectories_random_walks,
                                  react$trajectories_marked.B,
                                  tv,
@@ -657,9 +789,16 @@ shiny_server <- function(input, output, session) {
                                  large_base_size = react$trackers_large_base_size)
       react$tracked_markers_stats.B <- p$stats
       react$tracked_markers_pseudotime_bounds.B <- p$pseudotime_bounds
-      p$plot
+      if (react$svg_export.tracked_markers.B) {
+        svg(filename = paste0('Markers_B_', Sys.time(), '.svg'), width = 10, height = 6)
+        plot(p$plot)
+        dev.off()
+        react$svg_export.tracked_markers.B <- FALSE
+      } else {
+        p$plot
+      }
     } else {
-      react$tracked_markers_ready.A <- FALSE
+      react$tracked_markers_ready.B <- FALSE
     }
   })
   
