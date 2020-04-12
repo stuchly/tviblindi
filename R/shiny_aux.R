@@ -434,10 +434,11 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     a <- which(p >= pseudotime_highlight_bounds[1])
     b <- which(p <= pseudotime_highlight_bounds[2])
     idcs.highlight <- intersect(a, b)
+    idcs.highlight <- idcs.highlight[idcs.highlight %in% unlist(c(sel1, sel2))]
     
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, , drop = FALSE]
-      plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 1.2), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+      plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 1.3), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
   
@@ -481,10 +482,11 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     a <- which(p >= pseudotime_highlight_bounds[1])
     b <- which(p <= pseudotime_highlight_bounds[2])
     idcs.highlight <- intersect(a, b)
+    idcs.highlight <- idcs.highlight[idcs.highlight %in% unlist(c(sel1, sel2))]
     
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, , drop = FALSE]
-      plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 1.2), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+      plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 1.3), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
 }
@@ -510,10 +512,11 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     a <- which(p >= pseudotime_highlight_bounds[1])
     b <- which(p <= pseudotime_highlight_bounds[2])
     idcs.highlight <- intersect(a, b)
+    idcs.highlight <- idcs.highlight[idcs.highlight %in% unlist(c(sel1, sel2))]
     
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, , drop = FALSE]
-      points(pts, col = 'lightgreen', pch = 20, cex = 0.2)
+      points(pts, col = 'lightgreen', pch = 20, cex = 0.4)
     }
   }
   
@@ -554,10 +557,11 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     a <- which(p >= pseudotime_highlight_bounds[1])
     b <- which(p <= pseudotime_highlight_bounds[2])
     idcs.highlight <- intersect(a, b)
+    idcs.highlight <- idcs.highlight[idcs.highlight %in% unlist(c(sel1, sel2))]
     
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, , drop = FALSE]
-      points(pts, col = 'lightgreen', pch = 20, cex = 0.2)
+      points(pts, col = 'lightgreen', pch = 20, cex = 0.4)
     }
   }
 }
@@ -851,7 +855,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   
   ## Cluster and triangulate walks
   withProgress(message = 'Contracting trajectories', expr = {
-    walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters))
+    walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
     
     sel          <- 1:length(walks_clusters$starts)
     s2           <- which(unlist(lapply(tv$filtration$cmplx, function(x) length(x) == 2))) # 2-simplex idcs

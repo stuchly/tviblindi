@@ -104,11 +104,24 @@ shiny_server <- function(input, output, session) {
   layout.df           <- data.frame(layout) # for compatibility with brushOpts
   colnames(layout.df) <- c('X', 'Y')
   
+  # Re-order annotated population labels by pseudotime
+  average_pseudotime <- c()
+  for (label in labels.unique) {
+    idcs        <- which(tv$labels == label)
+    idcs.sample <- sample(idcs, min(1000, length(idcs)))
+    average_pseudotime <- c(average_pseudotime, mean(tv$pseudotime$res[idcs.sample]))
+  }
+  label_levels_order <- order(average_pseudotime)
+  
   ## Set up colour palette for plotting annotated populations
   gating_palette       <- RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$category == 'qual', ]
   gating_palette       <- unlist(mapply(RColorBrewer::brewer.pal, gating_palette$maxcolors, rownames(gating_palette)))[-1]
   gating_palette       <- gating_palette[1:length(unique(tv$labels))]
   gating_colour_vector <- gating_palette[as.numeric(as.factor(tv$labels))]
+  
+  ## Align colours and labels
+  colours.aligned       <- gating_palette[1:length(labels.unique)]
+  labels.aligned        <- labels.unique[label_levels_order]
   
   ## Find all trajectories' terminal nodes
   termini              <- c(tv$walks$v[tv$walks$starts[-1] - 1], tail(tv$walks$v, 1))
@@ -220,20 +233,7 @@ shiny_server <- function(input, output, session) {
   
   ## Gating layout pop-up
   output$plot_gating_layout <- renderPlot({
-    par(mar = c(1, 1, 1, 1))
     gating_layout.colours <- gating_colour_vector
-    labels.aligned        <- levels(tv$labels)
-    colours.aligned       <- gating_palette[1:length(labels.aligned)]
-    # Re-order labels by pseudotime
-    average_pseudotime <- c()
-    for (label in labels.aligned) {
-      idcs        <- which(tv$labels == label)
-      idcs.sample <- sample(idcs, min(1000, length(idcs)))
-      average_pseudotime <- c(average_pseudotime, mean(tv$pseudotime$res[idcs.sample]))
-    }
-    ordering <- order(average_pseudotime)
-    labels.aligned  <- labels.aligned[ordering]
-    colours.aligned <- colours.aligned[ordering]
     
     pch <- rep(20, length(tv$labels)) # symbols (can be set to different for each population here)
     par(xpd = TRUE, mar = c(2, 2, 2, 50))
@@ -339,7 +339,7 @@ shiny_server <- function(input, output, session) {
           simplices_selected            <- react$persistence$inds$death[idcs_selected]
           react$representations.reduced <- lapply(react$representations, function(x) x[x %in% simplices_selected])
           
-          if ((!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B)) && react$dendrogram_redraw_highlights) {
+          if ((!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B)) && (react$dendrogram_redraw_highlights || react$svg_export.dendrogram)) {
             dendrogram_plot               <- trajectories_dendrogram(precomputed_dendrogram = react$dendrogram,
                                                                      precomputed_dendrogram_labels = react$dendrogram_labels,
                                                                      leaves_to_highlight.A  = highlights.A,
@@ -404,6 +404,17 @@ shiny_server <- function(input, output, session) {
     }
   })
   
+  pin_batch_modal <- function(default_name, failed = FALSE) {
+    modalDialog(
+      textInput('input_pin_batch_name', 'Pinned batch name', placeholder = '', value = default_name),
+      if (failed) div(tags$b('Field is empty', style = 'colour: red')),
+      footer = tagList(
+        modalButton('Cancel'),
+        actionButton('btn_pin_batch_name', 'Confirm')
+      )
+    )
+  }
+  
   observeEvent(react$trajectories_to_pin, {
     if (is.null(react$output_ff)) {
       if (is.null(event_sel)) {
@@ -428,16 +439,28 @@ shiny_server <- function(input, output, session) {
         colname = 'total_pseudotime'
       )
     }
+    
     react$trajectories_pinned_batches_count <- react$trajectories_pinned_batches_count + 1
-    walks        <- list()
-    walks$v      <- unlist(react$trajectories_random_walks)
-    walks$starts <- c(1, cumsum(sapply(react$trajectories_random_walks, length)) + 1)
-    react$output_ff <- .add_path_info_to_fcs(ff                       = react$output_ff,
-                                             pseudotime               = react$pseudotime,
-                                             all_walks                = walks,
-                                             trajectories_of_interest = react$trajectories_to_pin,
-                                             id                       = react$trajectories_pinned_batches_count,
-                                             event_sel                = event_sel)
+    
+    showModal(pin_batch_modal(default_name = paste0('pathway_batch_', sprintf("%03d", react$trajectories_pinned_batches_count))))
+  })
+  
+  observeEvent(input$btn_pin_batch_name, {
+    
+    if (input$input_pin_batch_name != '') {
+      walks        <- list()
+      walks$v      <- unlist(react$trajectories_random_walks)
+      walks$starts <- c(1, cumsum(sapply(react$trajectories_random_walks, length)) + 1)
+      react$output_ff <- .add_path_info_to_fcs(ff                       = react$output_ff,
+                                               pseudotime               = react$pseudotime,
+                                               all_walks                = walks,
+                                               trajectories_of_interest = react$trajectories_to_pin,
+                                               id                       = input$input_pin_batch_name,
+                                               event_sel                = event_sel)
+      removeModal()
+    } else {
+      showModal(pin_batch_modal(failed = TRUE))
+    }
   })
   
   observeEvent(react$trajectories_pinned_batches_count, {
@@ -808,8 +831,8 @@ shiny_server <- function(input, output, session) {
     react$tracked_populations_log2_transform <- input$check_tracked_populations_log2_transform
   })
   observe({
-    updateSelectInput(session, 'input_tracked_populations.A', choices = labels.unique)
-    updateSelectInput(session, 'input_tracked_populations.B', choices = labels.unique)
+    updateSelectInput(session, 'input_tracked_populations.A', choices = labels.aligned)
+    updateSelectInput(session, 'input_tracked_populations.B', choices = labels.aligned)
   })
   observeEvent(input$input_tracked_populations.A, {
     react$tracked_populations.A <- input$input_tracked_populations.A
