@@ -339,7 +339,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram = NULL,
 
 .draw_placeholder <- function() {
   par(mar = c(0, 0, 0, 0))
-  j   <- jpeg::readJPEG(system.file('tree.jpg', package = "tviblindiTI"), native = TRUE)
+  j   <- jpeg::readJPEG(system.file('tree.jpg', package = "tviblindi"), native = TRUE)
   plot(0:1, 0:1, type = "n", ann = FALSE, axes = FALSE)
   rasterImage(j, 0, 0, 1, 1)
 }
