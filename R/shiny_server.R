@@ -426,7 +426,7 @@ shiny_server <- function(input, output, session) {
         layout_X[event_sel] <- layout.df$X * 100
         layout_Y[event_sel] <- layout.df$Y * 100
         ps           <- rep(-100, nrow(input_ff))
-        ps[evet_sel] <- react$pseudotime$res
+        ps[event_sel] <- react$pseudotime$res
       }
       react$output_ff <- fcs.add_col(
         fcs.add_col(
@@ -492,7 +492,7 @@ shiny_server <- function(input, output, session) {
         layout_X[event_sel] <- layout.df$X * 100
         layout_Y[event_sel] <- layout.df$Y * 100
         ps           <- rep(-100, nrow(input_ff))
-        ps[evet_sel] <- react$pseudotime$res
+        ps[event_sel] <- react$pseudotime$res
       }
       react$output_ff <- fcs.add_col(
         fcs.add_col(
@@ -519,7 +519,7 @@ shiny_server <- function(input, output, session) {
         layout_X[event_sel] <- layout.df$X * 100
         layout_Y[event_sel] <- layout.df$Y * 100
         ps           <- rep(-100, nrow(input_ff))
-        ps[evet_sel] <- react$pseudotime$res
+        ps[event_sel] <- react$pseudotime$res
       }
       react$output_ff <- fcs.add_col(
         fcs.add_col(
