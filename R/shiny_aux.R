@@ -191,6 +191,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram = NULL,
     colnames(branches) <- c('xmin', 'ymin', 'xmax', 'ymax', 'label')
     
     divide_leaves_by_subtrees <- function(leaf_idcs) {
+      if (length(leaf_idcs) == 1) return(list(leaf_idcs))
       subtrees <- vector(mode = 'list')
       n_leaves <- 0
       tmp <- c(leaf_idcs[1])
