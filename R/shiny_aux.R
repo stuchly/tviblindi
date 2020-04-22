@@ -629,7 +629,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
                                               # for each point on walk, which segment does it fall into?
   
-  pseudotime_bounds <- c(unlist(progress)[which(!duplicated(categs))], 1)
+  pseudotime_bounds <- sort(c(unlist(progress)[which(!duplicated(categs))], 1))
   coords <- tv$data[, markers]
   
   stats  <- lapply(1:N, function(i) {
@@ -706,7 +706,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   
   categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
   
-  pseudotime_bounds <- c(unlist(progress)[which(!duplicated(categs))], 1)
+  pseudotime_bounds <- sort(c(unlist(progress)[which(!duplicated(categs))], 1))
   
   coords <- tv$data[, markers]
   
