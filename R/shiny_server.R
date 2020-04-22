@@ -129,6 +129,11 @@ shiny_server <- function(input, output, session) {
 
   ### OUTPUTS & OBSERVERS
 
+  ## Display FCS file name
+  if (!is.null(tv$analysis_name)) {
+    output$text_analysis_name <- renderText(tv$analysis_name)
+  }
+  
   ## Help pop-up
   observeEvent(input$btn_help, {
     showModal(modalDialog(

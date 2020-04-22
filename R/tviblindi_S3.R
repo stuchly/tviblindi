@@ -17,12 +17,21 @@ tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep_intermediate=
     new_tviblindi(data,labels,fcs_path,events_sel,keep_intermediate)
 }
 
-new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep.intermediate=FALSE){
+new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=NULL,keep.intermediate=FALSE){
     stopifnot(is.matrix(data))
     stopifnot(length(labels)==nrow(data) && (is.factor(labels) || is.character(labels)))
     stopifnot(is.logical(keep.intermediate))
 
+    if(is.null(analysis_name)) {
+        username<-Sys.info()['login']
+        if(is.null(username)) username<-Sys.info()['user']
+        if(is.null(username)) username<-'anonymous'
+        timeanddate<-as.character(Sys.time())
+        analysis_name<-paste0(username, '_', timeanddate, '_tviblindi', packageVersion('tviblindi'), '_analysis')
+    }
+    
     out<-new.env(hash=TRUE)
+    out$analysis_name<-analysis_name
     out$origin<-NULL
     out$data=data
     out$labels<-as.factor(labels)

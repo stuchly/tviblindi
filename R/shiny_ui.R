@@ -66,18 +66,20 @@ shiny_ui <- fluidPage(
   fluidRow(
     ## APP TITLE
     column(
-      width = 11,
+      width = 8,
       titlePanel(
         h3(id = 'app_title', HTML('tvi<b>blindi</b>')),
         windowTitle = 'tviblindi'
       )
     ),
-    ## HELP BUTTON
+    ## ANALYSIS NAME & HELP BUTTON
     column(
-      width = 1,
+      width = 4,
       style = 'text-align:  right;
                padding-right: 5px;
                margin-top:   15px',
+      textOutput(outputId = 'text_analysis_name', inline = TRUE),
+      HTML('&nbsp;&nbsp;&nbsp;'),
       actionButton('btn_help', '', icon = icon('question-circle', lib = 'font-awesome'))
     )
   ),
@@ -189,7 +191,7 @@ shiny_ui <- fluidPage(
         choiceNames  = c('A', 'B'),
         selected = 'A', status = 'default',
         size = 'sm', direction = 'horizontal',
-        justified = TRUE, individual = F
+        justified = TRUE, individual = FALSE
       ),
       tags$script("$(\"input:radio[name='btn_trajectories_group'][value='A']\").parent().css('background-color', '#c2dfff');"),
       tags$script("$(\"input:radio[name='btn_trajectories_group'][value='B']\").parent().css('background-color', '#ffb5c9');"),
