@@ -21,7 +21,6 @@ shiny_server <- function(input, output, session) {
   layout           <- tv$layout
   event_sel        <- tv$events_sel # selected events from input FCS file
   markers          <- colnames(tv$data)
-  labels.unique    <- unique(tv$labels)
 
   if ((is.null(event_sel) && nrow(input_ff) != nrow(tv$data)) || (!is.null(event_sel) && length(event_sel) != nrow(tv$data))) {
     stop('Number of events in expression matrix incongruent with dimensionality of input FCS file. Did you misuse the event_sel parameter?')
@@ -105,6 +104,7 @@ shiny_server <- function(input, output, session) {
   colnames(layout.df) <- c('X', 'Y')
 
   # Re-order annotated population labels by pseudotime
+  labels.unique    <- unique(tv$labels)
   average_pseudotime <- c()
   for (label in labels.unique) {
     idcs        <- which(tv$labels == label)
@@ -112,16 +112,14 @@ shiny_server <- function(input, output, session) {
     average_pseudotime <- c(average_pseudotime, mean(tv$pseudotime$res[idcs.sample]))
   }
   label_levels_order <- order(average_pseudotime)
+  labels.aligned     <- labels.unique[label_levels_order]
 
   ## Set up colour palette for plotting annotated populations
   gating_palette       <- RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$category == 'qual', ]
-  gating_palette       <- unlist(mapply(RColorBrewer::brewer.pal, gating_palette$maxcolors, rownames(gating_palette)))[-1]
-  gating_palette       <- gating_palette[1:length(unique(tv$labels))]
-  gating_colour_vector <- gating_palette[as.numeric(as.factor(tv$labels))]
-
-  ## Align colours and labels
-  colours.aligned       <- gating_palette[1:length(labels.unique)]
-  labels.aligned        <- labels.unique[label_levels_order]
+  gating_palette       <- unique(unlist(mapply(RColorBrewer::brewer.pal, gating_palette$maxcolors, rownames(gating_palette))))
+  
+  gating_colour_vector <- gating_palette[1:length(labels.unique)][as.numeric(as.factor(tv$labels))]
+  colours.aligned      <- sapply(labels.aligned, function(l) gating_colour_vector[which(tv$labels == l)[1]])
 
   ## Find all trajectories' terminal nodes
   termini              <- c(tv$walks$v[tv$walks$starts[-1] - 1], tail(tv$walks$v, 1))
