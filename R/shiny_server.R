@@ -103,6 +103,12 @@ shiny_server <- function(input, output, session) {
   layout.df           <- data.frame(layout) # for compatibility with brushOpts
   colnames(layout.df) <- c('X', 'Y')
 
+  ## Determine size of points in 2-D layout plot
+  point_size <- if (nrow(layout) < 50000) { .8 } else
+                if (nrow(layout) < 75000) { .6 } else
+                if (nrow(layout) < 10000) { .3 } else
+                if (nrow(layout) < 15000) { .08 } else { .05 }
+  
   # Re-order annotated population labels by pseudotime
   labels.unique    <- unique(tv$labels)
   average_pseudotime <- c()
@@ -172,7 +178,7 @@ shiny_server <- function(input, output, session) {
     }
 
     par(mar = c(1, 1, 1, 1))
-    plot(layout, col = scales::alpha(cols, if (nrow(layout) > 20000) { .05 } else { .2 }), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = .3, xlim = c(0, 1), ylim = c(0, 1))
+    plot(layout, col = scales::alpha(cols, point_size), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = .3, xlim = c(0, 1), ylim = c(0, 1))
     # Plot origin and terminal nodes
     points(layout[tv$origin, 1], layout[tv$origin, 2], col = scales::alpha('yellow', .75), cex = 3, pch = 15)
     if (!is.null(tv$ShowAllFates) && tv$ShowAllFates) {
