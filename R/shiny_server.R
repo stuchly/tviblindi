@@ -76,6 +76,8 @@ shiny_server <- function(input, output, session) {
   react$tracked_markers_parts_to_remove.B <- NULL
   react$tracked_markers_ready.A      <- FALSE
   react$tracked_markers_ready.B      <- FALSE
+  react$tracked_populations_ready.A      <- FALSE
+  react$tracked_populations_ready.B      <- FALSE
   react$tracked_markers_pseudotime_bounds.A <- NULL
   react$tracked_markers_pseudotime_bounds.B <- NULL
   react$tracked_markers_last_removed.A <- NULL
@@ -106,6 +108,8 @@ shiny_server <- function(input, output, session) {
   react$image_export.trajectories      <- FALSE
   react$image_export.tracked_markers.A <- FALSE
   react$image_export.tracked_markers.B <- FALSE
+  react$image_export.tracked_populations.A <- FALSE
+  react$image_export.tracked_populations.B <- FALSE
   react$image_export_format            <- 'PNG'
 
   ## Scale 2D projection
@@ -186,7 +190,7 @@ shiny_server <- function(input, output, session) {
              <br><br>
              Seventh, export an enhanced FCS file. In the simplest use-case, you can press the <b>SAVE</b> button in the middle pane straightaway (without following any of the above steps) to append two artificial channels to your FCS, containing the 2D layout coordinates displayed in the left and right panes. If you want to append marked trajectories in either of the categories, along with pseudotime values, press the <b>PIN</b> button next to the header for either category. Then, press the <b>SAVE</b> button. To un-pin all the batches of vertices pinned so far, press the <b>GARBAGE</b> button next to it.
              <br><br>
-             Eighth, use the <b>DOWNLOAD FILE</b> buttons under the pseuodotime layout, modified persistence diagram, dendrogram, trajectory layout or tracked marker expression diagrams to generate PNG or SVG images in the working directory. This way, you can document your analysis and create a report.
+             Eighth, use the <b>PICTURE</b> buttons under the pseuodotime layout, modified persistence diagram, dendrogram, trajectory layout or tracked marker expression diagrams to generate PNG or SVG images in the working directory. This way, you can document your analysis and create a report.
              To choose whether to export a PNG or an SVG file, use the switch at the bottom of the left pane. PNG files are raster images. These will typically save space on your drive, but are resolution-dependent (they appear pixelated when enlarged). SVG files, on the other hand, typically take up more space (for large single-cell data layouts, possibly hunreds of megabytes), but are resolution-independent. This is especially suitable for further image processing."
       )))
   })
@@ -973,13 +977,49 @@ shiny_server <- function(input, output, session) {
     }
   })
 
+  observeEvent(input$btn_tracked_populations_highlight_segments.A, {
+    if (!is.null(react$tracked_populations.A)) {
+      pts <- brushedPoints(react$tracked_populations_stats.A,
+                           input$selector_tracked_populations.A,
+                           xvar = 'segment', yvar = 'count')
+      if (nrow(pts) > 0) {
+        highlighted_segments <- sort(unique(pts$segment))
+        react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments) + 1)]
+      } else {
+        react$pseudotime_highlight_bounds <- NULL
+      }
+      session$resetBrush('selector_tracked_populations.A')
+    }
+  })
+  
+  observeEvent(input$btn_tracked_populations_highlight_segments.B, {
+    if (!is.null(react$tracked_populations.B)) {
+      pts <- brushedPoints(react$tracked_populations_stats.B,
+                           input$selector_tracked_populations.B,
+                           xvar = 'segment', yvar = 'count')
+      if (nrow(pts) > 0) {
+        highlighted_segments <- sort(unique(pts$segment))
+        react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments) + 1)]
+      } else {
+        react$pseudotime_highlight_bounds <- NULL
+      }
+      session$resetBrush('selector_tracked_populations.B')
+    }
+  })
+  
   observeEvent(input$btn_tracked_markers_export_image.A, {
     react$image_export.tracked_markers.A <- TRUE
   })
   observeEvent(input$btn_tracked_markers_export_image.B, {
     react$image_export.tracked_markers.B <- TRUE
   })
-
+  observeEvent(input$btn_tracked_populations_export_image.A, {
+    react$image_export.tracked_populations.A <- TRUE
+  })
+  observeEvent(input$btn_tracked_populations_export_image.B, {
+    react$image_export.tracked_populations.B <- TRUE
+  })
+  
   # Plots
   output$plot_tracked_markers.A <- renderPlot({
     if (!is.null(react$trajectories_marked.A) && !is.null(react$tracked_markers.A)) {
@@ -1085,6 +1125,7 @@ shiny_server <- function(input, output, session) {
   # Plots
   output$plot_tracked_populations.A <- renderPlot({
     if (!is.null(react$trajectories_marked.A) && !is.null(react$tracked_populations.A)) {
+      react$tracked_markers_ready.A <- TRUE
       p <- .plot_tracked_populations(react$trajectories_random_walks,
                                      react$trajectories_marked.A,
                                      tv,
@@ -1094,12 +1135,38 @@ shiny_server <- function(input, output, session) {
                                      exp.part       = react$trackers_scaling_exponent,
                                      log2_transform = react$tracked_populations_log2_transform,
                                      large_base_size = react$trackers_large_base_size)
-      react$tracked_populations_stats.A <- p$stats
-      p$plot
+      react$tracked_populations_stats.A         <- p$stats
+      react$tracked_markers_pseudotime_bounds.A <- p$pseudotime_bounds
+      
+      if (react$image_export.tracked_populations.A) {
+        if (react$image_export_format == 'SVG') {
+          svg(filename = paste0('Populations_A_', Sys.time(), '.svg'), width = 10, height = 6)
+        } else {
+          png(filename = paste0('Populations_A_', Sys.time(), '.png'), width = 750, height = 480)
+        }
+        pp <- p$plot
+        if (react$image_export_format != 'SVG') {
+          pp <- pp +
+            theme(text          = element_text(size = 24),
+                  plot.title    = element_text(size = 20),
+                  plot.subtitle = element_text(size = 19),
+                  legend.title  = element_text(size = 24),
+                  legend.text   = element_text(size = 22)) +
+            geom_line(size = 2)
+        }
+        plot(pp)
+        dev.off()
+        react$image_export.tracked_populations.A <- FALSE
+      } else {
+        p$plot
+      }
+    } else {
+      react$tracked_markers_ready.A <- FALSE
     }
   })
   output$plot_tracked_populations.B <- renderPlot({
     if (!is.null(react$trajectories_marked.B) && !is.null(react$tracked_populations.B)) {
+      react$tracked_markers_ready.B <- TRUE
       p <- .plot_tracked_populations(react$trajectories_random_walks,
                                      react$trajectories_marked.B,
                                      tv,
@@ -1109,8 +1176,33 @@ shiny_server <- function(input, output, session) {
                                      exp.part       = react$trackers_scaling_exponent,
                                      log2_transform = react$tracked_populations_log2_transform,
                                      large_base_size = react$trackers_large_base_size)
-      react$tracked_populations_stats.B <- p$stats
-      p$plot
+      react$tracked_populations_stats.B         <- p$stats
+      react$tracked_markers_pseudotime_bounds.B <- p$pseudotime_bounds
+      
+      if (react$image_export.tracked_populations.B) {
+        if (react$image_export_format == 'SVG') {
+          svg(filename = paste0('Populations_B_', Sys.time(), '.svg'), width = 10, height = 6)
+        } else {
+          png(filename = paste0('Populations_B_', Sys.time(), '.png'), width = 750, height = 480)
+        }
+        pp <- p$plot
+        if (react$image_export_format != 'SVG') {
+          pp <- pp +
+            theme(text          = element_text(size = 24),
+                  plot.title    = element_text(size = 20),
+                  plot.subtitle = element_text(size = 19),
+                  legend.title  = element_text(size = 24),
+                  legend.text   = element_text(size = 22)) +
+            geom_line(size = 2)
+        }
+        plot(pp)
+        dev.off()
+        react$image_export.tracked_populations.B <- FALSE
+      } else {
+        p$plot
+      }
+    } else {
+      react$tracked_markers_ready.B <- FALSE
     }
   })
 }

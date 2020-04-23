@@ -115,12 +115,12 @@ shiny_ui <- fluidPage(
             width = 4,
             style = 'text-align:    right;
                      padding-bottom: 10px',
-            actionButton('btn_termini_export_image',           '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon')),
+            actionButton('btn_termini_export_image',           '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon')),
             actionButton('btn_left_show_gating',             '', icon = icon('glyphicon glyphicon-fullscreen', lib = 'glyphicon'))
           ),
           fluidRow(
             h4('Selected terminal nodes'),
-            verbatimTextOutput('log_termini_selected', placeholder = TRUE),
+            verbatimTextOutput('log_termini_selected', placeholder = TRUE)
           ),
           fluidRow(
             h4('Terminal nodes marked for further analysis'),
@@ -147,16 +147,18 @@ shiny_ui <- fluidPage(
           actionButton('btn_persistence_mark_classes',  '', icon = icon('glyphicon glyphicon-plus', lib = 'glyphicon')),
           actionButton('btn_persistence_clear_classes', '', icon = icon("glyphicon glyphicon-fire", lib = 'glyphicon')),
           HTML("&nbsp;&nbsp;&nbsp;&nbsp;"),
-          actionButton('btn_persistence_export_image',    '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon')),
+          actionButton('btn_persistence_export_image',    '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon')),
           HTML('&nbsp;&nbsp;'),
           textOutput('log_persistence_available', inline = TRUE),
           fluidRow(
             h4('Selected homology classes'),
-            verbatimTextOutput('log_persistence_selected', placeholder = TRUE)
+            verbatimTextOutput('log_persistence_selected', placeholder = TRUE)#,
+            #tags$head(tags$style("#log_persistence_selected{overflow-y:scroll;}"))
           ),
           fluidRow(
             h4('Marked homology classes'),
-            verbatimTextOutput('log_persistence_marked', placeholder = TRUE)
+            verbatimTextOutput('log_persistence_marked', placeholder = TRUE)#,
+            #tags$head(tags$style("#log_persistence_marked{ overflow-y:scroll;}"))
           )
         )
       ),
@@ -216,7 +218,7 @@ shiny_ui <- fluidPage(
           tags$script("$(\"input:radio[name='btn_trajectories_group'][value='A']\").parent().css('background-color', '#c2dfff');"),
           tags$script("$(\"input:radio[name='btn_trajectories_group'][value='B']\").parent().css('background-color', '#ffb5c9');"),
           column(
-            width = 6,
+            width = 7,
             actionButton('btn_dendrogram_mark_leaves',                 '', icon = icon('glyphicon glyphicon-plus',       lib = 'glyphicon')),
             actionButton('btn_dendrogram_clear_marked_leaves',         '', icon = icon('glyphicon glyphicon-fire',       lib = 'glyphicon')),
             HTML('&nbsp;&nbsp;&nbsp;&nbsp;'),
@@ -224,10 +226,11 @@ shiny_ui <- fluidPage(
             HTML('&nbsp;&nbsp;&nbsp;&nbsp;'),
             actionButton('btn_trajectories_export_fcs',                '', icon = icon('glyphicon glyphicon-save',       lib = 'glyphicon')),
             actionButton('btn_trajectories_clear_pinned_trajectories', '', icon = icon('glyphicon glyphicon-trash',      lib = 'glyphicon')),
-            actionButton('btn_dendrogram_export_image',                  '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon'))
+            HTML('&nbsp;&nbsp;&nbsp;&nbsp;'),
+            actionButton('btn_dendrogram_export_image',                  '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon'))
           ),
           column(
-            width = 6,
+            width = 5,
             style = 'text-align:  right;
                  padding-right: 5px;
                  margin-top:   15px',
@@ -351,7 +354,7 @@ shiny_ui <- fluidPage(
           actionButton('btn_layout_trajectories_highlight_in_background', label = '', icon = icon('glyphicon glyphicon-sunglasses ', lib = 'glyphicon')),
           HTML("&nbsp;&nbsp;"),
           actionButton('btn_layout_trajectories_flip_colours', label = '', icon = icon('glyphicon glyphicon-adjust', lib = 'glyphicon')),
-          actionButton('btn_layout_trajectories_export_image',           '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon'))
+          actionButton('btn_layout_trajectories_export_image',           '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon'))
         ),
         hr(),
         fluidRow(
@@ -398,7 +401,7 @@ shiny_ui <- fluidPage(
                 actionButton('btn_tracked_markers_remove_trajectories.A', label = '',      icon = icon('glyphicon glyphicon-flash',          lib = 'glyphicon')),
                 actionButton('btn_tracked_markers_undo_remove_trajectories.A', label = '', icon = icon('glyphicon glyphicon-step-backward',  lib = 'glyphicon')),
                 actionButton('btn_tracked_markers_highlight_segments.A',  label = '',      icon = icon('glyphicon glyphicon-flag',           lib = 'glyphicon')),
-                actionButton('btn_tracked_markers_export_image.A',                   '',      icon = icon('glyphicon glyphicon-save-file',      lib = 'glyphicon'))
+                actionButton('btn_tracked_markers_export_image.A',                   '',      icon = icon('glyphicon glyphicon-picture',      lib = 'glyphicon'))
               )
             ),
             fluidRow(
@@ -430,7 +433,7 @@ shiny_ui <- fluidPage(
                 actionButton('btn_tracked_markers_remove_trajectories.B', label = '',      icon = icon('glyphicon glyphicon-flash',          lib = 'glyphicon')),
                 actionButton('btn_tracked_markers_undo_remove_trajectories.B', label = '', icon = icon('glyphicon glyphicon-step-backward',  lib = 'glyphicon')),
                 actionButton('btn_tracked_markers_highlight_segments.B', label = '',       icon = icon('glyphicon glyphicon-flag',           lib = 'glyphicon')),
-                actionButton('btn_tracked_markers_export_image.B',                  '',      icon = icon('glyphicon glyphicon-save-file',      lib = 'glyphicon'))
+                actionButton('btn_tracked_markers_export_image.B',                  '',      icon = icon('glyphicon glyphicon-picture',      lib = 'glyphicon'))
               )
             ),
             fluidRow(
@@ -471,7 +474,8 @@ shiny_ui <- fluidPage(
                 style = 'padding-left: 2px;
                    margin-top:  26px;
                    text-align: right',
-                actionButton('btn_tracked_populations_save_svg.A',  label = '', icon = icon('glyphicon glyphicon-picture', lib = 'glyphicon'))
+                actionButton('btn_tracked_populations_highlight_segments.A', label = '',       icon = icon('glyphicon glyphicon-flag',           lib = 'glyphicon')),
+                actionButton('btn_tracked_populations_export_image.A',  label = '',            icon = icon('glyphicon glyphicon-picture',        lib = 'glyphicon'))
               )
             ),
             fluidRow(
@@ -479,6 +483,11 @@ shiny_ui <- fluidPage(
                 plotOutput(
                   'plot_tracked_populations.A',
                   height = 500,
+                  brush = brushOpts(
+                    id     = 'selector_tracked_populations.A',
+                    fill   = 'red',
+                    stroke = 'red'
+                  )
                 ),
                 color='#1d2c8f'
               )
@@ -496,7 +505,8 @@ shiny_ui <- fluidPage(
                 style = 'padding-left: 2px;
                    margin-top:  26px;
                    text-align: right',
-                actionButton('btn_tracked_populations_save_svg.B',  label = '', icon = icon('glyphicon glyphicon-picture', lib = 'glyphicon'))
+                actionButton('btn_tracked_populations_highlight_segments.B', label = '',       icon = icon('glyphicon glyphicon-flag',           lib = 'glyphicon')),
+                actionButton('btn_tracked_populations_export_image.B',  label = '',            icon = icon('glyphicon glyphicon-picture',        lib = 'glyphicon'))
               )
             ),
             fluidRow(
@@ -504,6 +514,11 @@ shiny_ui <- fluidPage(
                 plotOutput(
                   'plot_tracked_populations.B',
                   height = 500,
+                  brush = brushOpts(
+                    id     = 'selector_tracked_populations.B',
+                    fill   = 'red',
+                    stroke = 'red'
+                  )
                 ),
                 color='#1d2c8f'
               )
