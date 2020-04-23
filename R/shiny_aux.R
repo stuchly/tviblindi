@@ -792,7 +792,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   
   categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
   
-  pseudotime_bounds <- unlist(progress)[which(!duplicated(categs))]
+  pseudotime_bounds <- sort(unlist(progress)[which(!duplicated(categs))])
   
   stats  <- lapply(populations, function(p) {
     lapply(1:N, function(i) {
