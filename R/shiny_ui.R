@@ -159,7 +159,20 @@ shiny_ui <- fluidPage(
             verbatimTextOutput('log_persistence_marked', placeholder = TRUE)
           )
         )
-      )
+      )#,
+      # br(), hr(),
+      # h3('Export images as...'), br(),
+      # radioGroupButtons(
+      #   'btn_image_export_format',
+      #   label = NULL,
+      #   choiceValues = c('PNG', 'SVG'),
+      #   choiceNames  = c('PNG', 'SVG'),
+      #   selected = 'PNG', status = 'default',
+      #   size = 'sm', direction = 'horizontal',
+      #   justified = TRUE, individual = FALSE
+      # ),
+      # tags$script("$(\"input:radio[name='btn_image_export_format'][value='PNG']\").parent().css('background-color', '#ffffde');"),
+      # tags$script("$(\"input:radio[name='btn_image_export_format'][value='SVG']\").parent().css('background-color', '#ffe8fd');")
     ),
     ## MIDDLE PANEL: TRAJECTORY DENDROGRAM
     column(
@@ -258,10 +271,6 @@ shiny_ui <- fluidPage(
             width = 6,
             actionButton('btn_dendrogram_zoom_mark_leaves',                 '', icon = icon('glyphicon glyphicon-plus',       lib = 'glyphicon')),
             actionButton('btn_dendrogram_zoom_clear_marked_leaves',         '', icon = icon('glyphicon glyphicon-fire',       lib = 'glyphicon')),
-            HTML('&nbsp;&nbsp;&nbsp;&nbsp;'),
-            actionButton('btn_trajectories_zoom_export_fcs',                '', icon = icon('glyphicon glyphicon-save',       lib = 'glyphicon')),
-            actionButton('btn_trajectories_zoom_clear_pinned_trajectories', '', icon = icon('glyphicon glyphicon-trash',      lib = 'glyphicon')),
-            actionButton('btn_dendrogram_zoom_export_svg',                  '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon'))
           ),
           column(
             width = 6,

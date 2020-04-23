@@ -166,13 +166,16 @@ shiny_server <- function(input, output, session) {
     showModal(modalDialog(
       title = HTML('<h3>How to use the <i>tviblindiTI</i> Shiny interface</h3>'),
       size = 'l',
-      HTML("This interface is a tool to allow for discrimination within a set of canonical developmental trajectories in input data, as well as between canonical and aberrant trajectories. Some trajectories will be biologically relevant, whereas others might not reflect the underlying biology.
+      HTML("This interface is a tool to allow for discrimination within a set of canonical developmental trajectories in input data, as well as between canonical and aberrant trajectories. Some trajectories will be biologically relevant, others not.
              <br><br>
              First, select terminal nodes of simulated random walks in the left pane (tab <i>Terminal nodes selection</i>). This is done by clicking and drawing a rectangular selection. To mark selected points, press the <b>PLUS</b> button underneath. To remove marked points (and start selecting over again), press the <b>FIRE</b> button underneath. Once you are satisfied with your selection (the marked terminal nodes will be clustered together!), press the <b>THUMBS-UP</b> button to compute the relevant triangulation and create trajectory representations. Additionally, press the <b>ENLARGE</b> button in the right part of the left panel to view the dimension reduction layout coloured according to annotated cell populations.
              <br><br>
              Second, select the tab <i>Homology classes by persistence selection</i> in the left pane. Here, select relevant homology classes to be used for hierarchical classification of trajectories. (For our analysis, these correspond roughly to more or less significant holes in the high-dimensional data.) Persistence increases upward. Again, you can make multiple piecewise selections by consecutively drawing rectangles and pressing <b>PLUS</b> to mark the selected points, or you can discard the marked points by pressing the <b>FIRE</b> button.
              <br><br>
-             Third, select and mark trajectories of interest using the dendrogram which appears in the middle pane. Each bifurcation in the dendrogram corresponds to difference in path classification with regard to a single homology class. The horizontal coordinate of each bifurcation corresponds to filtration value of addition of a simplex associated with the death of that homology class during filtration. In other words, as we move toward the right, trajectories as clustered together based on the differences in how they circumnavigate around increasingly prominent holes in the high-dimensional space. During the marking of trajectories using the <b>PLUS</b> button, be sure to select the desired category (<b>A</b> or <b>B</b>) for distinguishing between two collections of marked trajectories, as desired.
+             Third, select and mark trajectories of interest using the dendrogram which appears in the middle pane. Each bifurcation in the dendrogram corresponds to difference in path classification with regard to a single homology class. The horizontal coordinate of each bifurcation corresponds to filtration value of addition of a simplex associated with the death of that homology class during filtration. In other words, as we move toward the right, trajectories as clustered together based on the differences in how they circumnavigate around increasingly prominent holes in the high-dimensional space. During the marking of trajectories using the <b>PLUS</b> button, be sure to select the desired group (<b>A</b> or <b>B</b>) for distinguishing between two collections of marked trajectories.
+             Upon adding any branches of the dendrogram to group A, a blue rectangle is drawn over the dendrogram, showing the marked branches. A red rectangle is displayed for branches in group B.
+             If the dendrogram is particularly complex to navigate, select an area of interest and click the <b>MAGNIFYING GLASS</b> button to generate a zoomed-in view of that area. A green rectangle will appear on the right border of the plot, showing which area was magnified.
+             Then, switch from the tab <i>Whole dendrogram</i> to the tab <i>Zoom</i> to interact with the zoomed-in area. To change the magnified area, return to the <i>Whole dendrogram</i> tab, change your selection and click the <b>MAGNIFYING GLASS</b> button again. To clear the magnified selection, leave your selection empty and then click the <b>MAGNIFYING GLASS</b>.
              <br><br>
              Fourth, inspect the projection of marked trajectories in the 2D layout in the right pane. Category <b>A</b> trajectories are drawn in blue, whereas category <b>B</b> trajectories are drawn in blue. By default, red trajectories are drawn on the top. To flip this ordering, press the <b>FLIP</b> button (with the black-white circular icon) beneath the 2D layout plot.
              <br><br>
@@ -183,7 +186,8 @@ shiny_server <- function(input, output, session) {
              <br><br>
              Seventh, export an enhanced FCS file. In the simplest use-case, you can press the <b>SAVE</b> button in the middle pane straightaway (without following any of the above steps) to append two artificial channels to your FCS, containing the 2D layout coordinates displayed in the left and right panes. If you want to append marked trajectories in either of the categories, along with pseudotime values, press the <b>PIN</b> button next to the header for either category. Then, press the <b>SAVE</b> button. To un-pin all the batches of vertices pinned so far, press the <b>GARBAGE</b> button next to it.
              <br><br>
-             Eighth, use the <b>DOWNLOAD FILE</b> buttons under the pseuodotime layout, modified persistence diagram, dendrogram, trajectory layout or tracked marker expression diagrams to generate SVG images in the working directory. This way, you can document your analysis and create a report."
+             Eighth, use the <b>DOWNLOAD FILE</b> buttons under the pseuodotime layout, modified persistence diagram, dendrogram, trajectory layout or tracked marker expression diagrams to generate PNG or SVG images in the working directory. This way, you can document your analysis and create a report.
+             To choose whether to export a PNG or an SVG file, use the switch at the bottom of the left pane. PNG files are raster images. These will typically save space on your drive, but are resolution-dependent (they appear pixelated when enlarged). SVG files, on the other hand, typically take up more space (for large single-cell data layouts, possibly hunreds of megabytes), but are resolution-independent. This is especially suitable for further image processing."
       )))
   })
 
@@ -486,19 +490,18 @@ shiny_server <- function(input, output, session) {
   })
   
   # Buttons & logs
-  observeEvent({
-    input$btn_dendrogram_mark_leaves
-    input$btn_dendrogram_zoom_mark_leaves
-    }, {
+  observeEvent((input$btn_dendrogram_mark_leaves | input$btn_dendrogram_zoom_mark_leaves), {
     if (react$trajectories_group == 'A') {
       react$trajectories_marked.A        <- unique(unlist(c(react$trajectories_marked.A,        react$dendrogram_selection)))
       react$dendrogram_marked_leaves.A   <- unique(unlist(c(react$dendrogram_marked_leaves.A,   react$dendrogram_selected_leaves)))
       react$dendrogram_redraw_highlights <- TRUE
+      
       react$trajectories_marked_idcs.A   <- unique(unlist(c(react$trajectories_marked_idcs.A),  react$dendrogram_selected_idcs))
     } else if (react$trajectories_group == 'B') {
       react$trajectories_marked.B        <- unique(unlist(c(react$trajectories_marked.B,        react$dendrogram_selection)))
       react$dendrogram_marked_leaves.B   <- unique(unlist(c(react$dendrogram_marked_leaves.B, react$dendrogram_selected_leaves)))
       react$dendrogram_redraw_highlights <- TRUE
+      
       react$trajectories_marked_idcs.B   <- unique(unlist(c(react$trajectories_marked_idcs.B),  react$dendrogram_selected_idcs))
     }
   })
@@ -600,10 +603,9 @@ shiny_server <- function(input, output, session) {
     )
   }
 
-  observeEvent({
-    input$btn_trajectories_export_fcs
-    input$btn_trajectories_zoom_export_fcs
-    }, {
+  
+  
+  observeEvent((input$btn_trajectories_export_fcs), {
     if (is.null(react$output_ff)) {
       if (is.null(event_sel)) {
         layout_X <- layout.df$X * 100
@@ -630,7 +632,7 @@ shiny_server <- function(input, output, session) {
     showModal(export_fcs_modal())
   })
 
-  observeEvent((input$btn_trajectories_clear_pinned_trajectories | input$btn_trajectories_clear_pinned_trajectories_zoom), {
+  observeEvent((input$btn_trajectories_clear_pinned_trajectories), {
     if (is.null(react$output_ff)) {
       if (is.null(event_sel)) {
         layout_X <- layout.df$X * 100
@@ -666,7 +668,7 @@ shiny_server <- function(input, output, session) {
     }
   })
 
-  observeEvent((input$btn_dendrogram_export_svg | input$btn_dendrogram_zoom_export_svg), {
+  observeEvent((input$btn_dendrogram_export_svg), {
     react$svg_export.dendrogram <- TRUE
   })
 
@@ -686,19 +688,19 @@ shiny_server <- function(input, output, session) {
     }
   })
   
-  observeEvent((input$btn_dendrogram_mark_leaves | input$btn_dendrogram_zoom_mark_leaves), {
-    if (react$trajectories_group == 'A') {
-      react$trajectories_marked.A        <- unique(unlist(c(react$trajectories_marked.A,        react$dendrogram_selection)))
-      react$dendrogram_marked_leaves.A   <- unique(unlist(c(react$dendrogram_marked_leaves.A,   react$dendrogram_selected_leaves)))
-      react$dendrogram_redraw_highlights <- TRUE
-      react$trajectories_marked_idcs.A   <- unique(unlist(c(react$trajectories_marked_idcs.A),  react$dendrogram_selected_idcs))
-    } else if (react$trajectories_group == 'B') {
-      react$trajectories_marked.B        <- unique(unlist(c(react$trajectories_marked.B,        react$dendrogram_selection)))
-      react$dendrogram_marked_leaves.B   <- unique(unlist(c(react$dendrogram_marked_leaves.B, react$dendrogram_selected_leaves)))
-      react$dendrogram_redraw_highlights <- TRUE
-      react$trajectories_marked_idcs.B   <- unique(unlist(c(react$trajectories_marked_idcs.B),  react$dendrogram_selected_idcs))
-    }
-  })
+  # observeEvent((input$btn_dendrogram_mark_leaves | input$btn_dendrogram_zoom_mark_leaves), {
+  #   if (react$trajectories_group == 'A') {
+  #     react$trajectories_marked.A        <- unique(unlist(c(react$trajectories_marked.A,        react$dendrogram_selection)))
+  #     react$dendrogram_marked_leaves.A   <- unique(unlist(c(react$dendrogram_marked_leaves.A,   react$dendrogram_selected_leaves)))
+  #     react$dendrogram_redraw_highlights <- TRUE
+  #     react$trajectories_marked_idcs.A   <- unique(unlist(c(react$trajectories_marked_idcs.A),  react$dendrogram_selected_idcs))
+  #   } else if (react$trajectories_group == 'B') {
+  #     react$trajectories_marked.B        <- unique(unlist(c(react$trajectories_marked.B,        react$dendrogram_selection)))
+  #     react$dendrogram_marked_leaves.B   <- unique(unlist(c(react$dendrogram_marked_leaves.B, react$dendrogram_selected_leaves)))
+  #     react$dendrogram_redraw_highlights <- TRUE
+  #     react$trajectories_marked_idcs.B   <- unique(unlist(c(react$trajectories_marked_idcs.B),  react$dendrogram_selected_idcs))
+  #   }
+  # })
   
   
   observeEvent({
@@ -725,21 +727,21 @@ shiny_server <- function(input, output, session) {
         pts     <- brushedPoints(df, input$selector_dendrogram_zoom, yvar = 'y')
         pts     <- rev(as.numeric(rownames(pts)))
         leaves  <- names(react$dendrogram_zoom_classes)[pts]
-        uniques                          <- which(!duplicated(leaves))
-        react$dendrogram_selected_leaves <- leaves[uniques]
-        react$dendrogram_selected_idcs   <- as.vector(unlist(react$dendrogram_zoom_classes[pts]))[uniques]
-        react$dendrogram_selection       <- as.numeric(unlist(react$dendrogram_zoom_classes[pts]))[uniques]
-        sizes                            <- unlist(sapply(react$dendrogram_zoom_classes[pts], length))[uniques]
+        #uniques                          <- which(!duplicated(leaves))
+        react$dendrogram_selected_leaves <- leaves#[uniques]
+        react$dendrogram_selected_idcs   <- as.vector(unlist(react$dendrogram_zoom_classes[pts]))#[uniques]
+        react$dendrogram_selection       <- as.numeric(unlist(react$dendrogram_zoom_classes[pts]))#[uniques]
+        sizes                            <- unlist(sapply(react$dendrogram_zoom_classes[pts], length))#[uniques]
       } else {
         df      <- data.frame(y = seq(0, 1, length.out = length(react$dendrogram_classes)))
         pts     <- brushedPoints(df, input$selector_dendrogram, yvar = 'y')
         pts     <- rev(as.numeric(rownames(pts)))
         leaves  <- names(react$dendrogram_classes)[pts]
-        uniques                          <- which(!duplicated(leaves))
-        react$dendrogram_selected_leaves <- leaves[uniques]
-        react$dendrogram_selected_idcs   <- as.vector(unlist(react$dendrogram_classes[pts]))[uniques]
-        react$dendrogram_selection       <- as.numeric(unlist(react$dendrogram_classes[pts]))[uniques]
-        sizes                            <- unlist(sapply(react$dendrogram_classes[pts], length))[uniques]
+        #uniques                          <- which(!duplicated(leaves))
+        react$dendrogram_selected_leaves <- leaves#[uniques]
+        react$dendrogram_selected_idcs   <- as.vector(unlist(react$dendrogram_classes[pts]))#[uniques]
+        react$dendrogram_selection       <- as.numeric(unlist(react$dendrogram_classes[pts]))#[uniques]
+        sizes                            <- unlist(sapply(react$dendrogram_classes[pts], length))#[uniques]
       }
       cat(sizes, sep = ', ')
     }
