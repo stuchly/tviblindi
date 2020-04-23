@@ -197,14 +197,6 @@ shiny_ui <- fluidPage(
               color='#1d2c8f'
             )
           ),
-          # Leaf magnitude cutoff slider (in percentages)
-          sliderInput(
-            'slider_dendrogram_leaf_cutoff',
-            'Min trajectory count % per leaf',
-            min = 0, max = 100,
-            value = 10.0,
-            step  = 1
-          ),
           # Trajectory group switch (A vs. B)
           radioGroupButtons(
             'btn_trajectories_group',
@@ -250,14 +242,6 @@ shiny_ui <- fluidPage(
                        )),
             color='#1d2c8f'
           ),
-          # Leaf magnitude cutoff slider (in percentages)
-          sliderInput(
-            'slider_dendrogram_zoom_leaf_cutoff',
-            'Min trajectory count % per leaf',
-            min = 0, max = 100,
-            value = 10.0,
-            step  = 1
-          ),
           # Trajectory group switch (A vs. B)
           radioGroupButtons(
             'btn_trajectories_group_zoom',
@@ -284,7 +268,15 @@ shiny_ui <- fluidPage(
           )
         )
       ),
-      br(), br(),
+      br(),br(),
+      sliderInput(
+        'slider_dendrogram_leaf_cutoff',
+        'Min trajectory count % per leaf',
+        min = 0, max = 100,
+        value = 10.0,
+        step  = 1,
+        width = '100%'
+      ),
       fluidRow(
         width = 12,
         h4('Selected dendrogram nodes by counts'),
