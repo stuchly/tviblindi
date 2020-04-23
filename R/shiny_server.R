@@ -11,7 +11,7 @@ shiny_server <- function(input, output, session) {
     stopApp()
   })
   message(paste0('Running tviblindi Shiny UI, working directory is ', getwd()))
-
+  
   ## Load up tviblindi analysis S3 object
   INPUTS_DIRECTORY <- 'tviblindi_tmp'
   tv_name          <- readRDS(file.path(INPUTS_DIRECTORY, 'tv.RDS'))
@@ -41,17 +41,27 @@ shiny_server <- function(input, output, session) {
   react$persistence_marked           <- NULL # marked homology classes idcs
   # Trajectories dendrogram
   react$dendrogram                   <- NA   # dendrogram for clustering of trajectories by homology classes
-  react$dendrogram_hclust            <- NA
+  react$dendrogram_zoom              <- NA
+  react$dendrogram_zoomed            <- FALSE
+  react$dendrogram_data              <- NA
+  react$dendrogram_zoom_data         <- NA
   react$dendrogram_ready             <- FALSE
+  react$dendrogram_zoom_ready        <- FALSE
   react$dendrogram_selection         <- NULL
   react$dendrogram_selected_leaves   <- NULL
   react$dendrogram_selected_idcs     <- NULL
   react$dendrogram_marked_leaves.A   <- NULL
-  react$dendrogram_marked_leaves.B   <- NULL
+  react$dendrogram_zoom_idcs         <- NULL
   react$dendrogram_redraw_highlights <- FALSE
-  react$dendrogram_leaf_perc_cutoff  <- NULL
+  react$dendrogram_redraw_zoom       <- FALSE
+  react$dendrogram_zoom_redraw_highlights <- FALSE
+  react$dendrogram_leaf_perc_cutoff      <- NULL
+  react$dendrogram_zoom_leaf_perc_cutoff <- NULL
   react$dendrogram_classes           <- list()
+  react$dendrogram_zoom_classes      <- list()
   react$dendrogram_labels            <- NA
+  react$dendrogram_zoom_labels       <- NA
+  react$dendrogram_zoom_active       <- FALSE
   # 2D trajectories layout
   react$layout_trajectories_flip_colours            <- FALSE
   react$layout_trajectories_highlight_in_background <- FALSE
@@ -93,6 +103,7 @@ shiny_server <- function(input, output, session) {
   react$svg_export.termini           <- FALSE
   react$svg_export.persistence       <- FALSE
   react$svg_export.dendrogram        <- FALSE
+  react$svg_export.dendrogram_zoom   <- FALSE
   react$svg_export.trajectories      <- FALSE
   react$svg_export.tracked_markers.A <- FALSE
   react$svg_export.tracked_markers.B <- FALSE
@@ -130,12 +141,24 @@ shiny_server <- function(input, output, session) {
   ## Find all trajectories' terminal nodes
   termini              <- c(tv$walks$v[tv$walks$starts[-1] - 1], tail(tv$walks$v, 1))
   termini.unique       <- unique(termini)
-
+  
   ### OUTPUTS & OBSERVERS
 
+  ## Reset all selectors if window is resized (otherwise this causes bugs)
+  observeEvent(input$windowSizeChange, {
+    session$resetBrush('selector_termini')
+    session$resetBrush('selector_persistence')
+    session$resetBrush('selector_dendrogram')
+    session$resetBrush('selector_dendrogram_zoom')
+    session$resetBrush('selector_tracked_markers.A')
+    session$resetBrush('selector_tracked_markers.B')
+  })
+  
   ## Display FCS file name
   if (!is.null(tv$analysis_name)) {
     output$text_analysis_name <- renderText(tv$analysis_name)
+  } else {
+    output$text_analysis_name <- renderText(Sys.time())
   }
   
   ## Help pop-up
@@ -171,7 +194,7 @@ shiny_server <- function(input, output, session) {
     psc   <- as.numeric(as.factor(react$pseudotime$res))
     psc   <- psc / max(psc)
     psc   <- psc * 10000 + 1
-    cols  <- gplots::greenred(10500)[psc]
+    cols  <- gplots::colorpanel(10500, low = 'yellow', mid = 'brown', high = 'red')[psc]
 
     if (react$svg_export.termini) {
       svg(filename = paste0('Termini_', Sys.time(), '.svg'))
@@ -180,7 +203,7 @@ shiny_server <- function(input, output, session) {
     par(mar = c(1, 1, 1, 1))
     plot(layout, col = scales::alpha(cols, point_size), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = .3, xlim = c(0, 1), ylim = c(0, 1))
     # Plot origin and terminal nodes
-    points(layout[tv$origin, 1], layout[tv$origin, 2], col = scales::alpha('yellow', .75), cex = 3, pch = 15)
+    points(layout[tv$origin, 1], layout[tv$origin, 2], col = scales::alpha('darkgreen', .75), cex = 3, pch = 15)
     if (!is.null(tv$ShowAllFates) && tv$ShowAllFates) {
       if (length(unique(tv$fates)) == 1) {
         points(layout[unique(tv$states), 1], layout[unique(tv$fates), 2], col = scales::alpha('grey', .75), cex = 1.5, pch = 20)
@@ -322,11 +345,17 @@ shiny_server <- function(input, output, session) {
     react$dendrogram_ready <- (!is.null(react$trajectories_random_walks) && !is.null(react$persistence_marked))
   })
   observeEvent(input$btn_persistence_clear_classes, {
+    react$dendrogram            <- NA
+    react$dendrogram_zoom       <- NA
+    react$dendrogram_ready      <- FALSE
+    react$dendrogram_zoom_ready <- FALSE
     react$persistence_marked      <- data.frame()
     output$log_persistence_marked <- renderText('No homology classes marked')
     react$trajectories_marked.A   <- NULL
     react$trajectories_marked.B   <- NULL
+    react$dendrogram_zoom_idcs    <- NULL
     session$resetBrush('selector_dendrogram')
+    session$resetBrush('selector_dendrogram_zoom')
   })
   observeEvent(input$btn_persistence_export_svg, {
     react$svg_export.persistence <- TRUE
@@ -335,31 +364,38 @@ shiny_server <- function(input, output, session) {
   ## Trajectories dendrogram
   # Plot
   output$plot_dendrogram <- renderPlot({
+    session$resetBrush('selector_dendrogram_zoom')
+    react$dendrogram_zoom_active <- FALSE
+    par(mar = c(0, 0, 0, 0))
     perc <- react$dendrogram_leaf_perc_cutoff
-    dendrogram_plotted <- FALSE
-    dendrogram_plot    <- NULL
-    highlights.A       <- react$dendrogram_marked_leaves.A
-    highlights.B       <- react$dendrogram_marked_leaves.B
+    dendrogram_plotted   <- FALSE
+    dendrogram_plot      <- NULL
+    highlights.A         <- react$dendrogram_marked_leaves.A
+    highlights.B         <- react$dendrogram_marked_leaves.B
+    dendrogram_zoom_idcs <- react$dendrogram_zoom_idcs
     if (react$dendrogram_ready) {
       idcs_selected <- as.numeric(unlist(rownames(react$persistence_marked))) # selected homology classes idcs
       isolate({
-        if (length(idcs_selected) > 0 && !is.null(react$representations)) {
+        if ((length(idcs_selected) > 0 && !is.null(react$representations)) || react$dendrogram_redraw_zoom) {
           dendrogram_plotted <- TRUE # if TRUE and SVG export button was clicked, also export the SVG
           simplices_selected            <- react$persistence$inds$death[idcs_selected]
           react$representations.reduced <- lapply(react$representations, function(x) x[x %in% simplices_selected])
 
-          if ((!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B)) && (react$dendrogram_redraw_highlights || react$svg_export.dendrogram)) {
-            dendrogram_plot               <- trajectories_dendrogram(precomputed_dendrogram = react$dendrogram,
+          if (((!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B)) &&
+              (react$dendrogram_redraw_highlights || react$svg_export.dendrogram)) || react$dendrogram_redraw_zoom) {
+            dendrogram_plot               <- trajectories_dendrogram(precomputed_dendrogram        = react$dendrogram,
                                                                      precomputed_dendrogram_labels = react$dendrogram_labels,
-                                                                     leaves_to_highlight.A  = highlights.A,
-                                                                     leaves_to_highlight.B  = highlights.B)
+                                                                     leaves_to_highlight.A         = highlights.A,
+                                                                     leaves_to_highlight.B         = highlights.B,
+                                                                     leaves_to_highlight.zoom      = dendrogram_zoom_idcs)
+            react$dendrogram_redraw_zoom       <- FALSE
             react$dendrogram_redraw_highlights <- FALSE
           } else {
             dendrogram_plot               <- trajectories_dendrogram(pers           = react$persistence,
                                                                      repre.reduced  = react$representations.reduced,
                                                                      perc           = perc,
                                                                      out.dendrogram = react$dendrogram,
-                                                                     out.hclust     = react$dendrogram_hclust,
+                                                                     out.data       = react$dendrogram_data,
                                                                      out.classif    = react$dendrogram_classes,
                                                                      out.labels     = react$dendrogram_labels)
           }
@@ -378,14 +414,82 @@ shiny_server <- function(input, output, session) {
       .draw_placeholder()
     }
   })
+  
+  output$plot_dendrogram_zoom <- renderPlot({
+    session$resetBrush('selector_dendrogram')
+    if (!react$dendrogram_zoom_active) {
+      react$dendrogram_zoom_redraw_highlights <- TRUE
+    }
+    react$dendrogram_zoom_active <- TRUE
+    par(mar = c(0, 0, 0, 0))
+    perc <- react$dendrogram_zoom_leaf_perc_cutoff
+    dendrogram_zoom_plotted <- FALSE
+    dendrogram_zoom_plot    <- NULL
+    highlights.A       <- react$dendrogram_marked_leaves.A
+    highlights.B       <- react$dendrogram_marked_leaves.B
+    zoom_idcs          <- react$dendrogram_zoom_idcs
+    if (react$dendrogram_zoom_ready) {
+      idcs_selected <- as.numeric(unlist(rownames(react$persistence_marked))) # selected homology classes idcs
+      isolate({
+        if ((length(idcs_selected) > 0 && !is.null(react$representations)) || react$dendrogram_redraw_zoom) {
+          dendrogram_zoom_plotted       <- TRUE # if TRUE and SVG export button was clicked, also export the SVG
+          simplices_selected            <- react$persistence$inds$death[idcs_selected]
+          react$representations.reduced <- lapply(react$representations, function(x) x[x %in% simplices_selected])
+          
+          if ((!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B)) &&
+              (react$dendrogram_zoom_redraw_highlights || react$svg_export.dendrogram_zoom) && !is.na(react$dendrogram_zoom_labels)) {
+            dendrogram_zoom_plot        <- trajectories_dendrogram(  precomputed_dendrogram        = react$dendrogram_zoom,
+                                                                     precomputed_dendrogram_labels = react$dendrogram_zoom_labels,
+                                                                     leaves_to_highlight.A         = highlights.A,
+                                                                     leaves_to_highlight.B         = highlights.B,
+                                                                     zoom_idcs                     = zoom_idcs)
+            react$dendrogram_zoom_redraw_highlights <- FALSE
+          } else {
+            dendrogram_zoom_plot        <- trajectories_dendrogram(  pers           = react$persistence,
+                                                                     repre.reduced  = react$representations.reduced,
+                                                                     perc           = perc,
+                                                                     zoom_idcs      = zoom_idcs,
+                                                                     leaves_to_highlight.A         = highlights.A,
+                                                                     leaves_to_highlight.B         = highlights.B,
+                                                                     out.dendrogram = react$dendrogram_zoom,
+                                                                     out.data       = react$dendrogram_zoom_data,
+                                                                     out.classif    = react$dendrogram_zoom_classes,
+                                                                     out.labels     = react$dendrogram_zoom_labels)
+            
+            if (!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B)) {
+              react$dendrogram_zoom_redraw_highlights <- TRUE
+            }
+          }
+          plot(dendrogram_zoom_plot)
+        }
+      })
+      if (dendrogram_zoom_plotted && react$svg_export.dendrogram_zoom) {
+        svg(filename = paste0('ZoomedDendrogram_', Sys.time(), '.svg'))
+        plot(dendrogram_zoom_plot)
+        dev.off()
+        react$dendrogram_zoom_redraw_highlights <- TRUE
+        react$svg_export.dendrogram_zoom <- FALSE
+      }
+    }
+    if (!dendrogram_zoom_plotted) {
+      .draw_placeholder(picture = 'petal')
+    }
+  })
 
   # Leaf magnitude cutoff slider (in percentages)
   observeEvent(input$slider_dendrogram_leaf_cutoff, {
     react$dendrogram_leaf_perc_cutoff <- input$slider_dendrogram_leaf_cutoff
   })
 
+  observeEvent(input$slider_dendrogram_zoom_leaf_cutoff, {
+    react$dendrogram_zoom_leaf_perc_cutoff <- input$slider_dendrogram_zoom_leaf_cutoff
+  })
+  
   # Buttons & logs
-  observeEvent(input$btn_dendrogram_mark_leaves, {
+  observeEvent({
+    input$btn_dendrogram_mark_leaves
+    input$btn_dendrogram_zoom_mark_leaves
+    }, {
     if (react$trajectories_group == 'A') {
       react$trajectories_marked.A        <- unique(unlist(c(react$trajectories_marked.A,        react$dendrogram_selection)))
       react$dendrogram_marked_leaves.A   <- unique(unlist(c(react$dendrogram_marked_leaves.A,   react$dendrogram_selected_leaves)))
@@ -398,15 +502,21 @@ shiny_server <- function(input, output, session) {
       react$trajectories_marked_idcs.B   <- unique(unlist(c(react$trajectories_marked_idcs.B),  react$dendrogram_selected_idcs))
     }
   })
-
-  observeEvent(input$btn_dendrogram_clear_marked_leaves, {
+  
+  observeEvent((input$btn_dendrogram_clear_marked_leaves | input$btn_dendrogram_zoom_clear_marked_leaves), {
     if (react$trajectories_group == 'A') {
-      react$trajectories_marked.A          <- react$dendrogram_marked_leaves.A <- react$trajcetories_marked_idcs.A <- NULL
+      if (!is.null(react$trajectories_marked.A) && is.null(react$trajectories_marked.B) && !is.null(react$dendrogram_zoom_idcs)) {
+        react$dendrogram_redraw_zoom <- TRUE
+      }
+      react$trajectories_marked.A          <- react$dendrogram_marked_leaves.A <- react$trajectories_marked_idcs.A <- NULL
       react$trajectories_junk.A            <- integer(0)
       react$tracked_markers_last_removed.A <- NULL
       react$dendrogram_redraw_highlights   <- TRUE
     } else if (react$trajectories_group == 'B') {
-      react$trajectories_marked.B          <- react$dendrogram_marked_leaves.B <- react$trajcetories_marked_idcs.B <- NULL
+      if (!is.null(react$trajectories_marked.B) && is.null(react$trajectories_marked.A) && !is.null(react$dendrogram_zoom_idcs)) {
+        react$dendrogram_redraw_zoom <- TRUE
+      }
+      react$trajectories_marked.B          <- react$dendrogram_marked_leaves.B <- react$trajectories_marked_idcs.B <- NULL
       react$trajectories_junk.B            <- integer(0)
       react$tracked_markers_last_removed.B <- NULL
       react$dendrogram_redraw_highlights   <- TRUE
@@ -474,7 +584,7 @@ shiny_server <- function(input, output, session) {
 
   observeEvent(react$trajectories_pinned_batches_count, {
     count <- react$trajectories_pinned_batches_count
-    output$log_pinned_batches_count <- renderPrint({
+    output$log_pinned_batches_count <- output$pinned_batches_count_zoom <- renderPrint({
       cat(paste(count, ' ', if (count == 1) { 'batch' } else { 'batches' }, 'pinned'), '\n')
     })
   })
@@ -490,7 +600,10 @@ shiny_server <- function(input, output, session) {
     )
   }
 
-  observeEvent(input$btn_trajectories_export_fcs, {
+  observeEvent({
+    input$btn_trajectories_export_fcs
+    input$btn_trajectories_zoom_export_fcs
+    }, {
     if (is.null(react$output_ff)) {
       if (is.null(event_sel)) {
         layout_X <- layout.df$X * 100
@@ -517,7 +630,7 @@ shiny_server <- function(input, output, session) {
     showModal(export_fcs_modal())
   })
 
-  observeEvent(input$btn_trajectories_clear_pinned_trajectories, {
+  observeEvent((input$btn_trajectories_clear_pinned_trajectories | input$btn_trajectories_clear_pinned_trajectories_zoom), {
     if (is.null(react$output_ff)) {
       if (is.null(event_sel)) {
         layout_X <- layout.df$X * 100
@@ -553,14 +666,50 @@ shiny_server <- function(input, output, session) {
     }
   })
 
-  observeEvent(input$btn_dendrogram_export_svg, {
+  observeEvent((input$btn_dendrogram_export_svg | input$btn_dendrogram_zoom_export_svg), {
     react$svg_export.dendrogram <- TRUE
   })
 
-  observeEvent(input$btn_trajectories_group, {
-    react$trajectories_group <- input$btn_trajectories_group
+  observeEvent(input$btn_dendrogram_zoom, {
+    df  <- data.frame(y = seq(0, 1, length.out = length(react$dendrogram_classes)))
+    pts <- brushedPoints(df, input$selector_dendrogram, yvar = 'y')
+    pts <- rev(as.numeric(rownames(pts)))
+    if (length(pts) < 2) {
+      react$dendrogram_zoom_idcs   <- NULL
+      react$dendrogram_zoom_ready  <- FALSE
+      react$dendrogram_redraw_zoom <- TRUE
+    } else {
+      X      <- react$dendrogram_data$labels[pts, 1]
+      react$dendrogram_zoom_idcs   <- c(min(X), max(X))
+      react$dendrogram_zoom_ready  <- TRUE
+      react$dendrogram_redraw_zoom <- TRUE
+    }
   })
-
+  
+  observeEvent((input$btn_dendrogram_mark_leaves | input$btn_dendrogram_zoom_mark_leaves), {
+    if (react$trajectories_group == 'A') {
+      react$trajectories_marked.A        <- unique(unlist(c(react$trajectories_marked.A,        react$dendrogram_selection)))
+      react$dendrogram_marked_leaves.A   <- unique(unlist(c(react$dendrogram_marked_leaves.A,   react$dendrogram_selected_leaves)))
+      react$dendrogram_redraw_highlights <- TRUE
+      react$trajectories_marked_idcs.A   <- unique(unlist(c(react$trajectories_marked_idcs.A),  react$dendrogram_selected_idcs))
+    } else if (react$trajectories_group == 'B') {
+      react$trajectories_marked.B        <- unique(unlist(c(react$trajectories_marked.B,        react$dendrogram_selection)))
+      react$dendrogram_marked_leaves.B   <- unique(unlist(c(react$dendrogram_marked_leaves.B, react$dendrogram_selected_leaves)))
+      react$dendrogram_redraw_highlights <- TRUE
+      react$trajectories_marked_idcs.B   <- unique(unlist(c(react$trajectories_marked_idcs.B),  react$dendrogram_selected_idcs))
+    }
+  })
+  
+  
+  observeEvent({
+    input$btn_trajectories_group
+    input$btn_trajectories_group_zoom
+    }, {
+    react$trajectories_group <- if (react$dendrogram_zoom_active) { input$btn_trajectories_group_zoom } else { input$btn_trajectories_group }
+    updateRadioButtons(session, 'btn_trajectories_group',      selected = react$trajectories_group)
+    updateRadioButtons(session, 'btn_trajectories_group_zoom', selected = react$trajectories_group)
+  })
+  
   observeEvent(input$btn_trajectories_pin_trajectories.A, {
     react$trajectories_to_pin <- sort(unique(react$trajectories_marked.A))
   })
@@ -570,16 +719,28 @@ shiny_server <- function(input, output, session) {
   })
 
   output$log_dendrogram_selected <- renderPrint({
-    if (any(!is.na(react$dendrogram_hclust))) {
-      df  <- data.frame(y = seq(0, 1, length.out = length(react$dendrogram_classes)))
-      pts <- brushedPoints(df, input$selector_dendrogram, yvar = 'y')
-      pts <- rev(as.numeric(rownames(pts)))
-
-      react$dendrogram_selected_leaves <- names(react$dendrogram_classes)[pts]
-      react$dendrogram_selected_idcs   <- as.vector(unlist(react$dendrogram_classes[pts]))
-      react$dendrogram_selection       <- as.numeric(unlist(react$dendrogram_classes[pts]))
-
-      sizes <- sapply(react$dendrogram_classes[pts], length)
+    if (any(c(!is.na(react$dendrogram), !is.na(react$dendrogram_zoom)))) {
+      if (react$dendrogram_zoom_active) {
+        df      <- data.frame(y = seq(0, 1, length.out = length(react$dendrogram_zoom_classes)))
+        pts     <- brushedPoints(df, input$selector_dendrogram_zoom, yvar = 'y')
+        pts     <- rev(as.numeric(rownames(pts)))
+        leaves  <- names(react$dendrogram_zoom_classes)[pts]
+        uniques                          <- which(!duplicated(leaves))
+        react$dendrogram_selected_leaves <- leaves[uniques]
+        react$dendrogram_selected_idcs   <- as.vector(unlist(react$dendrogram_zoom_classes[pts]))[uniques]
+        react$dendrogram_selection       <- as.numeric(unlist(react$dendrogram_zoom_classes[pts]))[uniques]
+        sizes                            <- unlist(sapply(react$dendrogram_zoom_classes[pts], length))[uniques]
+      } else {
+        df      <- data.frame(y = seq(0, 1, length.out = length(react$dendrogram_classes)))
+        pts     <- brushedPoints(df, input$selector_dendrogram, yvar = 'y')
+        pts     <- rev(as.numeric(rownames(pts)))
+        leaves  <- names(react$dendrogram_classes)[pts]
+        uniques                          <- which(!duplicated(leaves))
+        react$dendrogram_selected_leaves <- leaves[uniques]
+        react$dendrogram_selected_idcs   <- as.vector(unlist(react$dendrogram_classes[pts]))[uniques]
+        react$dendrogram_selection       <- as.numeric(unlist(react$dendrogram_classes[pts]))[uniques]
+        sizes                            <- unlist(sapply(react$dendrogram_classes[pts], length))[uniques]
+      }
       cat(sizes, sep = ', ')
     }
   })

@@ -20,6 +20,16 @@ shiny_ui <- fluidPage(
                 top: 22px
              }'),
   tags$head(
+    tags$script(HTML('
+        $(window).resize(function(event){
+          var w = $(this).width();
+          var h = $(this).height();
+          var obj = {width: w, height: h};
+          Shiny.onInputChange("windowSizeChange", obj);
+        });
+      '))
+  ),
+  tags$head(
     tags$style('#modal_layout_gating .modal-lg {
           width: 1850px
        }
@@ -40,27 +50,12 @@ shiny_ui <- fluidPage(
     size    = 'large',
     title   = '2-dimensional layout with annotated populations',
     trigger = 'btn_left_show_gating',
-    plotOutput('plot_gating_layout',
-               width  = '1800px',
-               height = '950px')
-  ),
-  shinyBS::bsModal(
-    id      = 'modal_tracked_markers.A',
-    size    = 'large',
-    title   = 'Tracking marker expression',
-    trigger = 'btn_tracked_markers_enlarge.A',
-    plotOutput('plot_tracked_markers_enlarged.A',
-               width  = '1000px',
-               height = '750px')
-  ),
-  shinyBS::bsModal(
-    id      = 'modal_tracked_markers.B',
-    size    = 'large',
-    title   = 'Tracking marker expression',
-    trigger = 'btn_tracked_markers_enlarge.B',
-    plotOutput('plot_tracked_markers_enlarged.B',
-               width  = '1000px',
-               height = '750px')
+    shinycssloaders::withSpinner(
+      plotOutput('plot_gating_layout',
+                 width  = '1800px',
+                 height = '950px'),
+      color='#1d2c8f'
+    )
   ),
   
   fluidRow(
@@ -94,19 +89,22 @@ shiny_ui <- fluidPage(
         tabPanel(
           'Terminal nodes selection',
           fluidRow(
-            plotOutput(
-              'plot_termini',
-              height = 500,
-              brush = brushOpts(
-                id     = 'selector_termini',
-                fill   = 'yellow',
-                stroke = 'yellow'
-              )
+            shinycssloaders::withSpinner(
+              plotOutput(
+                'plot_termini',
+                height = 500,
+                brush = brushOpts(
+                  id     = 'selector_termini',
+                  fill   = 'yellow',
+                  stroke = 'yellow'
+                )
+              ),
+              color='#1d2c8f'
             )
           ),
           column(
             width = 8,
-            style = 'text-aligh:    left;
+            style = 'text-align:    left;
                      pading-bottom: 10px',
             actionButton('btn_termini_mark_termini',            '', icon = icon('glyphicon glyphicon-plus',      lib = 'glyphicon')),
             actionButton('btn_termini_clear_termini',           '', icon = icon('glyphicon glyphicon-fire',      lib = 'glyphicon')),
@@ -133,14 +131,17 @@ shiny_ui <- fluidPage(
         tabPanel(
           'Homology classes by persistence selection',
           fluidRow(
-            plotOutput(
-              'plot_persistence',
-              height = 500,
-              brush  = brushOpts(
-                id     = 'selector_persistence',
-                fill   = 'yellow',
-                stroke = 'yellow'
-              )
+            shinycssloaders::withSpinner(
+              plotOutput(
+                'plot_persistence',
+                height = 500,
+                brush  = brushOpts(
+                  id     = 'selector_persistence',
+                  fill   = 'yellow',
+                  stroke = 'yellow'
+                )
+              ),
+              color='#1d2c8f'
             )
           ),
           actionButton('btn_persistence_mark_classes',  '', icon = icon('glyphicon glyphicon-plus', lib = 'glyphicon')),
@@ -165,51 +166,111 @@ shiny_ui <- fluidPage(
       width = 4,
       style = 'padding-left: 50px',
       # Dendrogram of trajectories clustered by marked homology classes
-      fluidRow(
-        plotOutput('plot_dendrogram',
-                   height = 800,
-                   brush  = brushOpts(
-                     id        = 'selector_dendrogram',
-                     fill      = 'yellow',
-                     stroke    = 'yellow',
-                     direction = 'y'
-                   ))
-      ),
-      # Leaf magnitude cutoff slider (in percentages)
-      sliderInput(
-        'slider_dendrogram_leaf_cutoff',
-        'Min trajectory count % per leaf',
-        min = 0, max = 100,
-        value = 10.0,
-        step  = 1
-      ),
-      # Trajectory group switch (A vs. B)
-      radioGroupButtons(
-        'btn_trajectories_group',
-        label = NULL,
-        choiceValues = c('A', 'B'),
-        choiceNames  = c('A', 'B'),
-        selected = 'A', status = 'default',
-        size = 'sm', direction = 'horizontal',
-        justified = TRUE, individual = FALSE
-      ),
-      tags$script("$(\"input:radio[name='btn_trajectories_group'][value='A']\").parent().css('background-color', '#c2dfff');"),
-      tags$script("$(\"input:radio[name='btn_trajectories_group'][value='B']\").parent().css('background-color', '#ffb5c9');"),
-      column(
-        width = 6,
-        actionButton('btn_dendrogram_mark_leaves',                 '', icon = icon('glyphicon glyphicon-plus',       lib = 'glyphicon')),
-        actionButton('btn_dendrogram_clear_marked_leaves',         '', icon = icon('glyphicon glyphicon-fire',       lib = 'glyphicon')),
-        HTML('&nbsp;&nbsp;&nbsp;&nbsp;'),
-        actionButton('btn_trajectories_export_fcs',                '', icon = icon('glyphicon glyphicon-save',       lib = 'glyphicon')),
-        actionButton('btn_trajectories_clear_pinned_trajectories', '', icon = icon('glyphicon glyphicon-trash',      lib = 'glyphicon')),
-        actionButton('btn_dendrogram_export_svg',                  '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon'))
-      ),
-      column(
-        width = 6,
-        style = 'text-align:  right;
+      tabsetPanel(
+        tabPanel(
+          title = 'Whole dendrogram',
+          fluidRow(
+            shinycssloaders::withSpinner(
+              plotOutput('plot_dendrogram',
+                         height = 800,
+                         brush  = brushOpts(
+                           id        = 'selector_dendrogram',
+                           fill      = 'yellow',
+                           stroke    = 'yellow',
+                           direction = 'y'
+                         )),
+              color='#1d2c8f'
+            )
+          ),
+          # Leaf magnitude cutoff slider (in percentages)
+          sliderInput(
+            'slider_dendrogram_leaf_cutoff',
+            'Min trajectory count % per leaf',
+            min = 0, max = 100,
+            value = 10.0,
+            step  = 1
+          ),
+          # Trajectory group switch (A vs. B)
+          radioGroupButtons(
+            'btn_trajectories_group',
+            label = NULL,
+            choiceValues = c('A', 'B'),
+            choiceNames  = c('A', 'B'),
+            selected = 'A', status = 'default',
+            size = 'sm', direction = 'horizontal',
+            justified = TRUE, individual = FALSE
+          ),
+          tags$script("$(\"input:radio[name='btn_trajectories_group'][value='A']\").parent().css('background-color', '#c2dfff');"),
+          tags$script("$(\"input:radio[name='btn_trajectories_group'][value='B']\").parent().css('background-color', '#ffb5c9');"),
+          column(
+            width = 6,
+            actionButton('btn_dendrogram_mark_leaves',                 '', icon = icon('glyphicon glyphicon-plus',       lib = 'glyphicon')),
+            actionButton('btn_dendrogram_clear_marked_leaves',         '', icon = icon('glyphicon glyphicon-fire',       lib = 'glyphicon')),
+            HTML('&nbsp;&nbsp;&nbsp;&nbsp;'),
+            actionButton('btn_dendrogram_zoom',                        '', icon = icon('glyphicon glyphicon-glyphicon glyphicon-zoom-in', lib = 'glyphicon')),
+            HTML('&nbsp;&nbsp;&nbsp;&nbsp;'),
+            actionButton('btn_trajectories_export_fcs',                '', icon = icon('glyphicon glyphicon-save',       lib = 'glyphicon')),
+            actionButton('btn_trajectories_clear_pinned_trajectories', '', icon = icon('glyphicon glyphicon-trash',      lib = 'glyphicon')),
+            actionButton('btn_dendrogram_export_svg',                  '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon'))
+          ),
+          column(
+            width = 6,
+            style = 'text-align:  right;
                  padding-right: 5px;
                  margin-top:   15px',
-        textOutput('log_pinned_batches_count')
+            textOutput('log_pinned_batches_count')
+          )
+        ),
+        tabPanel(
+          title = 'Zoom',
+          shinycssloaders::withSpinner(
+            plotOutput('plot_dendrogram_zoom',
+                       height = 800,
+                       brush  = brushOpts(
+                         id        = 'selector_dendrogram_zoom',
+                         fill      = 'yellow',
+                         stroke    = 'yellow',
+                         direction = 'y'
+                       )),
+            color='#1d2c8f'
+          ),
+          # Leaf magnitude cutoff slider (in percentages)
+          sliderInput(
+            'slider_dendrogram_zoom_leaf_cutoff',
+            'Min trajectory count % per leaf',
+            min = 0, max = 100,
+            value = 10.0,
+            step  = 1
+          ),
+          # Trajectory group switch (A vs. B)
+          radioGroupButtons(
+            'btn_trajectories_group_zoom',
+            label = NULL,
+            choiceValues = c('A', 'B'),
+            choiceNames  = c('A', 'B'),
+            selected = 'A', status = 'default',
+            size = 'sm', direction = 'horizontal',
+            justified = TRUE, individual = FALSE
+          ),
+          tags$script("$(\"input:radio[name='btn_trajectories_group_zoom'][value='A']\").parent().css('background-color', '#c2dfff');"),
+          tags$script("$(\"input:radio[name='btn_trajectories_group_zoom'][value='B']\").parent().css('background-color', '#ffb5c9');"),
+          column(
+            width = 6,
+            actionButton('btn_dendrogram_zoom_mark_leaves',                 '', icon = icon('glyphicon glyphicon-plus',       lib = 'glyphicon')),
+            actionButton('btn_dendrogram_zoom_clear_marked_leaves',         '', icon = icon('glyphicon glyphicon-fire',       lib = 'glyphicon')),
+            HTML('&nbsp;&nbsp;&nbsp;&nbsp;'),
+            actionButton('btn_trajectories_zoom_export_fcs',                '', icon = icon('glyphicon glyphicon-save',       lib = 'glyphicon')),
+            actionButton('btn_trajectories_zoom_clear_pinned_trajectories', '', icon = icon('glyphicon glyphicon-trash',      lib = 'glyphicon')),
+            actionButton('btn_dendrogram_zoom_export_svg',                  '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon'))
+          ),
+          column(
+            width = 6,
+            style = 'text-align:  right;
+                 padding-right: 5px;
+                 margin-top:   15px',
+            textOutput('log_pinned_batches_count_zoom')
+          )
+        )
       ),
       br(), br(),
       fluidRow(
@@ -263,9 +324,12 @@ shiny_ui <- fluidPage(
       style = 'padding-left: 50px',
       ## RIGHT PANEL: TRAJECTORIES LAYOUT
       fluidRow(
-        plotOutput(
-          'plot_layout_trajectories',
-          height = 500
+        shinycssloaders::withSpinner(
+          plotOutput(
+            'plot_layout_trajectories',
+            height = 500
+          ),
+          color='#1d2c8f'
         )
       ),
       fluidRow(
@@ -329,14 +393,17 @@ shiny_ui <- fluidPage(
               )
             ),
             fluidRow(
-              plotOutput(
-                'plot_tracked_markers.A',
-                height = 500,
-                brush = brushOpts(
-                  id     = 'selector_tracked_markers.A',
-                  fill   = 'red',
-                  stroke = 'red'
-                )
+              shinycssloaders::withSpinner(
+                plotOutput(
+                  'plot_tracked_markers.A',
+                  height = 500,
+                  brush = brushOpts(
+                    id     = 'selector_tracked_markers.A',
+                    fill   = 'red',
+                    stroke = 'red'
+                  )
+                ),
+                color='#1d2c8f'
               )
             ),
             ## B
@@ -358,14 +425,17 @@ shiny_ui <- fluidPage(
               )
             ),
             fluidRow(
-              plotOutput(
-                'plot_tracked_markers.B',
-                height = 500,
-                brush = brushOpts(
-                  id     = 'selector_tracked_markers.B',
-                  fill   = 'red',
-                  stroke = 'red'
-                )
+              shinycssloaders::withSpinner(
+                plotOutput(
+                  'plot_tracked_markers.B',
+                  height = 500,
+                  brush = brushOpts(
+                    id     = 'selector_tracked_markers.B',
+                    fill   = 'red',
+                    stroke = 'red'
+                  )
+                ),
+                color='#1d2c8f'
               )
             )
           ),
@@ -396,9 +466,12 @@ shiny_ui <- fluidPage(
               )
             ),
             fluidRow(
-              plotOutput(
-                'plot_tracked_populations.A',
-                height = 500,
+              shinycssloaders::withSpinner(
+                plotOutput(
+                  'plot_tracked_populations.A',
+                  height = 500,
+                ),
+                color='#1d2c8f'
               )
             ),
             ## B
@@ -418,10 +491,14 @@ shiny_ui <- fluidPage(
               )
             ),
             fluidRow(
-              plotOutput(
-                'plot_tracked_populations.B',
-                height = 500,
+              shinycssloaders::withSpinner(
+                plotOutput(
+                  'plot_tracked_populations.B',
+                  height = 500,
+                ),
+                color='#1d2c8f'
               )
+              
             )
           )
         )

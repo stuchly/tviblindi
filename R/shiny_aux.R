@@ -30,17 +30,19 @@
   vals
 }
 
-trajectories_dendrogram <- function(precomputed_dendrogram = NULL,
-                                    precomputed_dendrogram_labels = NULL,
-                                    leaves_to_highlight.A  = NULL,
-                                    leaves_to_highlight.B  = NULL,
-                                    pers                   = NULL,
-                                    repre.reduced          = NULL,
-                                    perc                   = NULL,
-                                    out.hclust             = NULL,
-                                    out.classif            = NULL,
-                                    out.labels             = NULL,
-                                    out.dendrogram         = NULL) {
+trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
+                                    precomputed_dendrogram_labels  = NULL,
+                                    zoom_idcs                      = NULL,
+                                    leaves_to_highlight.A          = NULL,
+                                    leaves_to_highlight.B          = NULL,
+                                    leaves_to_highlight.zoom       = NULL,
+                                    pers                           = NULL,
+                                    repre.reduced                  = NULL,
+                                    perc                           = NULL,
+                                    out.data                       = NULL,
+                                    out.classif                    = NULL,
+                                    out.labels                     = NULL,
+                                    out.dendrogram                 = NULL) {
   ## Create ggplot2 trajectories dendrogram & (optionally) output an hclust object
   if (is.null(precomputed_dendrogram)) {
     if (perc == 100) return(FALSE)
@@ -160,16 +162,21 @@ trajectories_dendrogram <- function(precomputed_dendrogram = NULL,
     tree_data         <- data
     leaves            <- labs
     labs_per_leaf     <- as.character(sapply(as.character(data$labels$label), function(leaf) get(leaf, pres)[[2]]))
+    
+    if (!is.null(out.data)) eval.parent(substitute(out.data <- tree_data))
     data$labels$label <- labs_per_leaf
     
-    if (!is.null(out.hclust)) eval.parent(substitute(out.hclust <- tree))
     if (!is.null(out.labels)) eval.parent(substitute(out.labels <- list(labs,
                                                                         labs_per_leaf)))
     if (!is.null(out.dendrogram)) eval.parent(substitute(out.dendrogram <- d))
     
     cl          <- lapply(labs, function(leaf) get(leaf, pres)[[3]]) # walk indices per leaf
     names(cl)   <- labs
+    if (!is.null(zoom_idcs)) {
+      cl <- cl[zoom_idcs[1]:zoom_idcs[2]]
+    }
     if (!is.null(out.classif)) eval.parent(substitute(out.classif <- cl))
+    
   } else { # !is.null(precomputed_dendrogram)
     d             <- precomputed_dendrogram
     labs          <- precomputed_dendrogram_labels[[1]]
@@ -177,18 +184,54 @@ trajectories_dendrogram <- function(precomputed_dendrogram = NULL,
     data              <- dendro_data(d, type = 'rectangle')
     tree_data         <- data
     leaves            <- labs
+    if (!is.null(out.data)) eval.parent(substitute(out.data <- tree_data))
     data$labels$label <- labs_per_leaf
   }
   
-  p <- ggplot(data$segments) + geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) +
-    geom_text(data = data$labels, aes(x, y, label = label), hjust = 1, angle = 0, size = 3.4) +
+  if (!is.null(zoom_idcs)) {
+    X            <- c(data$labels[zoom_idcs, 1])
+    x_min        <- min(X)
+    x_max        <- max(X)
+    # remove segments not in zoom selection
+    which_remove <- which(apply(data$segments, 1, function(v)
+      (min(v[c(1, 3)]) < x_min || min(v[c(1, 3)]) > x_max) &&
+      (max(v[c(1, 3)]) > x_max || max(v[c(1, 3)]) < x_min)
+    ))
+    # cut under-/overflowing segments short
+    if (length(which_remove) > 0) { data$segments <- data$segments[-which_remove, ] }
+    overflow  <- which(data$segments[, 1] > x_max)
+    underflow <- which(data$segments[, 1] < x_min)
+    data$segments[overflow, 1]  <- x_max
+    data$segments[underflow, 1] <- x_min
+    overflow  <- which(data$segments[, 3] > x_max)
+    underflow <- which(data$segments[, 3] < x_min)
+    data$segments[overflow, 3]  <- x_max
+    data$segments[underflow, 3] <- x_min
+    # remove labels not in zoom selection
+    which_remove <- which(data$labels[, 1] > x_max | data$labels[, 1] < x_min)
+    if (length(which_remove) > 0) { data$labels <- data$labels[-which_remove, ] }
+  }
+  
+  p <- ggplot(data$segments) + geom_segment(aes(x = x, y = y, xend = xend, yend = yend), lineend = 'round', linejoin = 'round',
+                                            size = if (!is.null(zoom_idcs)) { .8 } else { .5 }) +
+    geom_text(data = data$labels, aes(x, y, label = label), hjust = 1, angle = 0, size = if (!is.null(zoom_idcs)) { 5.2 } else { 3.4 }) +
     cowplot::theme_nothing() +
+    theme(plot.margin = unit(c(-.2, 0, -.2, 0), 'cm')) +
     coord_flip()
   
-  if (!is.null(leaves_to_highlight.A) || !is.null(leaves_to_highlight.B)) {
-    
+  if (!is.null(leaves_to_highlight.zoom) || (!is.null(leaves_to_highlight.A) || !is.null(leaves_to_highlight.B))) {
     branches           <- data.frame(tree_data$segments[tree_data$segments$yend == 0, ], label = tree_data$labels$label)
     colnames(branches) <- c('xmin', 'ymin', 'xmax', 'ymax', 'label')
+    ymax <- max(tree_data$segments[, c(2, 4)])
+  }
+    
+  if (!is.null(leaves_to_highlight.zoom)) {  
+    lowerbound <- min(branches$xmin[leaves_to_highlight.zoom])
+    upperbound <- max(branches$xmin[leaves_to_highlight.zoom])
+    p <- p + geom_rect(xmin = lowerbound - 0.2, xmax = upperbound + 0.2, ymin = ymax *.96, ymax = ymax, fill = '#9cf0d9', alpha = .01)
+  }
+  
+  if (!is.null(leaves_to_highlight.A) || !is.null(leaves_to_highlight.B)) {
     
     divide_leaves_by_subtrees <- function(leaf_idcs) {
       if (length(leaf_idcs) == 1) return(list(leaf_idcs))
@@ -211,34 +254,6 @@ trajectories_dendrogram <- function(precomputed_dendrogram = NULL,
       }
       return(subtrees)
     }
-    # 
-    # segs           <- tree_data$segments
-    # flip_x         <- segs[, 1] > segs[, 3]
-    # if (any(flip_x)) {
-    #   segs[flip_x, ] <- segs[flip_x, c(3, 2, 1, 4)]
-    # }
-    # flip_y         <- segs[, 2] > segs[, 4]
-    # if (any(flip_y)) {
-    #   segs[flip_y, ] <- segs[flip_y, c(1, 4, 3, 2)]
-    # }
-    # 
-    # if (!is.null(leaves_to_highlight.A)) {
-    #   idcs     <- which(branches$label %in% leaves_to_highlight.A)
-    #   X        <- branches$x[idcs]
-    #   Y       <- c(branches$yend[idcs], branches$y[idcs])
-    #   subtrees <- divide_leaves_by_subtrees(X)
-    #   for (X in subtrees) {
-    #     lowerbound <- min(X)
-    #     upperbound <- max(X)
-    #     C          <- data.frame(segs[segs[, 1] >= lowerbound & segs[, 3] <= upperbound, ])
-    #     lowerbound <- min(Y)
-    #     upperbound <- max(Y)
-    #     C          <- C[C[, 2] >= lowerbound & C[, 4] <= upperbound, ]
-    #     p <- p + geom_segment(data = C, aes(x = x, y = y, xend = xend, yend = yend), lineend = 'round', col = 'blue', alpha = .5, size = 1)
-    #   }
-    # }
-    
-    ymax <- max(tree_data$segments[, c(2, 4)])
     
     if (!is.null(leaves_to_highlight.A)) {
       idcs     <- which(branches$label %in% leaves_to_highlight.A)
@@ -247,7 +262,8 @@ trajectories_dendrogram <- function(precomputed_dendrogram = NULL,
       for (X in subtrees) {
         lowerbound <- min(X)
         upperbound <- max(X)
-        p <- p + geom_rect(xmin = lowerbound - 0.2, xmax = upperbound + 0.2, ymin = 0, ymax = ymax, fill = '#c2daff', alpha = .01)
+        p <- p + geom_rect(xmin = lowerbound - 0.25, xmax = upperbound + 0.25, ymin = 0, ymax = ymax * .95, fill = '#c2daff',
+                           alpha = if (!is.null(zoom_idcs)) { .03 } else { .01 })
       }
     }
     if (!is.null(leaves_to_highlight.B)) {
@@ -257,24 +273,10 @@ trajectories_dendrogram <- function(precomputed_dendrogram = NULL,
       for (X in subtrees) {
         lowerbound <- min(X)
         upperbound <- max(X)
-        p <- p + geom_rect(xmin = lowerbound - 0.2, xmax = upperbound + 0.2, ymin = 0, ymax = ymax, fill = 'pink', alpha = .01)
+        p <- p + geom_rect(xmin = lowerbound - 0.2, xmax = upperbound + 0.2, ymin = 0, ymax = ymax * .95, fill = 'pink',
+                           alpha = if (!is.null(zoom_idcs)) { .05 } else { .01 })
       }
     }
-    
-    # if (!is.null(leaves_to_highlight.A)) {
-    #   for (leaf in leaves_to_highlight.A) {
-    #     x    <- branches$xmin[branches$label == leaf]
-    #     ymax <- branches$ymin[branches$label == leaf]
-    #     p <- p + geom_rect(xmin = x - 0.2, xmax = x + 0.2, ymin = 0, ymax = ymax, fill = 'lightblue', alpha = .02)
-    #   }
-    # }
-    # if (!is.null(leaves_to_highlight.B)) {
-    #   for (leaf in leaves_to_highlight.B) {
-    #     x <- branches$xmin[branches$label == leaf]
-    #     ymax <- branches$ymin[branches$label == leaf]
-    #     p <- p + geom_rect(xmin = x - 0.2, xmax = x + 0.2, ymin = 0, ymax = ymax, fill = 'pink', alpha = .02)
-    #   }
-    # }
   }
   
   return(p)
@@ -338,9 +340,13 @@ trajectories_dendrogram <- function(precomputed_dendrogram = NULL,
   }
 }
 
-.draw_placeholder <- function() {
-  par(mar = c(0, 0, 0, 0))
-  j   <- jpeg::readJPEG(system.file('tree.jpg', package = "tviblindi"), native = TRUE)
+.draw_placeholder <- function(picture = 'tree') {
+  if (picture == 'tree') {
+    j   <- jpeg::readJPEG(system.file('tree.jpg', package = 'tviblindi'), native = TRUE)
+  }
+  if (picture == 'petal') {
+    j   <- jpeg::readJPEG(system.file('petal.jpg', package = 'tviblindi'), native = TRUE)
+  }
   plot(0:1, 0:1, type = "n", ann = FALSE, axes = FALSE)
   rasterImage(j, 0, 0, 1, 1)
 }
