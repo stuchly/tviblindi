@@ -95,8 +95,8 @@ shiny_ui <- fluidPage(
                 height = 500,
                 brush = brushOpts(
                   id     = 'selector_termini',
-                  fill   = 'yellow',
-                  stroke = 'yellow'
+                  fill   = 'green',
+                  stroke = 'green'
                 )
               ),
               color='#1d2c8f'
@@ -115,7 +115,7 @@ shiny_ui <- fluidPage(
             width = 4,
             style = 'text-align:    right;
                      padding-bottom: 10px',
-            actionButton('btn_termini_export_svg',           '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon')),
+            actionButton('btn_termini_export_image',           '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon')),
             actionButton('btn_left_show_gating',             '', icon = icon('glyphicon glyphicon-fullscreen', lib = 'glyphicon'))
           ),
           fluidRow(
@@ -147,7 +147,7 @@ shiny_ui <- fluidPage(
           actionButton('btn_persistence_mark_classes',  '', icon = icon('glyphicon glyphicon-plus', lib = 'glyphicon')),
           actionButton('btn_persistence_clear_classes', '', icon = icon("glyphicon glyphicon-fire", lib = 'glyphicon')),
           HTML("&nbsp;&nbsp;&nbsp;&nbsp;"),
-          actionButton('btn_persistence_export_svg',    '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon')),
+          actionButton('btn_persistence_export_image',    '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon')),
           HTML('&nbsp;&nbsp;'),
           textOutput('log_persistence_available', inline = TRUE),
           fluidRow(
@@ -159,20 +159,20 @@ shiny_ui <- fluidPage(
             verbatimTextOutput('log_persistence_marked', placeholder = TRUE)
           )
         )
-      )#,
-      # br(), hr(),
-      # h3('Export images as...'), br(),
-      # radioGroupButtons(
-      #   'btn_image_export_format',
-      #   label = NULL,
-      #   choiceValues = c('PNG', 'SVG'),
-      #   choiceNames  = c('PNG', 'SVG'),
-      #   selected = 'PNG', status = 'default',
-      #   size = 'sm', direction = 'horizontal',
-      #   justified = TRUE, individual = FALSE
-      # ),
-      # tags$script("$(\"input:radio[name='btn_image_export_format'][value='PNG']\").parent().css('background-color', '#ffffde');"),
-      # tags$script("$(\"input:radio[name='btn_image_export_format'][value='SVG']\").parent().css('background-color', '#ffe8fd');")
+      ),
+      br(), hr(),
+      h3('Export images as...'), br(),
+      radioGroupButtons(
+        'btn_image_export_format',
+        label = NULL,
+        choiceValues = c('PNG', 'SVG'),
+        choiceNames  = c('PNG', 'SVG'),
+        selected = 'PNG', status = 'default',
+        size = 'sm', direction = 'horizontal',
+        justified = TRUE, individual = FALSE
+      ),
+      tags$script("$(\"input:radio[name='btn_image_export_format'][value='PNG']\").parent().css('background-color', '#ffffde');"),
+      tags$script("$(\"input:radio[name='btn_image_export_format'][value='SVG']\").parent().css('background-color', '#ffe8fd');")
     ),
     ## MIDDLE PANEL: TRAJECTORY DENDROGRAM
     column(
@@ -224,7 +224,7 @@ shiny_ui <- fluidPage(
             HTML('&nbsp;&nbsp;&nbsp;&nbsp;'),
             actionButton('btn_trajectories_export_fcs',                '', icon = icon('glyphicon glyphicon-save',       lib = 'glyphicon')),
             actionButton('btn_trajectories_clear_pinned_trajectories', '', icon = icon('glyphicon glyphicon-trash',      lib = 'glyphicon')),
-            actionButton('btn_dendrogram_export_svg',                  '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon'))
+            actionButton('btn_dendrogram_export_image',                  '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon'))
           ),
           column(
             width = 6,
@@ -351,7 +351,7 @@ shiny_ui <- fluidPage(
           actionButton('btn_layout_trajectories_highlight_in_background', label = '', icon = icon('glyphicon glyphicon-sunglasses ', lib = 'glyphicon')),
           HTML("&nbsp;&nbsp;"),
           actionButton('btn_layout_trajectories_flip_colours', label = '', icon = icon('glyphicon glyphicon-adjust', lib = 'glyphicon')),
-          actionButton('btn_layout_trajectories_export_svg',           '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon'))
+          actionButton('btn_layout_trajectories_export_image',           '', icon = icon('glyphicon glyphicon-save-file',  lib = 'glyphicon'))
         ),
         hr(),
         fluidRow(
@@ -398,7 +398,7 @@ shiny_ui <- fluidPage(
                 actionButton('btn_tracked_markers_remove_trajectories.A', label = '',      icon = icon('glyphicon glyphicon-flash',          lib = 'glyphicon')),
                 actionButton('btn_tracked_markers_undo_remove_trajectories.A', label = '', icon = icon('glyphicon glyphicon-step-backward',  lib = 'glyphicon')),
                 actionButton('btn_tracked_markers_highlight_segments.A',  label = '',      icon = icon('glyphicon glyphicon-flag',           lib = 'glyphicon')),
-                actionButton('btn_tracked_markers_export_svg.A',                   '',      icon = icon('glyphicon glyphicon-save-file',      lib = 'glyphicon'))
+                actionButton('btn_tracked_markers_export_image.A',                   '',      icon = icon('glyphicon glyphicon-save-file',      lib = 'glyphicon'))
               )
             ),
             fluidRow(
@@ -430,7 +430,7 @@ shiny_ui <- fluidPage(
                 actionButton('btn_tracked_markers_remove_trajectories.B', label = '',      icon = icon('glyphicon glyphicon-flash',          lib = 'glyphicon')),
                 actionButton('btn_tracked_markers_undo_remove_trajectories.B', label = '', icon = icon('glyphicon glyphicon-step-backward',  lib = 'glyphicon')),
                 actionButton('btn_tracked_markers_highlight_segments.B', label = '',       icon = icon('glyphicon glyphicon-flag',           lib = 'glyphicon')),
-                actionButton('btn_tracked_markers_export_svg.B',                  '',      icon = icon('glyphicon glyphicon-save-file',      lib = 'glyphicon'))
+                actionButton('btn_tracked_markers_export_image.B',                  '',      icon = icon('glyphicon glyphicon-save-file',      lib = 'glyphicon'))
               )
             ),
             fluidRow(
