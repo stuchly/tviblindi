@@ -1024,6 +1024,7 @@ shiny_server <- function(input, output, session) {
   
   # Plots
   output$plot_tracked_markers.A <- renderPlot({
+    session$resetBrush('selector_tracked_markers.A')
     if (!is.null(react$trajectories_marked.A) && !is.null(react$tracked_markers.A)) {
       react$tracked_markers_ready.A <- TRUE
       p <- .plot_tracked_markers(react$trajectories_random_walks,
@@ -1063,6 +1064,7 @@ shiny_server <- function(input, output, session) {
     }
   })
   output$plot_tracked_markers.B <- renderPlot({
+    session$resetBrush('selector_tracked_markers.B')
     if (!is.null(react$trajectories_marked.B) && !is.null(react$tracked_markers.B)) {
       react$tracked_markers_ready.B <- TRUE
       p <- .plot_tracked_markers(react$trajectories_random_walks,
@@ -1126,6 +1128,7 @@ shiny_server <- function(input, output, session) {
 
   # Plots
   output$plot_tracked_populations.A <- renderPlot({
+    session$resetBrush('selector_tracked_populations.A')
     if (!is.null(react$trajectories_marked.A) && !is.null(react$tracked_populations.A)) {
       react$tracked_markers_ready.A <- TRUE
       p <- .plot_tracked_populations(react$trajectories_random_walks,
@@ -1167,6 +1170,7 @@ shiny_server <- function(input, output, session) {
     }
   })
   output$plot_tracked_populations.B <- renderPlot({
+    session$resetBrush('selector_tracked_populations.B')
     if (!is.null(react$trajectories_marked.B) && !is.null(react$tracked_populations.B)) {
       react$tracked_markers_ready.B <- TRUE
       p <- .plot_tracked_populations(react$trajectories_random_walks,
