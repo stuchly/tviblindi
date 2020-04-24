@@ -745,13 +745,8 @@ shiny_server <- function(input, output, session) {
   # })
   
   
-  observeEvent({
-    input$btn_trajectories_group
-    input$btn_trajectories_group_zoom
-    }, {
-    react$trajectories_group <- if (react$dendrogram_zoom_active) { input$btn_trajectories_group_zoom } else { input$btn_trajectories_group }
-    updateRadioButtons(session, 'btn_trajectories_group',      selected = react$trajectories_group)
-    updateRadioButtons(session, 'btn_trajectories_group_zoom', selected = react$trajectories_group)
+  observeEvent(input$btn_trajectories_group, {
+    react$trajectories_group <- input$btn_trajectories_group
   })
   
   observeEvent(input$btn_trajectories_pin_trajectories.A, {

@@ -197,18 +197,6 @@ shiny_ui <- fluidPage(
               color='#1d2c8f'
             )
           ),
-          # Trajectory group switch (A vs. B)
-          radioGroupButtons(
-            'btn_trajectories_group',
-            label = NULL,
-            choiceValues = c('A', 'B'),
-            choiceNames  = c('A', 'B'),
-            selected = 'A', status = 'default',
-            size = 'sm', direction = 'horizontal',
-            justified = TRUE, individual = FALSE
-          ),
-          tags$script("$(\"input:radio[name='btn_trajectories_group'][value='A']\").parent().css('background-color', '#c2dfff');"),
-          tags$script("$(\"input:radio[name='btn_trajectories_group'][value='B']\").parent().css('background-color', '#ffb5c9');"),
           column(
             width = 7,
             actionButton('btn_dendrogram_mark_leaves',                 '', icon = icon('glyphicon glyphicon-plus',       lib = 'glyphicon')),
@@ -242,18 +230,6 @@ shiny_ui <- fluidPage(
                        )),
             color='#1d2c8f'
           ),
-          # Trajectory group switch (A vs. B)
-          radioGroupButtons(
-            'btn_trajectories_group_zoom',
-            label = NULL,
-            choiceValues = c('A', 'B'),
-            choiceNames  = c('A', 'B'),
-            selected = 'A', status = 'default',
-            size = 'sm', direction = 'horizontal',
-            justified = TRUE, individual = FALSE
-          ),
-          tags$script("$(\"input:radio[name='btn_trajectories_group_zoom'][value='A']\").parent().css('background-color', '#c2dfff');"),
-          tags$script("$(\"input:radio[name='btn_trajectories_group_zoom'][value='B']\").parent().css('background-color', '#ffb5c9');"),
           column(
             width = 6,
             actionButton('btn_dendrogram_zoom_mark_leaves',                 '', icon = icon('glyphicon glyphicon-plus',       lib = 'glyphicon')),
@@ -268,7 +244,19 @@ shiny_ui <- fluidPage(
           )
         )
       ),
-      br(),br(),
+      br(), br(), br(),
+      # Trajectory group switch (A vs. B)
+      radioGroupButtons(
+        'btn_trajectories_group',
+        label = NULL,
+        choiceValues = c('A', 'B'),
+        choiceNames  = c('A', 'B'),
+        selected = 'A', status = 'default',
+        size = 'sm', direction = 'horizontal',
+        justified = TRUE, individual = FALSE
+      ),
+      tags$script("$(\"input:radio[name='btn_trajectories_group'][value='A']\").parent().css('background-color', '#c2dfff');"),
+      tags$script("$(\"input:radio[name='btn_trajectories_group'][value='B']\").parent().css('background-color', '#ffb5c9');"),
       sliderInput(
         'slider_dendrogram_leaf_cutoff',
         'Min trajectory count % per leaf',
