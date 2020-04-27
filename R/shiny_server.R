@@ -11,7 +11,7 @@ shiny_server <- function(input, output, session) {
     stopApp()
   })
   message(paste0('Running tviblindi Shiny UI, working directory is ', getwd()))
-  
+
   ## Load up tviblindi analysis S3 object
   INPUTS_DIRECTORY <- 'tviblindi_tmp'
   tv_name          <- readRDS(file.path(INPUTS_DIRECTORY, 'tv.RDS'))
@@ -124,7 +124,7 @@ shiny_server <- function(input, output, session) {
                 if (nrow(layout) < 75000) { .6 } else
                 if (nrow(layout) < 10000) { .3 } else
                 if (nrow(layout) < 15000) { .08 } else { .05 }
-  
+
   # Re-order annotated population labels by pseudotime
   labels.unique    <- unique(tv$labels)
   average_pseudotime <- c()
@@ -139,14 +139,14 @@ shiny_server <- function(input, output, session) {
   ## Set up colour palette for plotting annotated populations
   gating_palette       <- RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$category == 'qual', ]
   gating_palette       <- unique(unlist(mapply(RColorBrewer::brewer.pal, gating_palette$maxcolors, rownames(gating_palette))))
-  
+
   gating_colour_vector <- gating_palette[1:length(labels.unique)][as.numeric(as.factor(tv$labels))]
   colours.aligned      <- sapply(labels.aligned, function(l) gating_colour_vector[which(tv$labels == l)[1]])
 
   ## Find all trajectories' terminal nodes
   termini              <- c(tv$walks$v[tv$walks$starts[-1] - 1], tail(tv$walks$v, 1))
   termini.unique       <- unique(termini)
-  
+
   ### OUTPUTS & OBSERVERS
 
   ## Reset all selectors if window is resized (otherwise this causes bugs)
@@ -158,14 +158,14 @@ shiny_server <- function(input, output, session) {
     session$resetBrush('selector_tracked_markers.A')
     session$resetBrush('selector_tracked_markers.B')
   })
-  
+
   ## Display FCS file name
   if (!is.null(tv$analysis_name)) {
     output$text_analysis_name <- renderText(tv$analysis_name)
   } else {
     output$text_analysis_name <- renderText(Sys.time())
   }
-  
+
   ## Help pop-up
   observeEvent(input$btn_help, {
     showModal(modalDialog(
@@ -215,7 +215,7 @@ shiny_server <- function(input, output, session) {
     }
 
     par(mar = c(1, 1, 1, 1))
-    
+
     if (react$image_export.termini) {
       if (react$image_export_format == 'SVG') {
         svg(filename = paste0('Termini_', Sys.time(), '.svg'))
@@ -224,7 +224,7 @@ shiny_server <- function(input, output, session) {
       }
       par(mar = c(0, 0, 0, 0))
     }
-    
+
     plot(layout, col = scales::alpha(cols, if (nrow(layout) > 20000) { .05 } else { .2 }), axes = FALSE, xlab = '', ylab = '', pch = 20,
          cex = if (react$image_export.termini && react$image_export_format != 'SVG') { .6 } else { .3 },
          xlim = c(0, 1), ylim = c(0, 1))
@@ -238,7 +238,7 @@ shiny_server <- function(input, output, session) {
       }
     }
     if (length(termini.unique) == 1) {
-      points(layout[termini.unique, 1], layout[termini.unique, 2], col = scales::alpha('black', .5), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 }, pch = 20) 
+      points(layout[termini.unique, 1], layout[termini.unique, 2], col = scales::alpha('black', .5), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 }, pch = 20)
     } else {
       points(layout[termini.unique, ], col = scales::alpha('black', .5), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 }, pch = 20)
     }
@@ -341,7 +341,7 @@ shiny_server <- function(input, output, session) {
         dev.off()
         react$image_export.persistence <- FALSE
       }
-      
+
       ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot)) +
         scale_colour_gradientn(colours = rainbow(5)) +
         geom_point(size = 3.5, alpha = .7) +
@@ -398,12 +398,12 @@ shiny_server <- function(input, output, session) {
   })
 
   ## Image export format switch
-  
+
   observeEvent(input$btn_image_export_format, {
     react$image_export_format <- input$btn_image_export_format
   })
-  
-  
+
+
   ## Trajectories dendrogram
   # Plot
   output$plot_dendrogram <- renderPlot({
@@ -461,7 +461,7 @@ shiny_server <- function(input, output, session) {
       .draw_placeholder()
     }
   })
-  
+
   output$plot_dendrogram_zoom <- renderPlot({
     session$resetBrush('selector_dendrogram')
     if (!react$dendrogram_zoom_active) {
@@ -483,8 +483,8 @@ shiny_server <- function(input, output, session) {
           dendrogram_zoom_plotted       <- TRUE # if TRUE and SVG export button was clicked, also export the SVG
           simplices_selected            <- react$persistence$inds$death[idcs_selected]
           react$representations.reduced <- lapply(react$representations, function(x) x[x %in% simplices_selected])
-          
-          
+
+
           if (react$dendrogram_zoom_ready && (!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B) &&
               (react$dendrogram_zoom_redraw_highlights || react$image_export.dendrogram_zoom))) {
             dendrogram_zoom_plot        <- trajectories_dendrogram(  precomputed_dendrogram        = react$dendrogram_zoom,
@@ -528,24 +528,24 @@ shiny_server <- function(input, output, session) {
     react$dendrogram_draw_zoomed_in <- FALSE
     react$dendrogram_leaf_perc_cutoff <- input$slider_dendrogram_leaf_cutoff
   })
-  
+
   # Buttons & logs
   observeEvent((input$btn_dendrogram_mark_leaves | input$btn_dendrogram_zoom_mark_leaves), {
     if (react$trajectories_group == 'A') {
       react$trajectories_marked.A        <- unique(unlist(c(react$trajectories_marked.A,        react$dendrogram_selection)))
       react$dendrogram_marked_leaves.A   <- unique(unlist(c(react$dendrogram_marked_leaves.A,   react$dendrogram_selected_leaves)))
       react$dendrogram_redraw_highlights <- TRUE
-      
+
       react$trajectories_marked_idcs.A   <- unique(unlist(c(react$trajectories_marked_idcs.A),  react$dendrogram_selected_idcs))
     } else if (react$trajectories_group == 'B') {
       react$trajectories_marked.B        <- unique(unlist(c(react$trajectories_marked.B,        react$dendrogram_selection)))
       react$dendrogram_marked_leaves.B   <- unique(unlist(c(react$dendrogram_marked_leaves.B, react$dendrogram_selected_leaves)))
       react$dendrogram_redraw_highlights <- TRUE
-      
+
       react$trajectories_marked_idcs.B   <- unique(unlist(c(react$trajectories_marked_idcs.B),  react$dendrogram_selected_idcs))
     }
   })
-  
+
   observeEvent((input$btn_dendrogram_clear_marked_leaves | input$btn_dendrogram_zoom_clear_marked_leaves), {
     if (react$trajectories_group == 'A') {
       if (!is.null(react$trajectories_marked.A) && is.null(react$trajectories_marked.B) && !is.null(react$dendrogram_zoom_idcs)) {
@@ -588,7 +588,7 @@ shiny_server <- function(input, output, session) {
         layout_X[event_sel] <- layout.df$X * 100
         layout_Y[event_sel] <- layout.df$Y * 100
         ps           <- rep(-100, nrow(input_ff))
-        ps[event_sel] <- react$pseudotime$res
+        ps[event_sel] <- as.numeric(as.factor(react$pseudotime$res))
       }
       react$output_ff <- fcs.add_col(
         fcs.add_col(
@@ -643,8 +643,8 @@ shiny_server <- function(input, output, session) {
     )
   }
 
-  
-  
+
+
   observeEvent((input$btn_trajectories_export_fcs), {
     if (is.null(react$output_ff)) {
       if (is.null(event_sel)) {
@@ -656,7 +656,7 @@ shiny_server <- function(input, output, session) {
         layout_X[event_sel] <- layout.df$X * 100
         layout_Y[event_sel] <- layout.df$Y * 100
         ps           <- rep(-100, nrow(input_ff))
-        ps[event_sel] <- react$pseudotime$res
+        ps[event_sel] <- as.numeric(as.factor(react$pseudotime$res))
       }
       react$output_ff <- fcs.add_col(
         fcs.add_col(
@@ -729,7 +729,7 @@ shiny_server <- function(input, output, session) {
       react$dendrogram_draw_zoomed_in <- TRUE
     }
   })
-  
+
   # observeEvent((input$btn_dendrogram_mark_leaves | input$btn_dendrogram_zoom_mark_leaves), {
   #   if (react$trajectories_group == 'A') {
   #     react$trajectories_marked.A        <- unique(unlist(c(react$trajectories_marked.A,        react$dendrogram_selection)))
@@ -743,12 +743,12 @@ shiny_server <- function(input, output, session) {
   #     react$trajectories_marked_idcs.B   <- unique(unlist(c(react$trajectories_marked_idcs.B),  react$dendrogram_selected_idcs))
   #   }
   # })
-  
-  
+
+
   observeEvent(input$btn_trajectories_group, {
     react$trajectories_group <- input$btn_trajectories_group
   })
-  
+
   observeEvent(input$btn_trajectories_pin_trajectories.A, {
     react$trajectories_to_pin <- sort(unique(react$trajectories_marked.A))
   })
@@ -993,7 +993,7 @@ shiny_server <- function(input, output, session) {
       session$resetBrush('selector_tracked_populations.A')
     }
   })
-  
+
   observeEvent(input$btn_tracked_populations_highlight_segments.B, {
     if (!is.null(react$tracked_populations.B)) {
       pts <- brushedPoints(react$tracked_populations_stats.B,
@@ -1008,7 +1008,7 @@ shiny_server <- function(input, output, session) {
       session$resetBrush('selector_tracked_populations.B')
     }
   })
-  
+
   observeEvent(input$btn_tracked_markers_export_image.A, {
     react$image_export.tracked_markers.A <- TRUE
   })
@@ -1021,7 +1021,7 @@ shiny_server <- function(input, output, session) {
   observeEvent(input$btn_tracked_populations_export_image.B, {
     react$image_export.tracked_populations.B <- TRUE
   })
-  
+
   # Plots
   output$plot_tracked_markers.A <- renderPlot({
     session$resetBrush('selector_tracked_markers.A')
@@ -1142,7 +1142,7 @@ shiny_server <- function(input, output, session) {
                                      large_base_size = react$trackers_large_base_size)
       react$tracked_populations_stats.A         <- p$stats
       react$tracked_markers_pseudotime_bounds.A <- p$pseudotime_bounds
-      
+
       if (react$image_export.tracked_populations.A) {
         if (react$image_export_format == 'SVG') {
           svg(filename = paste0('Populations_A_', Sys.time(), '.svg'), width = 10, height = 6)
@@ -1184,7 +1184,7 @@ shiny_server <- function(input, output, session) {
                                      large_base_size = react$trackers_large_base_size)
       react$tracked_populations_stats.B         <- p$stats
       react$tracked_markers_pseudotime_bounds.B <- p$pseudotime_bounds
-      
+
       if (react$image_export.tracked_populations.B) {
         if (react$image_export_format == 'SVG') {
           svg(filename = paste0('Populations_B_', Sys.time(), '.svg'), width = 10, height = 6)
