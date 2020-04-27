@@ -108,7 +108,7 @@ shiny_server <- function(input, output, session) {
                 if (nrow(layout) < 75000) { .6 } else
                 if (nrow(layout) < 10000) { .3 } else
                 if (nrow(layout) < 15000) { .08 } else { .05 }
-  
+
   # Re-order annotated population labels by pseudotime
   labels.unique    <- unique(tv$labels)
   average_pseudotime <- c()
@@ -123,7 +123,7 @@ shiny_server <- function(input, output, session) {
   ## Set up colour palette for plotting annotated populations
   gating_palette       <- RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$category == 'qual', ]
   gating_palette       <- unique(unlist(mapply(RColorBrewer::brewer.pal, gating_palette$maxcolors, rownames(gating_palette))))
-  
+
   gating_colour_vector <- gating_palette[1:length(labels.unique)][as.numeric(as.factor(tv$labels))]
   colours.aligned      <- sapply(labels.aligned, function(l) gating_colour_vector[which(tv$labels == l)[1]])
 
@@ -137,7 +137,7 @@ shiny_server <- function(input, output, session) {
   if (!is.null(tv$analysis_name)) {
     output$text_analysis_name <- renderText(tv$analysis_name)
   }
-  
+
   ## Help pop-up
   observeEvent(input$btn_help, {
     showModal(modalDialog(
@@ -435,7 +435,7 @@ shiny_server <- function(input, output, session) {
         layout_X[event_sel] <- layout.df$X * 100
         layout_Y[event_sel] <- layout.df$Y * 100
         ps           <- rep(-100, nrow(input_ff))
-        ps[event_sel] <- react$pseudotime$res
+        ps[event_sel] <- as.numeric(as.factor(react$pseudotime$res))
       }
       react$output_ff <- fcs.add_col(
         fcs.add_col(
@@ -501,7 +501,7 @@ shiny_server <- function(input, output, session) {
         layout_X[event_sel] <- layout.df$X * 100
         layout_Y[event_sel] <- layout.df$Y * 100
         ps           <- rep(-100, nrow(input_ff))
-        ps[event_sel] <- react$pseudotime$res
+        ps[event_sel] <- as.numeric(as.factor(react$pseudotime$res))
       }
       react$output_ff <- fcs.add_col(
         fcs.add_col(
