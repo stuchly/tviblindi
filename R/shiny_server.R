@@ -429,7 +429,7 @@ shiny_server <- function(input, output, session) {
       if (is.null(event_sel)) {
         layout_X <- layout.df$X * 100
         layout_Y <- layout.df$Y * 100
-        ps       <- react$pseudotime$res
+        ps       <- as.numeric(as.factor(react$pseudotime$res))
       } else {
         layout_X <- layout_Y <- rep(-100, nrow(input_ff))
         layout_X[event_sel] <- layout.df$X * 100
@@ -495,7 +495,7 @@ shiny_server <- function(input, output, session) {
       if (is.null(event_sel)) {
         layout_X <- layout.df$X * 100
         layout_Y <- layout.df$Y * 100
-        ps       <- react$pseudotime$res
+        ps       <- as.numeric(as.factor(react$pseudotime$res))
       } else {
         layout_X <- layout_Y <- rep(-100, nrow(input_ff))
         layout_X[event_sel] <- layout.df$X * 100
