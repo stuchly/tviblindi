@@ -3,10 +3,10 @@
 #' \code{Connectome}
 #' @param x tviblindi class object.
 #' @param K integer (default K=30); number of nearest neighbors for louvain clustering
-#' 
-#' @details Computes louvain clusters and estimates the flow (and the direction) between them from simulated walks 
+#'
+#' @details Computes louvain clusters and estimates the flow (and the direction) between them from simulated walks
 #' (parameter \code{equinumerous} in \code{Walks}) would bias the result!
-#' 
+#'
 #' @return \code{tviblindi} returns an invisible tviblindi class object.
 #'
 #' @export
@@ -22,7 +22,7 @@ connectome<-function(x,png="connectome.png",K=70){
         x$metaclusters<-cluster_louvain(gU)$membership
         message("~Done!\n")
         rm(gU)
-    }
+    } else dsym<-x$dsym
 
     e.list <- cbind(x$walks$v[-c(x$walks$starts[-1]-1,length(x$walks$v))],x$walks$v[-x$walks$starts])
     e.list<-rbind(e.list,dim(dsym))
