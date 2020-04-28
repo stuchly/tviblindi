@@ -22,7 +22,7 @@
 
 ## Function: hclust reference -> hclust leaf node (recursive)
 .ref_to_vals <- function(ref, where) {
-  
+
   vals <- vector(mode = 'integer')
   vec  <- where[ref, ]
   vals <- c(vals, -vec[vec < 0])
@@ -48,7 +48,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
     if (perc == 100) return(FALSE)
     R              <- repre.reduced; rm(repre.reduced)
     Ru             <- c(unique(unlist(R)))            # unique simplices
-    
+
     threshold      <- ceiling(length(R) / 100 * perc) # lower bound of num trajectories per leaf
     H <- lapply(Ru, function(u) {                     # idcs of simplices corresponding to deaths of relevant homology classes
       idcs <- which(pers$inds$death == u)
@@ -63,12 +63,12 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
     # idcs of unique reduced trajectory representations
     R.unique       <- R[R.unique_idcs]                # only keep those unique representations
     Rl.unique      <- Rl[R.unique_idcs]
-    
+
     ## Build binary tree
     M              <- do.call(rbind, lapply(R.unique, function(r) Ru %in% r))
     N              <- length(Ru)
     K              <- length(Rl.unique)
-    
+
     pres           <- new.env(hash = TRUE)
     pres$R         <- R
     pres$Ru        <- Ru
@@ -79,24 +79,24 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
     pres$merges    <- list()
     pres$hcount    <- 0
     pres$heights   <- list()
-    
+
     ## Establish binary tree branching recursively
     .recurse(pres, 1:length(pres$R), length(pres$Ru), 'NULL', 'ROOT', 'NULL', th = threshold)
-    
+
     leaves  <- pres$leaves
     h       <- unlist(pres$heights)
     m       <- do.call(rbind, pres$merges)[order(h), ]
     h       <- sort(h)
-    
+
     if (is.null(dim(m))) return(FALSE)
-    
+
     ## Create hclust merging pattern
     l                        <- lapply(leaves, function(leaf) which(apply(m, 1, function(x) leaf %in% x))); names(l) <- leaves
     mm                       <- as.vector(t(m))
     M                        <- rep(0, length(mm))
     M[which(mm %in% leaves)] <- -(1:length(leaves))
     M                        <- matrix(M, nc = 2, byrow = TRUE)
-    
+
     for (i in 1:nrow(M)) {
       for (j in 1:2) {
         if (M[i, j] == 0) {
@@ -107,25 +107,25 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
         }
       }
     }
-    
+
     merge <- M; rm(M)
-    
+
     ## Resolve leaf ordering for a valid dendrogram
     o <- as.list(1:length(leaves))
     for (i in 1:nrow(merge)) {
-      
+
       p <- merge[i, ]
-      
+
       if (sum(p < 0) == 2) {
-        
+
         idx1         <- .find(abs(p[1]), o)
         idx2         <- .find(abs(p[2]), o)
         tmp          <- o[[idx2]]
         o[[idx2]]    <- integer(0)
         o[[idx1]]    <- c(o[[idx1]], tmp)
-        
+
       } else if (sum(p < 0) == 1) {
-        
+
         which.ref    <- which(p > 0)
         ref          <- p[which.ref]
         val          <- -p[3 - which.ref]
@@ -134,9 +134,9 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
         tmp          <- o[[idx.val]]
         o[[idx.val]] <- integer(0)
         o[[idx.ref]] <- c(o[[idx.ref]], tmp)
-        
+
       } else if (sum(p < 0) == 0) {
-        
+
         idx1         <- .find(.ref_to_vals(p[1], merge), o)
         idx2         <- .find(.ref_to_vals(p[2], merge), o)
         tmp          <- o[[idx2]]
@@ -144,7 +144,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
         o[[idx1]]    <- c(o[[idx1]], tmp)
       }
     }
-    
+
     ## Create a valid hclust object
     o           <- unlist(o)
     tree        <- list()
@@ -155,28 +155,28 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
     labs        <- nodes[nodes %in% leaves]
     tree$labels <- labs
     class(tree) <- 'hclust'
-    
+
     d                 <- as.dendrogram(tree)
     data              <- dendro_data(d, type = 'rectangle')
     labs              <- as.character(data$labels$label)
     tree_data         <- data
     leaves            <- labs
     labs_per_leaf     <- as.character(sapply(as.character(data$labels$label), function(leaf) get(leaf, pres)[[2]]))
-    
+
     if (!is.null(out.data)) eval.parent(substitute(out.data <- tree_data))
     data$labels$label <- labs_per_leaf
-    
+
     if (!is.null(out.labels)) eval.parent(substitute(out.labels <- list(labs,
                                                                         labs_per_leaf)))
     if (!is.null(out.dendrogram)) eval.parent(substitute(out.dendrogram <- d))
-    
+
     cl          <- lapply(labs, function(leaf) get(leaf, pres)[[3]]) # walk indices per leaf
     names(cl)   <- labs
     if (!is.null(zoom_idcs)) {
       cl <- cl[zoom_idcs[1]:zoom_idcs[2]]
     }
     if (!is.null(out.classif)) eval.parent(substitute(out.classif <- cl))
-    
+
   } else { # !is.null(precomputed_dendrogram)
     d             <- precomputed_dendrogram
     labs          <- precomputed_dendrogram_labels[[1]]
@@ -187,7 +187,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
     if (!is.null(out.data)) eval.parent(substitute(out.data <- tree_data))
     data$labels$label <- labs_per_leaf
   }
-  
+
   if (!is.null(zoom_idcs)) {
     X            <- c(data$labels[zoom_idcs, 1])
     x_min        <- min(X)
@@ -211,28 +211,28 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
     which_remove <- which(data$labels[, 1] > x_max | data$labels[, 1] < x_min)
     if (length(which_remove) > 0) { data$labels <- data$labels[-which_remove, ] }
   }
-  
+
   p <- ggplot(data$segments) + geom_segment(aes(x = x, y = y, xend = xend, yend = yend), lineend = 'round', linejoin = 'round',
                                             size = if (!is.null(zoom_idcs)) { .8 } else { .5 }) +
     geom_text(data = data$labels, aes(x, y, label = label), hjust = 1, angle = 0, size = if (!is.null(zoom_idcs)) { 5.2 } else { 3.4 }) +
     cowplot::theme_nothing() +
     theme(plot.margin = unit(c(-.2, 0, -.2, 0), 'cm')) +
     coord_flip()
-  
+
   if (!is.null(leaves_to_highlight.zoom) || (!is.null(leaves_to_highlight.A) || !is.null(leaves_to_highlight.B))) {
     branches           <- data.frame(tree_data$segments[tree_data$segments$yend == 0, ], label = tree_data$labels$label)
     colnames(branches) <- c('xmin', 'ymin', 'xmax', 'ymax', 'label')
     ymax <- max(tree_data$segments[, c(2, 4)])
   }
-    
-  if (!is.null(leaves_to_highlight.zoom)) {  
+
+  if (!is.null(leaves_to_highlight.zoom)) {
     lowerbound <- min(branches$xmin[leaves_to_highlight.zoom])
     upperbound <- max(branches$xmin[leaves_to_highlight.zoom])
     p <- p + geom_rect(xmin = lowerbound - 0.2, xmax = upperbound + 0.2, ymin = ymax *.96, ymax = ymax, fill = '#9cf0d9', alpha = .01)
   }
-  
+
   if (!is.null(leaves_to_highlight.A) || !is.null(leaves_to_highlight.B)) {
-    
+
     divide_leaves_by_subtrees <- function(leaf_idcs) {
       if (length(leaf_idcs) == 1) return(list(leaf_idcs))
       subtrees <- vector(mode = 'list')
@@ -254,7 +254,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
       }
       return(subtrees)
     }
-    
+
     if (!is.null(leaves_to_highlight.A)) {
       idcs     <- which(branches$label %in% leaves_to_highlight.A)
       X        <- branches$xmin[idcs]
@@ -278,20 +278,20 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
       }
     }
   }
-  
+
   return(p)
 }
 
 ## Function: resolve binary tree branching (recursive)
 .recurse <- function(pres, idcs, n, father, son, brother, th = 1) {
-  
+
   if (length(idcs) > th & n > 0) {
     left <- which(unlist(lapply(idcs, FUN = function(i) pres$Ru[n] %in% pres$R[[i]])))
-    
+
     while (length(left) == 0 || length(left) == length(idcs)) { # only divide if purity is <1
       n    <- n - 1
       left <- which(unlist(lapply(idcs, FUN = function(i) pres$Ru[n] %in% pres$R[[i]])))
-      
+
       if (n == 0) {
         pres$leafcount              <- pres$leafcount + 1
         pres$leaves[pres$leafcount] <- son
@@ -308,12 +308,12 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
     }
     sonl                        <- paste(son,  n,  sep = '_')
     sonr                        <- paste(son, -n, sep = '_')
-    
+
     pres$mcount                 <- pres$mcount + 1
     pres$merges[[pres$mcount]]  <- c(sonl, sonr)
     pres$hcount                 <- pres$hcount + 1
     pres$heights[[pres$hcount]] <- n
-    
+
     col  <- list(n,
                  length(idcs),
                  NULL,
@@ -321,9 +321,9 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
                  sonl,
                  sonr,
                  brother)
-    
+
     assign(son, col, envir = pres)
-    
+
     .recurse(pres, idcs[left],  n - 1, son, sonl, brother, th)
     .recurse(pres, idcs[-left], n - 1, son, sonr, brother, th)
   } else { # length(idxs) <= th | n <= 0
@@ -356,32 +356,32 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
   out           <- matrix(-1, nrow = nrow(ff@exprs), ncol = 2)
   colnames(out) <- c(paste(id,'which_event', sep = '_'), paste(id, 'local_pseudotime', sep = '_'))
   if (is.null(event_sel)) event_sel <- 1:nrow(ff@exprs)
-  
+
   out[event_sel[pp], 1] <- 1000
   out[event_sel[pp], 2] <- as.numeric(as.factor(pseudotime$res[pp]))
-  
+
   make_valid_fcs(cbind(ff@exprs, out), desc1 = as.character(ff@parameters@data$desc))
 }
 
 ## Function: add a column (~ channel) to an FCS file
 fcs.add_col <- function(ff, new_col, colname = 'label') {
   require(flowCore)
-  
+
   if (class(ff) != 'flowFrame') stop('Parameter ff is not a valid flowFrame object')
-  
+
   efcs <- ff@exprs
   N    <- nrow(efcs)
   len  <- length(new_col)
-  
+
   if (N != len)  stop(paste0('Number of rows of expression matrix is ', N, ', whereas length of new column is ', len, '.'))
-  
+
   params <- ff@parameters
   pd     <- pData(params)
   cols   <- as.vector(pd$name)
   idcs   <- match(cols, pd$name)
-  
+
   if (any(is.na(idcs))) stop('Invalid column specifier')
-  
+
   channel_number     <- ncol(ff) + 1
   channel_id         <- paste0('$P', channel_number)
   channel_name       <- colname
@@ -396,9 +396,9 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   channel_names      <- colnames(efcs)
   efcs.mod           <- cbind(efcs, new_col)
   colnames(efcs.mod) <- c(channel_names, colname)
-  
+
   ff.mod             <- flowFrame(efcs.mod, params, description = description(ff))
-  
+
   keyval                                      <- list()
   keyval[[paste0('$P', channel_number, 'B')]] <- '32'
   keyval[[paste0('$P', channel_number, 'R')]] <- toString(channel_range)
@@ -406,13 +406,13 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   keyval[[paste0('$P', channel_number, 'N')]] <- channel_name
   keyval[[paste0('$P', channel_number, 'S')]] <- channel_name
   keyword(ff.mod)                             <- keyval
-  
+
   flowCoreP_Rmax <- paste0('flowCore_$P', channel_number, 'Rmax')
   flowCoreP_Rmin <- paste0('flowCore_$P', channel_number, 'Rmin')
-  
+
   description(ff.mod)[flowCoreP_Rmax] <- max(20000, description(ff.mod)$`flowCore_$P1Rmax`)
   description(ff.mod)[flowCoreP_Rmin] <- 0
-  
+
   ff.mod
 }
 
@@ -426,29 +426,29 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                highlight_in_background,
                                ...) {
   ## Plot trajectories over a 2D layout
-  
+
   col1 <- c(34, 87, 201, 255)
   col2 <- c(194, 45, 55, 255)
-  
+
   plot(scattermore(X, rgba = c(200, 200, 200, 150), cex = 1.2))
-  
+
   j      <- 0
   sel1   <- walks[walk_idcs.A]
   sel2   <- walks[walk_idcs.B]
-  
+
   if (!is.null(pseudotime_highlight_bounds) && highlight_in_background) {
     p <- pseudotime$res / max(pseudotime$res)
     a <- which(p >= pseudotime_highlight_bounds[1])
     b <- which(p <= pseudotime_highlight_bounds[2])
     idcs.highlight <- intersect(a, b)
     idcs.highlight <- idcs.highlight[idcs.highlight %in% unlist(c(sel1, sel2))]
-    
+
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, , drop = FALSE]
-      plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 1.3), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+      plot(scattermore(pts, rgba = c(25, 69, 7, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 1.3), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
-  
+
   if (flip_colours) {
     tmp <- sel1
     sel1 <- sel2
@@ -457,43 +457,43 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     col1 <- col2
     col2 <- tmp
   }
-  
+
   if (length(sel1) > 0) {
     pts1 <- vector(mode = 'list', length = length(sel1))
     for (idx in 1:length(sel1)) {
       s   <- sel1[[idx]]
       j   <- j + 1
       pts <- X[s, ]
-      
+
       pts1[[idx]] <- do.call(rbind, interpolate_trajectories(lapply(1:nrow(pts), function(x) pts[x, ])))
     }
     pts1 <- do.call(rbind, pts1)
     plot(scattermore(pts1, rgba = col1, xlim = c(0, 1), ylim = c(0, 1)), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
   }
-  
+
   if (length(sel2) > 0) {
     pts2 <- vector(mode = 'list', length = length(sel2))
     for (idx in 1:length(sel2)) {
       s   <- sel2[[idx]]
       j   <- j + 1
       pts <- X[s, ]
-      
+
       pts2[[idx]] <- do.call(rbind, interpolate_trajectories(lapply(1:nrow(pts), function(x) pts[x, ])))
     }
     pts2 <- do.call(rbind, pts2)
     plot(scattermore(pts2, rgba = col2, xlim = c(0, 1), ylim = c(0, 1)), add = TRUE)
   }
-  
+
   if (!is.null(pseudotime_highlight_bounds) && !highlight_in_background) {
     p <- pseudotime$res / max(pseudotime$res)
     a <- which(p >= pseudotime_highlight_bounds[1])
     b <- which(p <= pseudotime_highlight_bounds[2])
     idcs.highlight <- intersect(a, b)
     idcs.highlight <- idcs.highlight[idcs.highlight %in% unlist(c(sel1, sel2))]
-    
+
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, , drop = FALSE]
-      plot(scattermore(pts, rgba = c(192, 235, 0, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 1.3), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+      plot(scattermore(pts, rgba = c(25, 69, 7, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 1.3), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
 }
@@ -511,22 +511,22 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   j      <- 0
   sel1   <- walks[walk_idcs.A]
   sel2   <- walks[walk_idcs.B]
-  
+
   plot(X, pch = 20, cex = 0.2, col = 'darkgrey', xlim = c(0, 1), ylim = c(0, 1), axes = FALSE, xlab = '', ylab = '')
-  
+
   if (!is.null(pseudotime_highlight_bounds) && highlight_in_background) {
     p <- pseudotime$res / max(pseudotime$res)
     a <- which(p >= pseudotime_highlight_bounds[1])
     b <- which(p <= pseudotime_highlight_bounds[2])
     idcs.highlight <- intersect(a, b)
     idcs.highlight <- idcs.highlight[idcs.highlight %in% unlist(c(sel1, sel2))]
-    
+
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, , drop = FALSE]
       points(pts, col = 'lightgreen', pch = 20, cex = 0.4)
     }
   }
-  
+
   if (flip_colours) {
     tmp <- sel1
     sel1 <- sel2
@@ -535,7 +535,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   }
   i <- c(walk_idcs.A, walk_idcs.B)
   a.idcs <- if (is.null(i)) { (1:length(walks)) } else { (1:length(walks))[-i] }
-  
+
   rest   <- if (length(a.idcs) > 0) { walks[a.idcs] } else { NULL }
   for (i in rest) {
     j   <- j + 1
@@ -565,7 +565,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     b <- which(p <= pseudotime_highlight_bounds[2])
     idcs.highlight <- intersect(a, b)
     idcs.highlight <- idcs.highlight[idcs.highlight %in% unlist(c(sel1, sel2))]
-    
+
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, , drop = FALSE]
       points(pts, col = 'lightgreen', pch = 20, cex = 0.4)
@@ -584,7 +584,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                   exp.part = 1,
                                   large_base_size = FALSE) {
   require(ggplot2)
-  
+
   if (length(markers) == 1) {
     return(do.call(.plot_tracked_markers_single,
                    as.list(environment())))
@@ -607,17 +607,17 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   ## Scale pseudotime
   pseudotime <- pseudotime$res
   pseudotime <- pseudotime/max(pseudotime)
-  
+
   ## Pick relevant walks
   walks      <- walks[walk_idcs]
-  
+
   ## Get pseudotimes per walk point for each walk
   progress   <- lapply(walks, function(pts) pseudotime[pts])
   pp         <- unique(unlist(progress))
-  
+
   b <- NULL
   N <- NULL
-  
+
   if (is.null(breaks)) {
     p <- (seq(0, 1, 1 / (n.part))) ^ exp.part # re-scale timeline of pseudotime segments
     b <- as.numeric(quantile(pp, p))
@@ -631,31 +631,31 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
       N <- length(b) - 1
     }
   }
-  
+
   categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
                                               # for each point on walk, which segment does it fall into?
-  
+
   pseudotime_bounds <- sort(c(unlist(progress)[which(!duplicated(categs))], 1))
   coords <- tv$data[, markers]
-  
+
   stats  <- lapply(1:N, function(i) {
     inds <- categs == i # pick points on paths by pseudotime increment
     if (!any(inds)) return(NULL)
-    
+
     which.walks <- unlist(lapply(1:length(walks), function(j) rep(j, length(walks[[j]]))))[inds]
     pts         <- unlist(walks)[unlist(inds)]
     means       <- lapply(sort(unique(which.walks)), function(j) mean(coords[pts[which.walks == j]]))
-    
+
     v           <- cbind(rep(i, length(means)), sort(unique(which.walks)), unlist(means))
     if (is.null(dim(v))) { names(v) <- c('segment', 'walk', 'expression') } else { colnames(v) <- c('segment', 'walk', 'expression') }
     as.data.frame(v)
   })
-  
+
   stats            <- do.call(rbind, stats)
   stats$walk       <- as.factor(stats$walk)
   stats$segment    <- as.numeric(stats$segment)
   stats$expression <- as.numeric(stats$expression)
-  
+
   g <- ggplot(data = stats, aes(x = segment, y = expression, group = walk, color = walk)) +
     geom_line(linetype = 'dashed') + geom_point() +
     ggtitle(paste0(markers, ' expression per walk: means per segment')) +
@@ -688,14 +688,14 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                            large_base_size = FALSE) {
   pseudotime <- pseudotime$res
   pseudotime <- pseudotime/max(pseudotime)
-  
+
   walks    <- walks[walk_idcs]
   progress <- lapply(walks, function(pts) pseudotime[pts])
   pp       <- unique(unlist(progress))
-  
+
   b <- NULL
   N <- NULL
-  
+
   if (is.null(breaks)) {
     p <- (seq(0, 1, 1 / (n.part))) ^ exp.part
     b <- as.numeric(quantile(pp, p))
@@ -709,24 +709,24 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
       N <- length(b) - 1
     }
   }
-  
+
   categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
-  
+
   pseudotime_bounds <- sort(c(unlist(progress)[which(!duplicated(categs))], 1))
-  
+
   coords <- tv$data[, markers]
-  
+
   stats  <- lapply(markers, function(m) {
     lapply(1:N, function(i) {
-      
+
       inds <- categs == i # pick points on paths by pseudotime increment
       if (!any(inds)) return(NULL)
-      
+
       which.walks <- unlist(lapply(1:length(walks), function(j) rep(j, length(walks[[j]]))))[inds]
       pts         <- unlist(walks)[unlist(inds)]
       means       <- sapply(sort(unique(which.walks)), function(j) mean(coords[pts[which.walks == j], m])) %>% mean
-      
-      
+
+
       v <- cbind(rep(m, length(means)), rep(i, length(means)), unlist(means))
       if (is.null(dim(v))) { names(v) <- c('marker', 'segment', 'expression') } else { colnames(v) <- c('marker', 'segment', 'expression') }
       as.data.frame(v)
@@ -737,7 +737,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   stats$marker     <- as.factor(stats$marker)
   stats$segment    <- as.numeric(stats$segment)
   stats$expression <- as.numeric(as.character(stats$expression))
-  
+
   g <- ggplot(data = stats, aes(x = segment, y = expression, group = marker, color = marker)) +
     geom_line() +
     geom_point() +
@@ -768,14 +768,14 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                       log2_transform) {
   pseudotime <- pseudotime$res
   pseudotime <- pseudotime / max(pseudotime)
-  
+
   walks    <- walks[walk_idcs]
   progress <- lapply(walks, function(pts) pseudotime[pts])
   pp       <- unique(unlist(progress))
-  
+
   b <- NULL
   N <- NULL
-  
+
   if (is.null(breaks)) {
     p <- (seq(0, 1, 1 / (n.part))) ^ exp.part
     b <- as.numeric(quantile(pp, p))
@@ -789,24 +789,24 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
       N <- length(b) - 1
     }
   }
-  
+
   categs <- as.numeric(cut(unlist(progress), breaks = b, include.lowest = TRUE))
-  
+
   pseudotime_bounds <- sort(unlist(progress)[which(!duplicated(categs))])
-  
+
   stats  <- lapply(populations, function(p) {
     lapply(1:N, function(i) {
-      
+
       inds <- categs == i # pick points on paths by pseudotime increment
       if (!any(inds)) return(NULL)
-      
+
       which.walks <- unlist(lapply(1:length(walks), function(j) rep(j, length(walks[[j]]))))[inds]
       pts         <- unique(unlist(walks)[unlist(inds)])
       counts      <- sum(tv$labels[pts] == p)
       if (log2_transform) {
         counts <- log2(counts)
       }
-      
+
       v <- cbind(rep(p, length(counts)), rep(i, length(counts)), unlist(counts))
       if (is.null(dim(v))) { names(v) <- c('population', 'segment', 'count') } else { colnames(v) <- c('population', 'segment', 'count') }
       as.data.frame(v)
@@ -817,7 +817,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   stats$population <- as.factor(stats$population)
   stats$segment    <- as.numeric(stats$segment)
   stats$count      <- as.numeric(as.character(stats$count))
-  
+
   g <- ggplot(data = stats, aes(x = segment, y = count, group = population, color = population)) +
     geom_line() +
     geom_point() +
@@ -834,7 +834,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   if (log2_transform) {
     g <- g + ylab('log2 count')
   }
-  
+
   list(plot              = g,
        stats             = stats,
        pseudotime_bounds = pseudotime_bounds)
@@ -846,24 +846,24 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                      termini_per_path) {
   ## Identify chosen walks
   idcs <- which(termini_per_path %in% marked_termini)
-  
+
   ## Remove other walks
   walks.selected <- lapply(idcs, function(idx) select_paths_points(tv$walks, idx))
   lens           <- sapply(walks.selected, length)
   walks.selected <- list(v      = unlist(walks.selected),
                          starts = c(1, 1 + cumsum(lens[-length(lens)])))
-  
+
   ## Put terminal node with highest pseudotime at end of each walk
   if (length(marked_termini) > 1) {
     max_t             <- marked_termini[which.max(pseudotime$res[marked_termini])][1]
     ends              <- c(walks.selected$starts[-1] - 1, length(walks.selected$v))
     walks.selected$v[ends] <- max_t
   }
-  
+
   ## Cluster and triangulate walks
   withProgress(message = 'Contracting trajectories', expr = {
     walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
-    
+
     sel          <- 1:length(walks_clusters$starts)
     s2           <- which(unlist(lapply(tv$filtration$cmplx, function(x) length(x) == 2))) # 2-simplex idcs
     cmplx        <- tv$filtration$cmplx[s2]                                        # 2-simplices
@@ -872,14 +872,14 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                                                             dist(tv$codes[sim,]))),
                                           XX = tv$codes))
     colnames(edges) <-c('from', 'to', 'weight')
-    
+
     graph           <- igraph::graph_from_edgelist(edges[, 1:2])
     E(graph)$weight <- edges[, 3]
     triangulation   <- list()[1:length(sel)]
-    
+
     j <- 0
   })
-  
+
   withProgress(message = 'Triangulating paths', expr = {
     for (i in sel) {
       j <- j + 1
@@ -887,15 +887,15 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                                       tv$codes, cmplx_hashed, graph)]
     }
   })
-  
+
   N <- length(idcs)
   repre      <- list()[1:N]
   repre[[1]] <- integer(0)
   j          <- 1
-  
+
   N <- length(idcs)
   tick <- 1 / N
-  
+
   withProgress(message = 'Computing representations', value = tick, expr = {
     for (idx in 2:N) {
       j          <- j + 1
@@ -905,9 +905,9 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
       incProgress(tick)
     }
   })
-  
+
   walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
-  
+
   pers <- pers_diagram(dBr = tv$reduced_boundary, repre = repre, plot = FALSE)
   pd   <- data.frame(Dimension    = pers$vals$dim,
                      Birth        = pers$vals$birth,
@@ -917,7 +917,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                      xplot        = (pers$vals$birth + pers$vals$death) / 2,
                      yplot        = (pers$vals$death - pers$vals$birth) / 2)
   pd   <- pd[pd$Dimension > 0, ]
-  
+
   return(list(random_walks = walks,
               repre        = repre,
               pers         = pers,
