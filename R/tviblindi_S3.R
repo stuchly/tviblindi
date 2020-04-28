@@ -112,6 +112,7 @@ KNN.tviblindi<-function(x,K=100,method="annoy",trees=150){
         x$KNN<-KNN.annoy(x$data,K,trees)
     } else {
         x$KNN<-knn.adj.raw.parallel(x$data, K)
+        x$KNN$IND<-matrix(as.integer(x$KNN$IND),ncol=ncol(x$KNN$IND))
     }
     return(invisible(x))
 }
