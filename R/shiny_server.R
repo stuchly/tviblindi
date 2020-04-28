@@ -83,6 +83,7 @@ shiny_server <- function(input, output, session) {
   react$tracked_markers_last_removed.A <- NULL
   react$tracked_markers_last_removed.B <- NULL
   react$pseudotime_highlight_bounds  <- NULL
+  react$selected_trajectory_points <- NULL
   react$tracked_populations.A        <- NULL
   react$tracked_populations.B        <- NULL
   react$tracked_populations_stats.A  <- NULL
@@ -832,7 +833,8 @@ shiny_server <- function(input, output, session) {
                               flip_colours = react$layout_trajectories_flip_colours,
                               pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
                               pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { react$pseudotime },
-                              highlight_in_background = react$layout_trajectories_highlight_in_background)
+                              highlight_in_background = react$layout_trajectories_highlight_in_background,
+                              selected_trajectory_points = react$selected_trajectory_points)
       dev.off()
       react$image_export.trajectories <- FALSE
     } else {
@@ -844,7 +846,7 @@ shiny_server <- function(input, output, session) {
                          flip_colours = react$layout_trajectories_flip_colours,
                          pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
                          pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { react$pseudotime },
-                         highlight_in_background = react$layout_trajectories_highlight_in_background)
+                         highlight_in_background = react$layout_trajectories_highlight_in_background, selected_trajectory_points = react$selected_trajectory_points)
     }
   })
 
@@ -954,6 +956,22 @@ shiny_server <- function(input, output, session) {
       pts <- brushedPoints(react$tracked_markers_stats.A,
                            input$selector_tracked_markers.A,
                            xvar = 'segment', yvar = 'expression')
+
+      if (nrow(pts)>0){
+
+          ##----MODIFIED by JS - temp
+          selected_trajectory_points<-NULL
+          pts$inds_char<-as.character(pts$inds_char)
+          for (i in 1:nrow(pts)){
+
+              if (pts$inds_char[i]!="NULL") selected_trajectory_points<-c(selected_trajectory_points,as.numeric(unlist(strsplit(pts$inds_char[i],split=","))))
+          }
+          react$selected_trajectory_points<-unique(selected_trajectory_points)
+      }
+
+      ##--END of JS
+
+
       if (nrow(pts) > 0) {
         highlighted_segments <- sort(unique(pts$segment))
         react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.A[c(min(highlighted_segments), max(highlighted_segments) + 1)]

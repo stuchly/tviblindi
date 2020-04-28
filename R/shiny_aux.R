@@ -424,12 +424,11 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                pseudotime_highlight_bounds,
                                pseudotime,
                                highlight_in_background,
+                               selected_trajectory_points=NULL,
                                ...) {
   ## Plot trajectories over a 2D layout
-
   col1 <- c(34, 87, 201, 255)
   col2 <- c(194, 45, 55, 255)
-
   plot(scattermore(X, rgba = c(200, 200, 200, 150), cex = 1.2))
 
   j      <- 0
@@ -444,7 +443,11 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     idcs.highlight <- idcs.highlight[idcs.highlight %in% unlist(c(sel1, sel2))]
 
     if (length(idcs.highlight) > 0) {
+
       pts <- X[idcs.highlight, , drop = FALSE]
+
+      if (!is.null(selected_trajectory_points)) pts<-X[selected_trajectory_points, ,drop=FALSE]
+
       plot(scattermore(pts, rgba = c(25, 69, 7, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 1.3), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
@@ -493,7 +496,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, , drop = FALSE]
-      plot(scattermore(pts, rgba = c(25, 69, 7, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 1.3), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+      if (!is.null(selected_trajectory_points)) pts<-X[selected_trajectory_points, ,drop=FALSE]
+      plot(scattermore(pts, rgba = c(25, 69, 7, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 2.3), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
 }
@@ -646,11 +650,26 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     pts         <- unlist(walks)[unlist(inds)]
     means       <- lapply(sort(unique(which.walks)), function(j) mean(coords[pts[which.walks == j]]))
 
+    inds_char  <- lapply(sort(unique(which.walks)), function(j) paste(pts[which.walks == j],collapse =","))
+
+    ## v           <- cbind(rep(i, length(means)), sort(unique(which.walks)), unlist(means), unlist(inds_char))
+    ## if (is.null(dim(v))) { names(v) <- c('segment', 'walk', 'expression', 'inds_char') } else { colnames(v) <- c('segment', 'walk', 'expression','inds_char') }
+
     v           <- cbind(rep(i, length(means)), sort(unique(which.walks)), unlist(means))
     if (is.null(dim(v))) { names(v) <- c('segment', 'walk', 'expression') } else { colnames(v) <- c('segment', 'walk', 'expression') }
     as.data.frame(v)
   })
 
+  inds_char  <- lapply(1:N, function(i) {
+    inds <- categs == i # pick points on paths by pseudotime increment
+    if (!any(inds)) return(NULL)
+    which.walks <- unlist(lapply(1:length(walks), function(j) rep(j, length(walks[[j]]))))[inds]
+    pts         <- unlist(walks)[unlist(inds)]
+    inds_char  <- lapply(sort(unique(which.walks)), function(j) paste(pts[which.walks == j],collapse =","))
+    return(matrix(unlist(inds_char),ncol=1))
+  })
+
+  inds_char<-do.call(rbind,inds_char)
   stats            <- do.call(rbind, stats)
   stats$walk       <- as.factor(stats$walk)
   stats$segment    <- as.numeric(stats$segment)
@@ -672,7 +691,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     g <- g + theme(legend.position = 'none')
   }
   list(plot              = g,
-       stats             = stats,
+       stats             = cbind(stats,inds_char=inds_char),
        pseudotime_bounds = pseudotime_bounds)
 }
 
@@ -752,7 +771,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
           legend.title  = element_text(size = if (large_base_size) { 24 } else { 16 }),
           legend.text   = element_text(size = if (large_base_size) { 22 } else { 12 }))
   list(plot              = g,
-       stats             = stats,
+       stats             = cbind(stats,inds_char="NULL"),
        pseudotime_bounds = pseudotime_bounds)
 }
 
