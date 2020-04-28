@@ -29,7 +29,7 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=
         timeanddate<-as.character(Sys.time())
         analysis_name<-paste0(username, '_', timeanddate, '_tviblindi', packageVersion('tviblindi'), '_analysis')
     }
-    
+
     out<-new.env(hash=TRUE)
     out$analysis_name<-analysis_name
     out$origin<-NULL
@@ -470,7 +470,10 @@ DimRed.tviblindi <-
                 t = t
             )$X
 
-        } else {
+        } else if (method[1]=="umap"){
+            if (!require(umap)) stop("install umap first")
+            x$layout<-umap::umap(x$data)$layout
+        }  else {
             message("Unimplemented method. Nothing done.")
         }
         return(invisible(x))
