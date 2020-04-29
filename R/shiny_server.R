@@ -138,9 +138,7 @@ shiny_server <- function(input, output, session) {
   labels.aligned     <- labels.unique[label_levels_order]
 
   ## Set up colour palette for plotting annotated populations
-  gating_palette       <- RColorBrewer::brewer.pal.info[RColorBrewer::brewer.pal.info$category == 'qual', ]
-  gating_palette       <- unique(unlist(mapply(RColorBrewer::brewer.pal, gating_palette$maxcolors, rownames(gating_palette))))
-
+  gating_palette <- c(RColorBrewer::brewer.pal(8, 'Dark2'), RColorBrewer::brewer.pal(12, 'Paired')[-11], RColorBrewer::brewer.pal(9, 'Set1')[-6], RColorBrewer::brewer.pal(8, 'Accent')[5:8])
   gating_colour_vector <- gating_palette[1:length(labels.unique)][as.numeric(as.factor(tv$labels))]
   colours.aligned      <- sapply(labels.aligned, function(l) gating_colour_vector[which(tv$labels == l)[1]])
 
@@ -226,7 +224,7 @@ shiny_server <- function(input, output, session) {
       par(mar = c(0, 0, 0, 0))
     }
 
-    plot(layout, col = scales::alpha(cols, if (nrow(layout) > 20000) { .05 } else { .2 }), axes = FALSE, xlab = '', ylab = '', pch = 20,
+    plot(layout, col = scales::alpha(cols, point_size), axes = FALSE, xlab = '', ylab = '', pch = 20,
          cex = if (react$image_export.termini && react$image_export_format != 'SVG') { .6 } else { .3 },
          xlim = c(0, 1), ylim = c(0, 1))
     # Plot origin and terminal nodes
@@ -295,6 +293,7 @@ shiny_server <- function(input, output, session) {
     gating_layout.colours <- gating_colour_vector
 
     pch <- rep(20, length(tv$labels)) # symbols (can be set to different for each population here)
+    
     par(xpd = TRUE, mar = c(2, 2, 2, 50))
 
     # Plot ungated events distinctly
