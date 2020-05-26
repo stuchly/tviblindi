@@ -293,7 +293,7 @@ shiny_server <- function(input, output, session) {
     gating_layout.colours <- gating_colour_vector
 
     pch <- rep(20, length(tv$labels)) # symbols (can be set to different for each population here)
-    
+
     par(xpd = TRUE, mar = c(2, 2, 2, 50))
 
     # Plot ungated events distinctly

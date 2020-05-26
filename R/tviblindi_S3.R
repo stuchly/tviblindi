@@ -21,7 +21,7 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=
     stopifnot(is.matrix(data))
     stopifnot(length(labels)==nrow(data) && (is.factor(labels) || is.character(labels)))
     stopifnot(is.logical(keep.intermediate))
-
+    if (is.null(events_sel)) events_sel<-1:nrow(data) ##for downsampling
     if(is.null(analysis_name)) {
         username<-Sys.info()['login']
         if(is.null(username)) username<-Sys.info()['user']
