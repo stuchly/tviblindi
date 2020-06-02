@@ -34,6 +34,7 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=
     out$analysis_name<-analysis_name
     out$origin<-NULL
     out$data=data
+    out$denoised=NULL
     out$labels<-as.factor(labels)
     out$keep<-keep.intermediate
     out$pseudotime<-NULL
@@ -107,11 +108,13 @@ KNN<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-KNN.tviblindi<-function(x,K=100,method="annoy",trees=150){
+KNN.tviblindi<-function(x,K=100,method="annoy",trees=150,denoised=FALSE){
+    if (denoised & is.null(x$denoised)) stop("call Denoise() first")
     if (method=="annoy"){
-        x$KNN<-KNN.annoy(x$data,K,trees)
+        if (denoised) x$KNN<-KNN.annoy(x$denoised,K,trees) else x$KNN<-KNN.annoy(x$data,K,trees)
+
     } else {
-        x$KNN<-knn.adj.raw.parallel(x$data, K)
+        if (denoised) x$KNN<-knn.adj.raw.parallel(x$denoised, K) else x$KNN<-knn.adj.raw.parallel(x$data, K)
         x$KNN$IND<-matrix(as.integer(x$KNN$IND),ncol=ncol(x$KNN$IND))
     }
     return(invisible(x))
