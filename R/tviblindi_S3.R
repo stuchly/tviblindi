@@ -429,6 +429,7 @@ DimRed.tviblindi <-
              ivis_pretrain=0,
              ww=c(10.,10.,1.,1.),
              margin=1.,
+             shuffle=TRUE,
              neigen = 2,
              t = 0,
              load_model=NULL) {
@@ -443,8 +444,9 @@ DimRed.tviblindi <-
                 x$layout <- model$encoder$callp(x$data)$numpy()
                 x$vae <- model
             } else {
+                if (shuffle) sshuf<-sample(nrow(x$data)) else sshuf<-1:nrow(x$data)
                 layout = vv$dimred(
-                                x$data,
+                                x$data[sshuf,],
                                 as.integer(dim),
                                 vsplit,
                                 enc_shape,
@@ -462,7 +464,7 @@ DimRed.tviblindi <-
                             )
                 x$vae <- layout[[3]]
                 #x$vae_structure<-list(config=layout[[3]]$get_config(),weights=layout[[3]]$get_weights())
-                x$layout <- layout[[1]]
+                x$layout <- layout[[2]](x$data)
             }
 
 
