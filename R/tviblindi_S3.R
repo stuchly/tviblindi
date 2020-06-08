@@ -408,6 +408,7 @@ DimRed<-function(x,...){
 #' @param neigen integer; for "diffuse" number of eigen vectors to compute.
 #' @param t double; time parameter for "diffuse", if \code{t==0} multi-time scale is used (geometric sum).
 #' @param load_model character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied
+#' @param upsample named list \code{list(N=,takeall=)} or \code{NULL};  sample events by labels (involves recomputation of KNN matrix); affects "vaevictis" only
 #'
 #' @details The pathway analysis visualisation benefits from dimensional reductions which are by definition continuous... to be elaborated
 #'
@@ -432,7 +433,8 @@ DimRed.tviblindi <-
              shuffle=TRUE,
              neigen = 2,
              t = 0,
-             load_model=NULL) {
+             load_model=NULL,
+             upsample=NULL) {
         if (!is.null(layout)) {
             x$layout <- layout
             return(invisible(x))
@@ -444,24 +446,45 @@ DimRed.tviblindi <-
                 x$layout <- model$encoder$callp(x$data)$numpy()
                 x$vae <- model
             } else {
-                if (shuffle) sshuf<-sample(nrow(x$data)) else sshuf<-1:nrow(x$data)
-                layout = vv$dimred(
-                                x$data[sshuf,],
-                                as.integer(dim),
-                                vsplit,
-                                enc_shape,
-                                dec_shape,
-                                perplexity,
-                                as.integer(batch_size),
-                                as.integer(epochs),
-                                as.integer(patience),
-                                as.integer(ivis_pretrain),
-                                ww,
-                                "euclidean",
-                                margin,
-                                ncol(x$KNN$IND),
-                                x$KNN$IND
-                            )
+                if (!is.null(upsample)){
+                    ss<-.upsample.labels(tv1$labels,N=upsample$N,takeall = upsample$takeall)
+                    layout = vv$dimred(
+                                    x$data[ss,],
+                                    as.integer(dim),
+                                    vsplit,
+                                    enc_shape,
+                                    dec_shape,
+                                    perplexity,
+                                    as.integer(batch_size),
+                                    as.integer(epochs),
+                                    as.integer(patience),
+                                    as.integer(ivis_pretrain),
+                                    ww,
+                                    "euclidean",
+                                    margin,
+                                    ncol(x$KNN$IND),
+                                    NULL
+                                )
+                } else {
+                    if (shuffle) sshuf<-sample(nrow(x$data)) else sshuf<-1:nrow(x$data)
+                    layout = vv$dimred(
+                                    x$data[sshuf,],
+                                    as.integer(dim),
+                                    vsplit,
+                                    enc_shape,
+                                    dec_shape,
+                                    perplexity,
+                                    as.integer(batch_size),
+                                    as.integer(epochs),
+                                    as.integer(patience),
+                                    as.integer(ivis_pretrain),
+                                    ww,
+                                    "euclidean",
+                                    margin,
+                                    ncol(x$KNN$IND),
+                                    x$KNN$IND
+                                )
+                }
                 x$vae <- layout[[3]]
                 #x$vae_structure<-list(config=layout[[3]]$get_config(),weights=layout[[3]]$get_weights())
                 x$layout <- layout[[2]](x$data)
