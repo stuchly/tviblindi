@@ -405,10 +405,11 @@ DimRed<-function(x,...){
 #' @param patience integer; maxim patience for for "vaevictis" training (early stopping).
 #' @param ww vector double; weights for vaevictis in this order - tsne_regularisations, ivis pn loss, reconstruction error, KL divergence
 #' @param margin double; ivis pn loss margin
+#' @param shuffle logical; shuffle data before validation split; involves recomputation of KNN matrix
 #' @param neigen integer; for "diffuse" number of eigen vectors to compute.
 #' @param t double; time parameter for "diffuse", if \code{t==0} multi-time scale is used (geometric sum).
 #' @param load_model character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied
-#' @param upsample named list \code{list(N=,takeall=)} or \code{NULL};  sample events by labels (involves recomputation of KNN matrix); affects "vaevictis" only
+#' @param upsample named list \code{list(N=,takeall=)} or \code{NULL};  sample events by labels (involves recomputation of KNN matrix); affects "vaevictis" only; if NULL nothing happens, \code{N} events per label, takes all events from labels in character vector \code{takeall}
 #'
 #' @details The pathway analysis visualisation benefits from dimensional reductions which are by definition continuous... to be elaborated
 #'
@@ -430,7 +431,7 @@ DimRed.tviblindi <-
              ivis_pretrain=0,
              ww=c(10.,10.,1.,1.),
              margin=1.,
-             shuffle=TRUE,
+             shuffle=FALSE,
              neigen = 2,
              t = 0,
              load_model=NULL,
@@ -482,7 +483,7 @@ DimRed.tviblindi <-
                                     "euclidean",
                                     margin,
                                     ncol(x$KNN$IND),
-                                    x$KNN$IND
+                                    ifelse(shuffle,NULL,x$KNN$IND)
                                 )
                 }
                 x$vae <- layout[[3]]
