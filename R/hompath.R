@@ -77,7 +77,7 @@ plot_walks<-function(XX,walks,sel=1:length(walks$starts),col=1:length(walks$star
 select_unique_points<-function(XX,sel){
     sel <- sort(sel)
     sel <- cbind(sel, as.numeric(as.factor(sel)))
-    sel <- sel[-which(duplicated(sel[,1])),]
+    if(length(which(duplicated(sel[,1])))>0) sel <- sel[-which(duplicated(sel[,1])),]
     map <- rep(0, nrow(XX))
     map[sel[,1]] <- sel[,2]
     return(list(X=XX[sel[,1],], map=map))

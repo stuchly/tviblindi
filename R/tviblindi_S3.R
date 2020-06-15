@@ -448,7 +448,7 @@ DimRed.tviblindi <-
                 x$vae <- model
             } else {
                 if (!is.null(upsample)){
-                    ss<-.upsample.labels(tv1$labels,N=upsample$N,takeall = upsample$takeall)
+                    ss<-.upsample.labels(x$labels,N=upsample$N,takeall = upsample$takeall)
                     layout = vv$dimred(
                                     x$data[ss,],
                                     as.integer(dim),
