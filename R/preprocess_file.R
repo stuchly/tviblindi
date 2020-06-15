@@ -1,9 +1,9 @@
-tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventprefix="/[A-Z]_",origin="^A_",normalize=FALSE){
+tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventprefix="/[A-Z]_",origin="^A_",normalize=FALSE,sep="\t"){
   require(CytoML)
   require(flowWorkspace)
 
   ws<-open_flowjo_xml(wsp)
-  protilatky<-read.table(fcstable,header=TRUE,sep="\t")
+  protilatky<-read.table(fcstable,header=TRUE,sep=sep)
   fcs<-flowCore::read.FCS(fcsn)
   chans<-protilatky$name[protilatky$use==1]
   chans<-which(fcs@parameters@data$name %in% chans)
