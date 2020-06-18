@@ -468,6 +468,7 @@ DimRed.tviblindi <-
                                 )
                 } else {
                     if (shuffle) sshuf<-sample(nrow(x$data)) else sshuf<-1:nrow(x$data)
+                    if (shuffle) knn.plc<-NULL else knn.plc<-x$KNN$IND
                     layout = vv$dimred(
                                     x$data[sshuf,],
                                     as.integer(dim),
@@ -483,7 +484,7 @@ DimRed.tviblindi <-
                                     "euclidean",
                                     margin,
                                     ncol(x$KNN$IND),
-                                    ifelse(shuffle,NULL,x$KNN$IND)
+                                    knn.plc
                                 )
                 }
                 x$vae <- layout[[3]]
