@@ -448,7 +448,13 @@ DimRed.tviblindi <-
                 x$vae <- model
             } else {
                 if (!is.null(upsample)){
-                    ss<-.upsample.labels(x$labels,N=upsample$N,takeall = upsample$takeall)
+                    if (is.null(upsample$cluster)) labl<-x$labels
+                    else {
+                        message("running clara clustering...")
+                        labl<-cluster::clara(x$data,k=upsample$cluster)$clustering
+                        message("~done\n")
+                    }
+                    ss<-.upsample.labels(labl,N=upsample$N,takeall = upsample$takeall)
                     layout = vv$dimred(
                                     x$data[ss,],
                                     as.integer(dim),
