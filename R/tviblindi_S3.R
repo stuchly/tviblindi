@@ -444,7 +444,7 @@ DimRed.tviblindi <-
             vv = reticulate::import("vaevictis")
             if (!is.null(load_model)){
                 model <- vv$loadModel(config_file = load_model[1],weights_file = load_model[2])
-                x$layout <- model$encoder(x$data)[[1]]$numpy()
+                x$layout <- model[[2]](x$data)
                 x$vae <- model
             } else {
                 if (!is.null(upsample)){
