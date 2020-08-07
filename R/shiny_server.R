@@ -39,6 +39,7 @@ shiny_server <- function(input, output, session) {
   # Homology classes selection
   react$persistence_selected         <- NULL # selected homology classes idcs
   react$persistence_marked           <- NULL # marked homology classes idcs
+  react$persistence.death_birth_ratio <- FALSE
   # Trajectories dendrogram
   react$dendrogram                   <- NA   # dendrogram for clustering of trajectories by homology classes
   react$dendrogram_zoom              <- NA
@@ -255,10 +256,11 @@ shiny_server <- function(input, output, session) {
 
   observeEvent(input$btn_termini_update_walks_by_termini, {
     if (length(react$termini_marked) > 0) {
-      updated <- .update_walks_by_termini(tv               = tv,
-                                          pseudotime       = react$pseudotime,
-                                          marked_termini   = react$termini_marked,
-                                          termini_per_path = termini)
+      updated <- .update_walks_by_termini(tv                = tv,
+                                          pseudotime        = react$pseudotime,
+                                          marked_termini    = react$termini_marked,
+                                          termini_per_path  = termini,
+                                          death_birth_ratio = react$persistence.death_birth_ratio)
       react$trajectories_random_walks <- updated$random_walks
       react$representations           <- updated$repre
       react$persistence               <- updated$pers
@@ -328,11 +330,12 @@ shiny_server <- function(input, output, session) {
         } else {
           png(filename = paste0('Persistence_', Sys.time(), '.png'), width = 700, height = 700)
         }
+        print('HELLOOO')
         g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot)) +
           scale_colour_gradientn(colours = rainbow(5)) +
           geom_point(size = if (react$image_export_format == 'SVG') { 3.5 } else { 5.0 }, alpha = .7) +
           theme_light() + theme(legend.position = 'none') +
-          xlab('(Birth + Death) / 2') + ylab('(Death - Birth) / 2')
+          xlab('(Birth + Death) / 2') + ylab(if (react$persistence.death_birth_ratio) { 'Death / Birth' } else { '(Death - Birth) / 2' })
         if (react$image_export_format != 'SVG') {
           g <- g + theme(axis.text=element_text(size = 16),
                          axis.title=element_text(size = 20))
@@ -397,6 +400,11 @@ shiny_server <- function(input, output, session) {
     react$image_export.persistence <- TRUE
   })
 
+  observeEvent(input$switch_persistence_ratio, {
+    react$persistence.death_birth_ratio <- input$switch_persistence_ratio
+    react$persistence_diagram       <- .persistence_diagram(react$persistence, react$persistence.death_birth_ratio)
+  })
+  
   ## Image export format switch
 
   observeEvent(input$btn_image_export_format, {

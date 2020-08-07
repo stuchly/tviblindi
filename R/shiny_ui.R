@@ -149,7 +149,9 @@ shiny_ui <- fluidPage(
           HTML("&nbsp;&nbsp;&nbsp;&nbsp;"),
           actionButton('btn_persistence_export_image',    '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon')),
           HTML('&nbsp;&nbsp;'),
-          textOutput('log_persistence_available', inline = TRUE),
+          # textOutput('log_persistence_available', inline = TRUE),
+          # br()
+          checkboxInput('switch_persistence_ratio', label = 'Adjust for dissimilar densities', value = FALSE),
           fluidRow(
             h4('Selected homology classes'),
             verbatimTextOutput('log_persistence_selected', placeholder = TRUE)#,

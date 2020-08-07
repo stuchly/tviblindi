@@ -862,7 +862,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 .update_walks_by_termini <- function(tv,
                                      pseudotime,
                                      marked_termini,
-                                     termini_per_path) {
+                                     termini_per_path,
+                                     death_birth_ratio) {
   ## Identify chosen walks
   idcs <- which(termini_per_path %in% marked_termini)
 
@@ -926,19 +927,38 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   })
 
   walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
+  
+  p <- .compute_persistence(tv, repre, death_birth_ratio)
 
+  return(list(random_walks = walks,
+              repre        = repre,
+              pers         = p$pers,
+              pers_diag    = p$pd))
+}
+
+.compute_persistence <- function(
+  tv,
+  repre,
+  death_birth_ratio
+) {
   pers <- pers_diagram(dBr = tv$reduced_boundary, repre = repre, plot = FALSE)
+  pd <- .persistence_diagram(pers, death_birth_ratio)
+  list(
+    pers = pers,
+    pd = pd
+  )
+}
+
+.persistence_diagram <- function(
+  pers,
+  death_birth_ratio
+) {
   pd   <- data.frame(Dimension    = pers$vals$dim,
                      Birth        = pers$vals$birth,
                      Death        = pers$vals$death,
                      BirthSimplex = pers$inds$birth,
                      DeathSimplex = pers$inds$death,
                      xplot        = (pers$vals$birth + pers$vals$death) / 2,
-                     yplot        = (pers$vals$death - pers$vals$birth) / 2)
-  pd   <- pd[pd$Dimension > 0, ]
-
-  return(list(random_walks = walks,
-              repre        = repre,
-              pers         = pers,
-              pers_diag    = pd))
+                     yplot        = if (death_birth_ratio) { pers$vals$death / pers$vals$birth } else { (pers$vals$death - pers$vals$birth) / 2 })
+  pd[pd$Dimension > 0, ]
 }
