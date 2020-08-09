@@ -323,7 +323,6 @@ shiny_server <- function(input, output, session) {
   ## Homology class picker (persistence)
   # Layout
   output$plot_persistence <- renderPlot({
-    print(react$persistence.death_birth_ratio)
     if (!is.null(react$persistence)) {
       if (react$image_export.persistence) {
         if (react$image_export_format == 'SVG') {
