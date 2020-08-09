@@ -323,6 +323,7 @@ shiny_server <- function(input, output, session) {
   ## Homology class picker (persistence)
   # Layout
   output$plot_persistence <- renderPlot({
+    print(react$persistence.death_birth_ratio)
     if (!is.null(react$persistence)) {
       if (react$image_export.persistence) {
         if (react$image_export_format == 'SVG') {
@@ -330,12 +331,16 @@ shiny_server <- function(input, output, session) {
         } else {
           png(filename = paste0('Persistence_', Sys.time(), '.png'), width = 700, height = 700)
         }
-        print('HELLOOO')
         g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot)) +
           scale_colour_gradientn(colours = rainbow(5)) +
           geom_point(size = if (react$image_export_format == 'SVG') { 3.5 } else { 5.0 }, alpha = .7) +
           theme_light() + theme(legend.position = 'none') +
-          xlab('(Birth + Death) / 2') + ylab(if (react$persistence.death_birth_ratio) { 'Death / Birth' } else { '(Death - Birth) / 2' })
+          xlab('(Birth + Death) / 2')
+        if (react$persistence.death_birth_ratio) {
+          g <- g + ylab('Death / Birth') 
+        } else {
+          g <- g + ylab('(Death - Birth) / 2')
+        }
         if (react$image_export_format != 'SVG') {
           g <- g + theme(axis.text=element_text(size = 16),
                          axis.title=element_text(size = 20))
@@ -345,11 +350,17 @@ shiny_server <- function(input, output, session) {
         react$image_export.persistence <- FALSE
       }
 
-      ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot)) +
+      g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot)) +
         scale_colour_gradientn(colours = rainbow(5)) +
         geom_point(size = 3.5, alpha = .7) +
         theme_light() + theme(legend.position = 'none') +
-        xlab('(Birth + Death) / 2') + ylab('(Death - Birth) / 2')
+        xlab('(Birth + Death) / 2')
+      if (react$persistence.death_birth_ratio) {
+        g <- g + ylab('Death / Birth') 
+      } else {
+        g <- g + ylab('(Death - Birth) / 2')
+      }
+      g
     }
   })
   # Buttons & logs
