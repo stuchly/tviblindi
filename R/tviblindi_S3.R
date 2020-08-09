@@ -168,6 +168,7 @@ Som.tviblindi<-function(x,xdim=25,ydim=25,method="som"){
     }
     K<-xdim*ydim
     codes <-sample_points(x$denoised,K)
+    ###METHOD CHANGED
     if (method!="som"){
         cl<-kmeans(x$denoised,K,centers=codes)
         x$clusters<-cl$cluster
