@@ -161,16 +161,24 @@ Som<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Som.tviblindi<-function(x,xdim=25,ydim=25){
+Som.tviblindi<-function(x,xdim=25,ydim=25,method="som"){
     if (is.null(x$denoised)) {
         warning("Using original data!")
         x$denoised<-x$data
     }
     K<-xdim*ydim
     codes <-sample_points(x$denoised,K)
-    som<-FlowSOM::SOM(x$denoised,codes=codes, xdim = xdim, ydim = ydim)
-    x$clusters<-som$mapping[, 1]
-    x$codes<-som$codes
+    if (method!="som"){
+        cl<-kmeans(x$denoised,K,centers=codes)
+        x$clusters<-cl$cluster
+        x$codes<-cl$centers
+    }
+    else {
+        som<-FlowSOM::SOM(x$denoised,codes=codes, xdim = xdim, ydim = ydim)
+        x$clusters<-som$mapping[, 1]
+        x$codes<-som$codes
+    }
+
     x$sominfo<-c(xdim,ydim)
     return(invisible(x))
 }
