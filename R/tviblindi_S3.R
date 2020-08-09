@@ -178,9 +178,10 @@ Som.tviblindi<-function(x,xdim=25,ydim=25,method="som"){
         som<-FlowSOM::SOM(x$denoised,codes=codes, xdim = xdim, ydim = ydim)
         x$clusters<-som$mapping[, 1]
         x$codes<-som$codes
+        x$sominfo<-c(xdim,ydim)
     }
 
-    x$sominfo<-c(xdim,ydim)
+
     return(invisible(x))
 }
 
@@ -217,6 +218,8 @@ Filtration.tviblindi<-function(x,method="witness",K=30,alpha2=NULL){
     }
 
     if (method=="traingulation"){
+        ###METHOD CHANGED
+        if (is.null(x$sominfo)) stop("traingulation works only with SOM clustering")
         x$filtration<-traingulation(x$codes,x$sominfo[1],x$sominfo[2])
     }
 
