@@ -85,7 +85,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
 
     leaves  <- pres$leaves
     h       <- unlist(pres$heights)
-    m       <- do.call(rbind, pres$merges)[order(h), ]
+    m       <- do.call(rbind, pres$merges)[order(h), , drop = FALSE]
     h       <- sort(h)
 
     if (is.null(dim(m))) return(FALSE)
