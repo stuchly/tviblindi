@@ -254,7 +254,7 @@ Pseudotime<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-6,kernel="Exp"){
+Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-6,kernel="Exp",kepsilon=NULL){
     stopifnot(!is.null(x$origin))
     if (length(x$origin)==0) stop("Origin not set!")
     if (K>dim(x$KNN$IND)[2]){
@@ -264,7 +264,7 @@ Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-6,kernel="Ex
     d<-KofRawN(x$KNN,K)
     d  <- knn.raw2adj(d)
     dsym <- knn.spadj2sym(knn.adj2spadj(d))
-    sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel))
+    sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     x$pseudotime  <- assign_distance(sim, x$origin,weights = dsym,nb_it=nb_it,iguess=iguess,eps=eps)
     cat("Pseudotime error:", x$pseudotime$error, "\n")
     if (x$keep) {
