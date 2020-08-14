@@ -13,8 +13,8 @@
 #' @return \code{tviblindi} returns a tviblindi class object.
 #'
 #' @export
-tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep_intermediate=FALSE){
-    new_tviblindi(data,labels,fcs_path,events_sel,keep_intermediate)
+tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep_intermediate=FALSE, analysis_name = paste0('tviblindi_', Sys.Date())){
+    new_tviblindi(data,labels,fcs_path,events_sel,analysis_name,keep_intermediate)
 }
 
 new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=NULL,keep.intermediate=FALSE){
@@ -448,83 +448,93 @@ DimRed.tviblindi <-
              t = 0,
              load_model=NULL,
              upsample=NULL) {
-        if (!is.null(layout)) {
-            x$layout <- layout
-            return(invisible(x))
-        }
-        if (method[1] == "vaevictis") {
-            vv = reticulate::import("vaevictis")
-            if (!is.null(load_model)){
-                model <- vv$loadModel(config_file = load_model[1],weights_file = load_model[2])
-                x$layout <- model[[2]](x$data)
-                x$vae <- model
-            } else {
-                if (!is.null(upsample)){
-                    if (is.null(upsample$cluster)) labl<-x$labels
-                    else {
-                        message("running clara clustering...")
-                        labl<-cluster::clara(x$data,k=upsample$cluster)$clustering
-                        message("~done\n")
-                    }
-                    ss<-.upsample.labels(labl,N=upsample$N,takeall = upsample$takeall)
-                    layout = vv$dimred(
-                                    x$data[ss,],
-                                    as.integer(dim),
-                                    vsplit,
-                                    enc_shape,
-                                    dec_shape,
-                                    perplexity,
-                                    as.integer(batch_size),
-                                    as.integer(epochs),
-                                    as.integer(patience),
-                                    as.integer(ivis_pretrain),
-                                    ww,
-                                    "euclidean",
-                                    margin,
-                                    ncol(x$KNN$IND),
-                                    NULL
-                                )
+        
+        vae <- NULL
+        if (is.null(layout)) {
+            if (method[1] == "vaevictis") {
+                vv = reticulate::import("vaevictis")
+                if (!is.null(load_model)){
+                    model <- vv$loadModel(config_file = load_model[1],weights_file = load_model[2])
+                    layout <- model[[2]](x$data)
+                    vae <- model
                 } else {
-                    if (shuffle) sshuf<-sample(nrow(x$data)) else sshuf<-1:nrow(x$data)
-                    if (shuffle) knn.plc<-NULL else knn.plc<-x$KNN$IND
-                    layout = vv$dimred(
-                                    x$data[sshuf,],
-                                    as.integer(dim),
-                                    vsplit,
-                                    enc_shape,
-                                    dec_shape,
-                                    perplexity,
-                                    as.integer(batch_size),
-                                    as.integer(epochs),
-                                    as.integer(patience),
-                                    as.integer(ivis_pretrain),
-                                    ww,
-                                    "euclidean",
-                                    margin,
-                                    ncol(x$KNN$IND),
-                                    knn.plc
-                                )
+                    if (!is.null(upsample)){
+                        if (is.null(upsample$cluster)) labl<-x$labels
+                        else {
+                            message("running clara clustering...")
+                            labl<-cluster::clara(x$data,k=upsample$cluster)$clustering
+                            message("~done\n")
+                        }
+                        ss<-.upsample.labels(labl,N=upsample$N,takeall = upsample$takeall)
+                        layout = vv$dimred(
+                            x$data[ss,],
+                            as.integer(dim),
+                            vsplit,
+                            enc_shape,
+                            dec_shape,
+                            perplexity,
+                            as.integer(batch_size),
+                            as.integer(epochs),
+                            as.integer(patience),
+                            as.integer(ivis_pretrain),
+                            ww,
+                            "euclidean",
+                            margin,
+                            ncol(x$KNN$IND),
+                            NULL
+                        )
+                    } else {
+                        if (shuffle) sshuf<-sample(nrow(x$data)) else sshuf<-1:nrow(x$data)
+                        if (shuffle) knn.plc<-NULL else knn.plc<-x$KNN$IND
+                        layout = vv$dimred(
+                            x$data[sshuf,],
+                            as.integer(dim),
+                            vsplit,
+                            enc_shape,
+                            dec_shape,
+                            perplexity,
+                            as.integer(batch_size),
+                            as.integer(epochs),
+                            as.integer(patience),
+                            as.integer(ivis_pretrain),
+                            ww,
+                            "euclidean",
+                            margin,
+                            ncol(x$KNN$IND),
+                            knn.plc
+                        )
+                    }
+                    x$vae <- layout[[3]]
+                    #x$vae_structure<-list(config=layout[[3]]$get_config(),weights=layout[[3]]$get_weights())
+                    layout <- layout[[2]](x$data)
                 }
-                x$vae <- layout[[3]]
-                #x$vae_structure<-list(config=layout[[3]]$get_config(),weights=layout[[3]]$get_weights())
-                x$layout <- layout[[2]](x$data)
+                
+                
+            } else if (method[1] == "diffuse") {
+                if (is.null(x$KNN)) stop("Compute KNN graph first.")
+                layout<-sparse.diffuse(
+                    sparse.Laplacian.construct(knn.raw2adj(x$KNN)),
+                    neigen = neigen,
+                    t = t
+                )$X
+                
+            } else if (method[1]=="umap"){
+                if (!require(umap)) stop("install umap first")
+                layout<-umap::umap(x$data)$layout
+            }  else {
+                message("Unimplemented method. Nothing done.")
             }
-
-
-        } else if (method[1] == "diffuse") {
-            if (is.null(x$KNN)) stop("Compute KNN graph first.")
-            x$layout<-sparse.diffuse(
-                sparse.Laplacian.construct(knn.raw2adj(x$KNN)),
-                neigen = neigen,
-                t = t
-            )$X
-
-        } else if (method[1]=="umap"){
-            if (!require(umap)) stop("install umap first")
-            x$layout<-umap::umap(x$data)$layout
-        }  else {
-            message("Unimplemented method. Nothing done.")
         }
+        
+        if (is.null(x$layout)) {
+            x$layout <- list(layout)
+            names(x$layout) <- paste0('1_', method[1])
+        } else {
+            idx.layout <- length(x$layout) + 1
+            x$layout <- c(x$layout, list(layout))
+            names(x$layout)[idx.layout] <- paste0(idx.layout, '_', method[1])
+        }
+        
         return(invisible(x))
     }
 

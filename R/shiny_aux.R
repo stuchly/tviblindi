@@ -425,11 +425,12 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                pseudotime,
                                highlight_in_background,
                                selected_trajectory_points=NULL,
+                               cex = 1.2,
                                ...) {
   ## Plot trajectories over a 2D layout
   col1 <- c(34, 87, 201, 255)
   col2 <- c(194, 45, 55, 255)
-  plot(scattermore(X, rgba = c(200, 200, 200, 150), cex = 1.2))
+  plot(scattermore(X, rgba = c(200, 200, 200, 150), cex = cex))
 
   j      <- 0
   sel1   <- walks[walk_idcs.A]
@@ -448,7 +449,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
       if (!is.null(selected_trajectory_points)) pts<-X[selected_trajectory_points, ,drop=FALSE]
 
-      plot(scattermore(pts, rgba = c(25, 69, 7, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 1.3), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+      plot(scattermore(pts, rgba = c(0, 224, 34, 255), xlim = c(0, 1), ylim = c(0, 1), cex = cex + .6), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
 
@@ -497,7 +498,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, , drop = FALSE]
       if (!is.null(selected_trajectory_points)) pts<-X[selected_trajectory_points, ,drop=FALSE]
-      plot(scattermore(pts, rgba = c(25, 69, 7, 255), xlim = c(0, 1), ylim = c(0, 1), cex = 2.3), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+      plot(scattermore(pts, rgba = c(0, 224, 34, 255), xlim = c(0, 1), ylim = c(0, 1), cex = cex + .6), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
 }
@@ -586,7 +587,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                   breaks   = NULL,
                                   n.part   = 10,
                                   exp.part = 1,
-                                  large_base_size = FALSE) {
+                                  large_base_size = FALSE,
+                                  grey = FALSE) {
   require(ggplot2)
 
   if (length(markers) == 1) {
@@ -607,7 +609,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                     n.part      = 10,
                                     exp.part    = 1,
                                     show_legend = FALSE,
-                                    large_base_size = FALSE) {
+                                    large_base_size = FALSE,
+                                    grey            = FALSE) {
   ## Scale pseudotime
   pseudotime <- pseudotime$res
   pseudotime <- pseudotime/max(pseudotime)
@@ -650,7 +653,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     pts         <- unlist(walks)[unlist(inds)]
     means       <- lapply(sort(unique(which.walks)), function(j) mean(coords[pts[which.walks == j]]))
 
-    inds_char  <- lapply(sort(unique(which.walks)), function(j) paste(pts[which.walks == j],collapse =","))
+    inds_char  <- lapply(sort(unique(which.walks)), function(j) paste(pts[which.walks == j], collapse =","))
 
     ## v           <- cbind(rep(i, length(means)), sort(unique(which.walks)), unlist(means), unlist(inds_char))
     ## if (is.null(dim(v))) { names(v) <- c('segment', 'walk', 'expression', 'inds_char') } else { colnames(v) <- c('segment', 'walk', 'expression','inds_char') }
@@ -679,7 +682,6 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     geom_line(linetype = 'dashed') + geom_point() +
     ggtitle(paste0(markers, ' expression per walk: means per segment')) +
     labs(subtitle = 'Segmented by pseudotime values.') +
-    theme_light() +
     theme(text          = element_text(size = if (large_base_size) { 24 } else { 11 }),
           axis.text.x   = element_blank(),
           axis.ticks    = element_blank(),
@@ -687,6 +689,11 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
           plot.subtitle = element_text(size = if (large_base_size) { 19 } else { 16 }),
           legend.title  = element_text(size = if (large_base_size) { 24 } else { 16 }),
           legend.text   = element_text(size = if (large_base_size) { 22 } else { 12 }))
+  if (grey) {
+    g <- g + theme_grey()
+  } else {
+    g <- g + theme_minimal()
+  }
   if (!show_legend) {
     g <- g + theme(legend.position = 'none')
   }
@@ -704,7 +711,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                            n.part      = 10,
                                            exp.part    = 1,
                                            show_legend = TRUE,
-                                           large_base_size = FALSE) {
+                                           large_base_size = FALSE,
+                                           grey = FALSE) {
   pseudotime <- pseudotime$res
   pseudotime <- pseudotime/max(pseudotime)
 
@@ -762,7 +770,6 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     geom_point() +
     ggtitle(paste0('Multiple markers expression')) +
     labs(subtitle = 'Segmented by pseudotime values. ') +
-    theme_light() +
     theme(text          = element_text(size = if (large_base_size) { 24 } else { 11 }),
           axis.text.x   = element_blank(),
           axis.ticks    = element_blank(),
@@ -770,6 +777,11 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
           plot.subtitle = element_text(size = if (large_base_size) { 19 } else { 16 }),
           legend.title  = element_text(size = if (large_base_size) { 24 } else { 16 }),
           legend.text   = element_text(size = if (large_base_size) { 22 } else { 12 }))
+  if (grey) {
+    g <- g + theme_grey()
+  } else {
+    g <- g + theme_minimal()
+  }
   list(plot              = g,
        stats             = cbind(stats,inds_char="NULL"),
        pseudotime_bounds = pseudotime_bounds)
@@ -784,7 +796,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                       n.part = 20,
                                       exp.part = 1,
                                       large_base_size = FALSE,
-                                      log2_transform) {
+                                      log2_transform,
+                                      grey = FALSE) {
   pseudotime <- pseudotime$res
   pseudotime <- pseudotime / max(pseudotime)
 
@@ -842,7 +855,6 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     geom_point() +
     ggtitle(paste0('Annotated populations composition progression')) +
     labs(subtitle = 'Segmented by pseudotime values. ') +
-    theme_light() +
     theme(text          = element_text(size = if (large_base_size) { 24 } else { 11 }),
           axis.text.x   = element_blank(),
           axis.ticks    = element_blank(),
@@ -853,9 +865,14 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   if (log2_transform) {
     g <- g + ylab('log2 count')
   }
-
+  if (grey) {
+    g <- g + theme_grey()
+  } else {
+    g <- g + theme_minimal()
+  }
+  
   list(plot              = g,
-       stats             = stats,
+       stats             = cbind(stats, inds_char = 'NULL'),
        pseudotime_bounds = pseudotime_bounds)
 }
 

@@ -18,7 +18,7 @@ shiny_server <- function(input, output, session) {
   tv               <- get(tv_name, parent.env(environment()))
 
   input_ff         <- if (!is.null(tv$fcs)) { flowCore::read.FCS(tv$fcs) } else { make_valid_fcs(exprs = tv$data) }
-  layout           <- tv$layout
+  layout           <- if (class(tv$layout) == 'list') { tv$layout } else { list(default = tv$layout) }
   event_sel        <- tv$events_sel # selected events from input FCS file
   markers          <- colnames(tv$data)
 
@@ -33,9 +33,13 @@ shiny_server <- function(input, output, session) {
   react$persistence_diagram          <- NULL
   react$representations              <- NULL # trajectories representations
   react$representations.reduced      <- NULL # trajectory representations only using marked homology classes
+  # Dimred layout
+  react$layout_name                  <- names(layout)[1]
+  react$layout_pointsize             <- .3
   # Terminal nodes selection
   react$termini_selected             <- NULL # selected terminal nodes idcs
   react$termini_marked               <- NULL # marked terminal nodes idcs
+  react$termini_processed            <- NULL
   # Homology classes selection
   react$persistence_selected         <- NULL # selected homology classes idcs
   react$persistence_marked           <- NULL # marked homology classes idcs
@@ -116,16 +120,13 @@ shiny_server <- function(input, output, session) {
   react$image_export_format            <- 'PNG'
 
   ## Scale 2D projection
-  layout[, 1]         <- layout[, 1] - min(layout[, 1]); layout[, 1] <- layout[, 1] / max(layout[, 1])
-  layout[, 2]         <- layout[, 2] - min(layout[, 2]); layout[, 2] <- layout[, 2] / max(layout[, 2])
-  layout.df           <- data.frame(layout) # for compatibility with brushOpts
-  colnames(layout.df) <- c('X', 'Y')
-
-  ## Determine size of points in 2-D layout plot
-  point_size <- if (nrow(layout) < 50000) { .8 } else
-                if (nrow(layout) < 75000) { .6 } else
-                if (nrow(layout) < 10000) { .3 } else
-                if (nrow(layout) < 15000) { .08 } else { .05 }
+  for (idx.layout in names(layout)) {
+    layout[[idx.layout]][, 1] <- layout[[idx.layout]][, 1] - min(layout[[idx.layout]][, 1]); layout[[idx.layout]][, 1] <- layout[[idx.layout]][, 1] / max(layout[[idx.layout]][, 1])
+    layout[[idx.layout]][, 2] <- layout[[idx.layout]][, 2] - min(layout[[idx.layout]][, 2]); layout[[idx.layout]][, 2] <- layout[[idx.layout]][, 2] / max(layout[[idx.layout]][, 2])
+  }
+  
+  layout.df <- lapply(layout, function(l) data.frame(l) %>% setNames(c('X', 'Y'))) # for compatibility with brushOpts
+  names(layout.df) <- names(layout)
 
   # Re-order annotated population labels by pseudotime
   labels.unique    <- unique(tv$labels)
@@ -159,14 +160,22 @@ shiny_server <- function(input, output, session) {
     session$resetBrush('selector_tracked_markers.B')
   })
 
+  ## Display dimension reduction methods in dropdown menu
+  observe({
+    updateSelectInput(session, 'input_dimred_method', choices = names(layout))
+  })
+  observeEvent(input$input_dimred_method, {
+    react$layout_name <- input$input_dimred_method
+  })
+  
+  observeEvent(input$btn_layout_pointsize, {
+    react$layout_pointsize <- as.numeric(input$btn_layout_pointsize)
+  })
+  
   ## Display FCS file name
   if (!is.null(tv$analysis_name)) {
-    output$text_analysis_name <- renderText(tv$analysis_name)
-  } else {
-    output$text_analysis_name <- renderText(Sys.time())
+    output$text_analysis_name <- renderText(if (tv$analysis_name != FALSE) { tv$analysis_name } else { 'Untitled tviblindi analysis' })
   }
-
-  ## Help pop-up
   observeEvent(input$btn_help, {
     showModal(modalDialog(
       title = HTML('<h3>How to use the <i>tviblindi</i> Shiny interface</h3>'),
@@ -224,23 +233,23 @@ shiny_server <- function(input, output, session) {
       }
       par(mar = c(0, 0, 0, 0))
     }
-
-    plot(layout, col = scales::alpha(cols, point_size), axes = FALSE, xlab = '', ylab = '', pch = 20,
-         cex = if (react$image_export.termini && react$image_export_format != 'SVG') { .6 } else { .3 },
+    
+    plot(layout[[react$layout_name]], col = scales::alpha(cols, .7), axes = FALSE, xlab = '', ylab = '', pch = 20,
+         cex = if (react$image_export.termini && react$image_export_format != 'SVG') { react$layout_pointsize + .3 } else { react$layout_pointsize },
          xlim = c(0, 1), ylim = c(0, 1))
     # Plot origin and terminal nodes
-    points(layout[tv$origin, 1], layout[tv$origin, 2], col = scales::alpha('purple', .75), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 }, pch = 15)
+    points(layout[[react$layout_name]][tv$origin, 1], layout[[react$layout_name]][tv$origin, 2], col = scales::alpha('purple', .75), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 }, pch = 15)
     if (!is.null(tv$ShowAllFates) && tv$ShowAllFates) {
       if (length(unique(tv$fates)) == 1) {
-        points(layout[unique(tv$states), 1], layout[unique(tv$fates), 2], col = scales::alpha('grey', .75), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 3 } else { 1.5 }, pch = 20)
+        points(layout[[react$layout_name]][unique(tv$states), 1], layout[[react$layout_name]][unique(tv$fates), 2], col = scales::alpha('grey', .75), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 3 } else { 1.5 }, pch = 20)
       } else {
-        points(layout[unique(tv$fates), ], col = scales::alpha('grey', .75), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 3 } else { 1.5 }, pch = 20)
+        points(layout[[react$layout_name]][unique(tv$fates), ], col = scales::alpha('grey', .75), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 3 } else { 1.5 }, pch = 20)
       }
     }
     if (length(termini.unique) == 1) {
-      points(layout[termini.unique, 1], layout[termini.unique, 2], col = scales::alpha('black', .5), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 }, pch = 20)
+      points(layout[[react$layout_name]][termini.unique, 1], layout[[react$layout_name]][termini.unique, 2], col = scales::alpha('black', .5), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 + (termini.unique %in% react$termini_processed) * 5 } else { 3 + (termini.unique %in% react$termini_processed) * 5 }, pch = 20)
     } else {
-      points(layout[termini.unique, ], col = scales::alpha('black', .5), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 }, pch = 20)
+      points(layout[[react$layout_name]][termini.unique, ], col = scales::alpha('black', .5), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 + (termini.unique %in% react$termini_processed) * 5 } else { 3 + (termini.unique %in% react$termini_processed) * 5 }, pch = 20)
     }
     if (react$image_export.termini) {
       dev.off()
@@ -255,10 +264,11 @@ shiny_server <- function(input, output, session) {
   })
 
   observeEvent(input$btn_termini_update_walks_by_termini, {
+    react$termini_processed <- react$termini_marked
     if (length(react$termini_marked) > 0) {
       updated <- .update_walks_by_termini(tv                = tv,
                                           pseudotime        = react$pseudotime,
-                                          marked_termini    = react$termini_marked,
+                                          marked_termini    = react$termini_processed,
                                           termini_per_path  = termini,
                                           death_birth_ratio = react$persistence.death_birth_ratio)
       react$trajectories_random_walks <- updated$random_walks
@@ -282,12 +292,12 @@ shiny_server <- function(input, output, session) {
 
   # Logs
   output$log_termini_selected <- renderPrint({
-    react$termini_selected <- as.numeric(rownames(brushedPoints(layout.df[termini.unique, ], input$selector_termini, xvar = 'X', yvar = 'Y')))
-    cat(sapply(react$termini_selected, function(s) paste0(s, ' (', sum(termini == s), ' pathways)')), sep = '\n')
+    react$termini_selected <- as.numeric(rownames(brushedPoints(layout.df[[react$layout_name]][termini.unique, ], input$selector_termini, xvar = 'X', yvar = 'Y')))
+    cat(sapply(react$termini_selected, function(s) paste0(s, ' (label: ', tv$labels[s], '; ', sum(termini == s), ' walks terminate here)')), sep = '\n')
   })
   observeEvent(input$btn_termini_mark_termini, {
     react$termini_marked <- unique(unlist(c(react$termini_marked, react$termini_selected)))
-    output$log_termini_marked <- renderPrint({ cat(react$termini_marked, sep = '\n') })
+    output$log_termini_marked <- renderPrint({ cat(sapply(react$termini_marked, function(s) paste0(s, ' (label: ', tv$labels[s], '; ', sum(termini == s), ' walks terminate here)')), sep = '\n') })
   })
 
   ## Gating layout pop-up
@@ -304,17 +314,17 @@ shiny_server <- function(input, output, session) {
       label.ungated                  <- labels.aligned[which.ungated]
       idcs.ungated                   <- which(tv$labels == label.ungated)
       colours.aligned[which.ungated] <- gating_colour_vector[idcs.ungated] <- 'black'
-      plot(layout[idcs.ungated, ], col = scales::alpha('black', .4), axes = FALSE, xlab = '', ylab = '', pch = '.', cex = .5, xlim = c(0, 1), ylim = c(0, 1))
-      points(layout[-idcs.ungated, 1], layout[-idcs.ungated, 2], col = scales::alpha(gating_colour_vector[-idcs.ungated], 0.4), pch = 20, cex = .18)
+      plot(layout[[react$layout_name]][idcs.ungated, ], col = scales::alpha('black', .4), axes = FALSE, xlab = '', ylab = '', pch = '.', cex = react$layout_pointsize + 1, xlim = c(0, 1), ylim = c(0, 1))
+      points(layout[[react$layout_name]][-idcs.ungated, 1], layout[[react$layout_name]][-idcs.ungated, 2], col = scales::alpha(gating_colour_vector[-idcs.ungated], 0.4), pch = 20, cex = .18)
     } else {
-      plot(layout, col = scales::alpha(gating_colour_vector, .35), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = .18, xlim = c(0, 1), ylim = c(0, 1))
+      plot(layout[[react$layout_name]], col = scales::alpha(gating_colour_vector, .35), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = react$layout_pointsize - .9, xlim = c(0, 1), ylim = c(0, 1))
     }
     # Plot origin and terminal nodes
-    points(layout[tv$origin, 1], layout[tv$origin, 2], col = scales::alpha('yellow', .75), cex = 3, pch = 15)
+    points(layout[[react$layout_name]][tv$origin, 1], layout[[react$layout_name]][tv$origin, 2], col = scales::alpha('yellow', .75), cex = 3, pch = 15)
     if (length(termini.unique) == 1) {
-      points(layout[termini.unique, 1], layout[termini.unique, 2], col = scales::alpha('purple', .75), cex = 3, pch = 20)
+      points(layout[[react$layout_name]][termini.unique, 1], layout[[react$layout_name]][termini.unique, 2], col = scales::alpha('purple', .75), cex = 3, pch = 20)
     } else {
-      points(layout[termini.unique, ], col = scales::alpha('purple', .75), cex = 3, pch = 20)
+      points(layout[[react$layout_name]][termini.unique, ], col = scales::alpha('purple', .75), cex = 3, pch = 20)
     }
     # Plot legend for gates colouring
     legend(x = 1.08, y = 1, legend = labels.aligned, fill = colours.aligned, cex = 1.5, bty = 'n')
@@ -324,15 +334,18 @@ shiny_server <- function(input, output, session) {
   # Layout
   output$plot_persistence <- renderPlot({
     if (!is.null(react$persistence)) {
+      quantiles <- quantile(react$persistence_diagram$yplot)
+      sizes <- max(1, sapply(react$persistence_diagram$yplot, function(val) first(which(quantiles >= val)) - 1))
       if (react$image_export.persistence) {
         if (react$image_export_format == 'SVG') {
           svg(filename = paste0('Persistence_', Sys.time(), '.svg'))
         } else {
           png(filename = paste0('Persistence_', Sys.time(), '.png'), width = 700, height = 700)
         }
-        g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot)) +
+        g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot, size = yplot)) +
+          scale_size_continuous(range = c(3, 15)) +
           scale_colour_gradientn(colours = rainbow(5)) +
-          geom_point(size = if (react$image_export_format == 'SVG') { 3.5 } else { 5.0 }, alpha = .7) +
+          geom_point(size = if (react$image_export_format == 'SVG') { 3.5 + sizes_extra * 1 } else { 5.0  + sizes_extra * 1 }, alpha = .7) +
           theme_light() + theme(legend.position = 'none') +
           xlab('(Birth + Death) / 2')
         if (react$persistence.death_birth_ratio) {
@@ -349,10 +362,11 @@ shiny_server <- function(input, output, session) {
         react$image_export.persistence <- FALSE
       }
 
-      g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot)) +
+      g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot, size = yplot)) +
         scale_colour_gradientn(colours = rainbow(5)) +
-        geom_point(size = 3.5, alpha = .7) +
-        theme_light() + theme(legend.position = 'none') +
+        scale_size_continuous(range = c(3, 15)) +
+        geom_point(stroke = 3, alpha = .7) +
+        theme_grey() + theme(legend.position = 'none') +
         xlab('(Birth + Death) / 2')
       if (react$persistence.death_birth_ratio) {
         g <- g + ylab('Death / Birth') 
@@ -598,13 +612,13 @@ shiny_server <- function(input, output, session) {
   observeEvent(react$trajectories_to_pin, {
     if (is.null(react$output_ff)) {
       if (is.null(event_sel)) {
-        layout_X <- layout.df$X * 100
-        layout_Y <- layout.df$Y * 100
+        layout_X <- layout.df[[react$layout_name]]$X * 100
+        layout_Y <- layout.df[[react$layout_name]]$Y * 100
         ps       <- as.numeric(as.factor(react$pseudotime$res))
       } else {
         layout_X <- layout_Y <- rep(-100, nrow(input_ff))
-        layout_X[event_sel] <- layout.df$X * 100
-        layout_Y[event_sel] <- layout.df$Y * 100
+        layout_X[event_sel] <- layout.df[[react$layout_name]]$X * 100
+        layout_Y[event_sel] <- layout.df[[react$layout_name]]$Y * 100
         ps           <- rep(-100, nrow(input_ff))
         ps[event_sel] <- as.numeric(as.factor(react$pseudotime$res))
       }
@@ -666,13 +680,13 @@ shiny_server <- function(input, output, session) {
   observeEvent((input$btn_trajectories_export_fcs), {
     if (is.null(react$output_ff)) {
       if (is.null(event_sel)) {
-        layout_X <- layout.df$X * 100
-        layout_Y <- layout.df$Y * 100
+        layout_X <- layout.df[[react$layout_name]]$X * 100
+        layout_Y <- layout.df[[react$layout_name]]$Y * 100
         ps       <- as.numeric(as.factor(react$pseudotime$res))
       } else {
         layout_X <- layout_Y <- rep(-100, nrow(input_ff))
-        layout_X[event_sel] <- layout.df$X * 100
-        layout_Y[event_sel] <- layout.df$Y * 100
+        layout_X[event_sel] <- layout.df[[react$layout_name]]$X * 100
+        layout_Y[event_sel] <- layout.df[[react$layout_name]]$Y * 100
         ps           <- rep(-100, nrow(input_ff))
         ps[event_sel] <- as.numeric(as.factor(react$pseudotime$res))
       }
@@ -693,13 +707,13 @@ shiny_server <- function(input, output, session) {
   observeEvent((input$btn_trajectories_clear_pinned_trajectories), {
     if (is.null(react$output_ff)) {
       if (is.null(event_sel)) {
-        layout_X <- layout.df$X * 100
-        layout_Y <- layout.df$Y * 100
+        layout_X <- layout.df[[react$layout_name]]$X * 100
+        layout_Y <- layout.df[[react$layout_name]]$Y * 100
         ps       <- react$pseudotime$res
       } else {
         layout_X <- layout_Y <- rep(-100, nrow(input_ff))
-        layout_X[event_sel] <- layout.df$X * 100
-        layout_Y[event_sel] <- layout.df$Y * 100
+        layout_X[event_sel] <- layout.df[[react$layout_name]]$X * 100
+        layout_Y[event_sel] <- layout.df[[react$layout_name]]$Y * 100
         ps           <- rep(-100, nrow(input_ff))
         ps[event_sel] <- react$pseudotime$res
       }
@@ -843,7 +857,7 @@ shiny_server <- function(input, output, session) {
       } else {
         png(filename = paste0('Trajectories_', Sys.time(), '.png'), width = 1000, height = 900)
       }
-      .plot_trajectories_full(layout,
+      .plot_trajectories_full(layout[[react$layout_name]],
                               react$trajectories_random_walks,
                               react$trajectories_marked.A,
                               react$trajectories_marked.B,
@@ -856,14 +870,18 @@ shiny_server <- function(input, output, session) {
       react$image_export.trajectories <- FALSE
     } else {
       par(mar = c(0, 0, 0, 0))
-      .plot_trajectories(layout,
-                         react$trajectories_random_walks,
-                         react$trajectories_marked.A,
-                         react$trajectories_marked.B,
-                         flip_colours = react$layout_trajectories_flip_colours,
-                         pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
-                         pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { react$pseudotime },
-                         highlight_in_background = react$layout_trajectories_highlight_in_background, selected_trajectory_points = react$selected_trajectory_points)
+      if (!is.null(react$layout_name) && !is.null(react$layout_pointsize)) {
+        .plot_trajectories(layout[[react$layout_name]],
+                           react$trajectories_random_walks,
+                           react$trajectories_marked.A,
+                           react$trajectories_marked.B,
+                           flip_colours = react$layout_trajectories_flip_colours,
+                           pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
+                           pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { react$pseudotime },
+                           highlight_in_background = react$layout_trajectories_highlight_in_background, selected_trajectory_points = react$selected_trajectory_points,
+                           cex = react$layout_pointsize)
+      }
+      
     }
   })
 
@@ -1004,6 +1022,21 @@ shiny_server <- function(input, output, session) {
       pts <- brushedPoints(react$tracked_markers_stats.B,
                            input$selector_tracked_markers.B,
                            xvar = 'segment', yvar = 'expression')
+      
+      if (nrow(pts)>0){
+        
+        ##----MODIFIED by JS - temp
+        selected_trajectory_points<-NULL
+        pts$inds_char<-as.character(pts$inds_char)
+        for (i in 1:nrow(pts)){
+          
+          if (pts$inds_char[i]!="NULL") selected_trajectory_points<-c(selected_trajectory_points,as.numeric(unlist(strsplit(pts$inds_char[i],split=","))))
+        }
+        react$selected_trajectory_points<-unique(selected_trajectory_points)
+      }
+      
+      ##--END of JS
+      
       if (nrow(pts) > 0) {
         highlighted_segments <- sort(unique(pts$segment))
         react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments) + 1)]
@@ -1019,7 +1052,16 @@ shiny_server <- function(input, output, session) {
       pts <- brushedPoints(react$tracked_populations_stats.A,
                            input$selector_tracked_populations.A,
                            xvar = 'segment', yvar = 'count')
-      if (nrow(pts) > 0) {
+      if (nrow(pts)>0){
+        print(pts)
+        selected_trajectory_points<-NULL
+        pts$inds_char<-as.character(pts$inds_char)
+        for (i in 1:nrow(pts)){
+          
+          if (pts$inds_char[i]!="NULL") selected_trajectory_points<-c(selected_trajectory_points,as.numeric(unlist(strsplit(pts$inds_char[i],split=","))))
+        }
+        react$selected_trajectory_points<-unique(selected_trajectory_points)
+
         highlighted_segments <- sort(unique(pts$segment))
         react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments) + 1)]
       } else {
@@ -1034,7 +1076,18 @@ shiny_server <- function(input, output, session) {
       pts <- brushedPoints(react$tracked_populations_stats.B,
                            input$selector_tracked_populations.B,
                            xvar = 'segment', yvar = 'count')
-      if (nrow(pts) > 0) {
+      if (nrow(pts)>0){
+
+        ##----MODIFIED by JS - temp
+        selected_trajectory_points<-NULL
+        pts$inds_char<-as.character(pts$inds_char)
+        for (i in 1:nrow(pts)){
+
+          if (pts$inds_char[i]!="NULL") selected_trajectory_points<-c(selected_trajectory_points,as.numeric(unlist(strsplit(pts$inds_char[i],split=","))))
+        }
+        react$selected_trajectory_points<-unique(selected_trajectory_points)
+
+        print(pts)
         highlighted_segments <- sort(unique(pts$segment))
         react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments) + 1)]
       } else {
@@ -1069,7 +1122,8 @@ shiny_server <- function(input, output, session) {
                                  markers  = react$tracked_markers.A,
                                  n.part   = react$trackers_n_segments,
                                  exp.part = react$trackers_scaling_exponent,
-                                 large_base_size = react$trackers_large_base_size)
+                                 large_base_size = react$trackers_large_base_size,
+                                 grey = !react$image_export.tracked_markers.A)
       react$tracked_markers_stats.A <- p$stats
       react$tracked_markers_pseudotime_bounds.A <- p$pseudotime_bounds
       if (react$image_export.tracked_markers.A) {
@@ -1109,7 +1163,8 @@ shiny_server <- function(input, output, session) {
                                  markers  = react$tracked_markers.B,
                                  n.part   = react$trackers_n_segments,
                                  exp.part = react$trackers_scaling_exponent,
-                                 large_base_size = react$trackers_large_base_size)
+                                 large_base_size = react$trackers_large_base_size,
+                                 grey = !react$image_export.tracked_markers.B)
       react$tracked_markers_stats.B <- p$stats
       react$tracked_markers_pseudotime_bounds.B <- p$pseudotime_bounds
       if (react$image_export.tracked_markers.B) {
@@ -1174,7 +1229,8 @@ shiny_server <- function(input, output, session) {
                                      n.part         = react$trackers_n_segments,
                                      exp.part       = react$trackers_scaling_exponent,
                                      log2_transform = react$tracked_populations_log2_transform,
-                                     large_base_size = react$trackers_large_base_size)
+                                     large_base_size = react$trackers_large_base_size,
+                                     grey = !react$image_export.tracked_populations.A)
       react$tracked_populations_stats.A         <- p$stats
       react$tracked_markers_pseudotime_bounds.A <- p$pseudotime_bounds
 
@@ -1216,7 +1272,8 @@ shiny_server <- function(input, output, session) {
                                      n.part         = react$trackers_n_segments,
                                      exp.part       = react$trackers_scaling_exponent,
                                      log2_transform = react$tracked_populations_log2_transform,
-                                     large_base_size = react$trackers_large_base_size)
+                                     large_base_size = react$trackers_large_base_size,
+                                     grey = !react$image_export.tracked_populations.B)
       react$tracked_populations_stats.B         <- p$stats
       react$tracked_markers_pseudotime_bounds.B <- p$pseudotime_bounds
 

@@ -57,25 +57,74 @@ shiny_ui <- fluidPage(
       color='#1d2c8f'
     )
   ),
-  
   fluidRow(
+    style = "background:linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(210,250,250,1) 100%)",
     ## APP TITLE
     column(
       width = 8,
-      titlePanel(
-        h3(id = 'app_title', HTML('tvi<b>blindi</b>')),
-        windowTitle = 'tviblindi'
-      )
+      column(
+        style = 'color:#000052; padding-top:5px',
+        width = 2,
+          titlePanel(
+            h2(id = 'app_title', HTML('tvi<b>blindi</b>')),
+            windowTitle = 'tviblindi'
+        )
+      ),
+      column(
+        width = 10,
+        style = 'padding-top: 10px; color: #000052',
+        fluidRow(
+          column(
+            width = 2,
+            style = 'text-align:    left; padding-left:45px',
+            selectInput(
+              'input_dimred_method', label = 'LAYOUT TYPE', c('default'),
+              selected = NULL,
+              multiple = FALSE
+            )
+          ),
+          column(
+            width = 2,
+            style = 'text-align:    left; padding-left:40px',
+            radioGroupButtons(
+              inputId = 'btn_layout_pointsize',
+              label = 'POINT SIZE',
+              choiceValues = c(.2, .5, 1),
+              choiceNames = c('·', '•', '⚫'),
+              status = 'primary'
+            )
+          ),
+          column(
+            width = 8,
+            style = 'text-align: left',
+            radioGroupButtons(
+              'btn_image_export_format',
+              label = 'IMAGE EXPORT',
+              choiceValues = c('PNG', 'SVG'),
+              choiceNames  = c('PNG', 'SVG'),
+              selected = 'PNG', status = 'info',
+              size = 's', direction = 'horizontal',
+              justified = TRUE, individual = FALSE,
+              width = 150
+            )
+            # tags$script("$(\"input:radio[name='btn_image_export_format'][value='PNG']\").parent().css('background-color', '#ffffde');"),
+            # tags$script("$(\"input:radio[name='btn_image_export_format'][value='SVG']\").parent().css('background-color', '#ffe8fd');")
+          )
+        )
+      )  
     ),
     ## ANALYSIS NAME & HELP BUTTON
-    column(
-      width = 4,
-      style = 'text-align:  right;
-               padding-right: 5px;
-               margin-top:   15px',
-      textOutput(outputId = 'text_analysis_name', inline = TRUE),
-      HTML('&nbsp;&nbsp;&nbsp;'),
-      actionButton('btn_help', '', icon = icon('question-circle', lib = 'font-awesome'))
+    span(
+      style = 'color:#000052',
+      column(
+        width = 4,
+        style = 'text-align:  right;
+               padding-right: 25px;
+               margin-top:   20px',
+        textOutput(outputId = 'text_analysis_name', inline = TRUE),
+        HTML('&nbsp;&nbsp;&nbsp;'),
+        actionButton('btn_help', '', icon = icon('question-circle', lib = 'font-awesome'))
+      )
     )
   ),
   br(),
@@ -103,7 +152,7 @@ shiny_ui <- fluidPage(
             )
           ),
           column(
-            width = 8,
+            width = 4,
             style = 'text-align:    left;
                      pading-bottom: 10px',
             actionButton('btn_termini_mark_termini',            '', icon = icon('glyphicon glyphicon-plus',      lib = 'glyphicon')),
@@ -112,11 +161,11 @@ shiny_ui <- fluidPage(
             actionButton('btn_termini_update_walks_by_termini', '', icon = icon('glyphicon glyphicon-thumbs-up', lib = 'glyphicon'))
           ),
           column(
-            width = 4,
+            width = 8,
             style = 'text-align:    right;
                      padding-bottom: 10px',
-            actionButton('btn_termini_export_image',           '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon')),
-            actionButton('btn_left_show_gating',             '', icon = icon('glyphicon glyphicon-fullscreen', lib = 'glyphicon'))
+              actionButton('btn_termini_export_image',           '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon')),
+              actionButton('btn_left_show_gating',             '', icon = icon('glyphicon glyphicon-fullscreen', lib = 'glyphicon')),
           ),
           fluidRow(
             h4('Selected terminal nodes'),
@@ -163,20 +212,7 @@ shiny_ui <- fluidPage(
             #tags$head(tags$style("#log_persistence_marked{ overflow-y:scroll;}"))
           )
         )
-      ),
-      br(), hr(),
-      h3('Export images as...'), br(),
-      radioGroupButtons(
-        'btn_image_export_format',
-        label = NULL,
-        choiceValues = c('PNG', 'SVG'),
-        choiceNames  = c('PNG', 'SVG'),
-        selected = 'PNG', status = 'default',
-        size = 'sm', direction = 'horizontal',
-        justified = TRUE, individual = FALSE
-      ),
-      tags$script("$(\"input:radio[name='btn_image_export_format'][value='PNG']\").parent().css('background-color', '#ffffde');"),
-      tags$script("$(\"input:radio[name='btn_image_export_format'][value='SVG']\").parent().css('background-color', '#ffe8fd');")
+      )
     ),
     ## MIDDLE PANEL: TRAJECTORY DENDROGRAM
     column(
@@ -187,20 +223,17 @@ shiny_ui <- fluidPage(
         tabPanel(
           title = 'Whole dendrogram',
           fluidRow(
-            shinycssloaders::withSpinner(
               plotOutput('plot_dendrogram',
-                         height = 800,
+                         height = 700,
                          brush  = brushOpts(
                            id        = 'selector_dendrogram',
                            fill      = 'yellow',
                            stroke    = 'yellow',
                            direction = 'y'
-                         )),
-              color='#1d2c8f'
-            )
+                         ))
           ),
           column(
-            width = 7,
+            width = 8,
             actionButton('btn_dendrogram_mark_leaves',                 '', icon = icon('glyphicon glyphicon-plus',       lib = 'glyphicon')),
             actionButton('btn_dendrogram_clear_marked_leaves',         '', icon = icon('glyphicon glyphicon-fire',       lib = 'glyphicon')),
             HTML('&nbsp;&nbsp;&nbsp;&nbsp;'),
@@ -212,7 +245,7 @@ shiny_ui <- fluidPage(
             actionButton('btn_dendrogram_export_image',                  '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon'))
           ),
           column(
-            width = 5,
+            width = 4,
             style = 'text-align:  right;
                  padding-right: 5px;
                  margin-top:   15px',
