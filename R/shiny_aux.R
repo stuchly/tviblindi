@@ -425,12 +425,12 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                pseudotime,
                                highlight_in_background,
                                selected_trajectory_points=NULL,
-                               cex = 1.2,
+                               pointsize = 1.2,
                                ...) {
   ## Plot trajectories over a 2D layout
   col1 <- c(34, 87, 201, 255)
   col2 <- c(194, 45, 55, 255)
-  plot(scattermore(X, rgba = c(200, 200, 200, 150), cex = cex))
+  plot(scattermore(X, rgba = c(200, 200, 200, 150), cex = pointsize))
 
   j      <- 0
   sel1   <- walks[walk_idcs.A]
@@ -449,7 +449,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
       if (!is.null(selected_trajectory_points)) pts<-X[selected_trajectory_points, ,drop=FALSE]
 
-      plot(scattermore(pts, rgba = c(0, 224, 34, 255), xlim = c(0, 1), ylim = c(0, 1), cex = cex + .6), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+      plot(scattermore(pts, rgba = c(0, 153, 31, 255), xlim = c(0, 1), ylim = c(0, 1), cex = pointsize + 1), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
 
@@ -498,7 +498,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     if (length(idcs.highlight) > 0) {
       pts <- X[idcs.highlight, , drop = FALSE]
       if (!is.null(selected_trajectory_points)) pts<-X[selected_trajectory_points, ,drop=FALSE]
-      plot(scattermore(pts, rgba = c(0, 224, 34, 255), xlim = c(0, 1), ylim = c(0, 1), cex = cex + .6), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+      plot(scattermore(pts, rgba = c(0, 153, 31, 255), xlim = c(0, 1), ylim = c(0, 1), cex = pointsize + 1), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
     }
   }
 }
@@ -690,7 +690,9 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
           legend.title  = element_text(size = if (large_base_size) { 24 } else { 16 }),
           legend.text   = element_text(size = if (large_base_size) { 22 } else { 12 }))
   if (grey) {
-    g <- g + theme_grey()
+    g <- g + theme(panel.background = element_rect(fill = '#f2f2f2',
+                                                   colour = '#f2f2f2',
+                                                   size = 0.5, linetype = 'solid'))
   } else {
     g <- g + theme_minimal()
   }
@@ -778,7 +780,9 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
           legend.title  = element_text(size = if (large_base_size) { 24 } else { 16 }),
           legend.text   = element_text(size = if (large_base_size) { 22 } else { 12 }))
   if (grey) {
-    g <- g + theme_grey()
+    g <- g + theme(panel.background = element_rect(fill = '#f2f2f2',
+                                                   colour = '#f2f2f2',
+                                                   size = 0.5, linetype = 'solid'))
   } else {
     g <- g + theme_minimal()
   }
@@ -866,7 +870,9 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     g <- g + ylab('log2 count')
   }
   if (grey) {
-    g <- g + theme_grey()
+    g <- g + theme(panel.background = element_rect(fill = '#f2f2f2',
+                                                   colour = '#f2f2f2',
+                                                   size = 0.5, linetype = 'solid'))
   } else {
     g <- g + theme_minimal()
   }

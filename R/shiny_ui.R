@@ -4,6 +4,7 @@
 require(shiny)
 require(shinyWidgets)
 
+
 shiny_ui <- fluidPage(
   title = 'tviblindi',
   ## CSS tags
@@ -63,7 +64,7 @@ shiny_ui <- fluidPage(
     column(
       width = 8,
       column(
-        style = 'color:#000052; padding-top:5px',
+        style = 'color:#000052; padding-top:5px; background-color:#fcffd9',
         width = 2,
           titlePanel(
             h2(id = 'app_title', HTML('tvi<b>blindi</b>')),
@@ -75,10 +76,19 @@ shiny_ui <- fluidPage(
         style = 'padding-top: 10px; color: #000052',
         fluidRow(
           column(
-            width = 2,
+            width = 3,
             style = 'text-align:    left; padding-left:45px',
             selectInput(
               'input_dimred_method', label = 'LAYOUT TYPE', c('default'),
+              selected = NULL,
+              multiple = FALSE
+            )
+          ),
+          column(
+            width = 3,
+            style = 'text-align:    left; padding-left:45px',
+            selectInput(
+              'input_labels_name', label = 'LABELS VECTOR', c('default'),
               selected = NULL,
               multiple = FALSE
             )
@@ -89,13 +99,13 @@ shiny_ui <- fluidPage(
             radioGroupButtons(
               inputId = 'btn_layout_pointsize',
               label = 'POINT SIZE',
-              choiceValues = c(.2, .5, 1),
+              choiceValues = c(.08, .4, 1.1),
               choiceNames = c('·', '•', '⚫'),
               status = 'primary'
             )
           ),
           column(
-            width = 8,
+            width = 4,
             style = 'text-align: left',
             radioGroupButtons(
               'btn_image_export_format',
@@ -144,8 +154,8 @@ shiny_ui <- fluidPage(
                 height = 500,
                 brush = brushOpts(
                   id     = 'selector_termini',
-                  fill   = 'green',
-                  stroke = 'green'
+                  fill   = '#4c969c',
+                  stroke = '#4c969c'
                 )
               ),
               color='#1d2c8f'
@@ -420,7 +430,6 @@ shiny_ui <- fluidPage(
               )
             ),
             fluidRow(
-              shinycssloaders::withSpinner(
                 plotOutput(
                   'plot_tracked_markers.A',
                   height = 500,
@@ -429,9 +438,7 @@ shiny_ui <- fluidPage(
                     fill   = 'red',
                     stroke = 'red'
                   )
-                ),
-                color='#1d2c8f'
-              )
+                )
             ),
             ## B
             fluidRow(
@@ -452,7 +459,6 @@ shiny_ui <- fluidPage(
               )
             ),
             fluidRow(
-              shinycssloaders::withSpinner(
                 plotOutput(
                   'plot_tracked_markers.B',
                   height = 500,
@@ -461,9 +467,7 @@ shiny_ui <- fluidPage(
                     fill   = 'red',
                     stroke = 'red'
                   )
-                ),
-                color='#1d2c8f'
-              )
+                )
             )
           ),
           tabPanel(
@@ -479,13 +483,13 @@ shiny_ui <- fluidPage(
             ),
             fluidRow(
               column(
-                width = 10,
+                width = 9,
                 style = 'padding-left: 5px;
                          padding-right: 5px',
                 selectInput('input_tracked_populations.A', label = 'Group A populations of interest', choices = c(), multiple = TRUE, width = '100%')
               ),
               column(
-                width = 2,
+                width = 3,
                 style = 'padding-left: 2px;
                    margin-top:  26px;
                    text-align: right',
@@ -494,7 +498,6 @@ shiny_ui <- fluidPage(
               )
             ),
             fluidRow(
-              shinycssloaders::withSpinner(
                 plotOutput(
                   'plot_tracked_populations.A',
                   height = 500,
@@ -503,20 +506,18 @@ shiny_ui <- fluidPage(
                     fill   = 'red',
                     stroke = 'red'
                   )
-                ),
-                color='#1d2c8f'
-              )
+                )
             ),
             ## B
             fluidRow(
               column(
-                width = 10,
+                width = 9,
                 style = 'padding-left: 5px;
                          padding-right: 5px',
                 selectInput('input_tracked_populations.B', label = 'Group B populations of interest', choices = c(), multiple = TRUE, width = '100%')
               ),
               column(
-                width = 2,
+                width = 3,
                 style = 'padding-left: 2px;
                    margin-top:  26px;
                    text-align: right',
@@ -525,7 +526,7 @@ shiny_ui <- fluidPage(
               )
             ),
             fluidRow(
-              shinycssloaders::withSpinner(
+              
                 plotOutput(
                   'plot_tracked_populations.B',
                   height = 500,
@@ -534,13 +535,12 @@ shiny_ui <- fluidPage(
                     fill   = 'red',
                     stroke = 'red'
                   )
-                ),
-                color='#1d2c8f'
-              )
+                )
               
             )
           )
         )
       )
     )
-  ))
+  )
+)

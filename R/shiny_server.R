@@ -2,6 +2,8 @@
 ## Shiny interface module
 ## Server function
 
+require(shinyBS)
+
 #### Shiny interface for tviblindi: server function
 
 shiny_server <- function(input, output, session) {
@@ -19,6 +21,7 @@ shiny_server <- function(input, output, session) {
 
   input_ff         <- if (!is.null(tv$fcs)) { flowCore::read.FCS(tv$fcs) } else { make_valid_fcs(exprs = tv$data) }
   layout           <- if (class(tv$layout) == 'list') { tv$layout } else { list(default = tv$layout) }
+  labels           <- if (class(tv$labels) == 'list') { tv$labels } else { list(default = tv$labels) }
   event_sel        <- tv$events_sel # selected events from input FCS file
   markers          <- colnames(tv$data)
 
@@ -36,6 +39,8 @@ shiny_server <- function(input, output, session) {
   # Dimred layout
   react$layout_name                  <- names(layout)[1]
   react$layout_pointsize             <- .3
+  # Labels vector
+  react$labels_name                  <- names(labels)[1]
   # Terminal nodes selection
   react$termini_selected             <- NULL # selected terminal nodes idcs
   react$termini_marked               <- NULL # marked terminal nodes idcs
@@ -128,21 +133,29 @@ shiny_server <- function(input, output, session) {
   layout.df <- lapply(layout, function(l) data.frame(l) %>% setNames(c('X', 'Y'))) # for compatibility with brushOpts
   names(layout.df) <- names(layout)
 
-  # Re-order annotated population labels by pseudotime
-  labels.unique    <- unique(tv$labels)
-  average_pseudotime <- c()
-  for (label in labels.unique) {
-    idcs        <- which(tv$labels == label)
-    idcs.sample <- sample(idcs, min(100000, length(idcs)))
-    average_pseudotime <- c(average_pseudotime, mean(tv$pseudotime$res[idcs.sample]))
-  }
-  label_levels_order <- order(average_pseudotime)
-  labels.aligned     <- labels.unique[label_levels_order]
-
-  ## Set up colour palette for plotting annotated populations
   gating_palette <- c(RColorBrewer::brewer.pal(8, 'Dark2'), RColorBrewer::brewer.pal(12, 'Paired')[-11], RColorBrewer::brewer.pal(9, 'Set1')[-6], RColorBrewer::brewer.pal(8, 'Accent')[5:8])
-  gating_colour_vector <- gating_palette[1:length(labels.unique)][as.numeric(as.factor(tv$labels))]
-  colours.aligned      <- sapply(labels.aligned, function(l) gating_colour_vector[which(tv$labels == l)[1]])
+  labels.unique <- lapply(labels, unique) %>% setNames(names(labels))
+  labels.aligned <-
+    colours.aligned <-
+    gating_colour_vectors <- vector(mode = 'list', length = length(labels)) %>% setNames(names(labels))
+  for (idx.labels in 1:length(labels)) {
+    # Re-order annotated population labels by pseudotime
+    average_pseudotime <- c()
+    for (label in labels.unique[[idx.labels]]) {
+      idcs        <- which(labels[[idx.labels]] == label)
+      idcs.sample <- sample(idcs, min(100000, length(idcs)))
+      average_pseudotime <- c(average_pseudotime, mean(tv$pseudotime$res[idcs.sample]))
+    }
+    label_levels_order <- order(average_pseudotime)
+    labels.aligned[[idx.labels]] <- labels.unique[[idx.labels]][label_levels_order]
+    
+    gating_colour_vectors[[idx.labels]] <- gating_palette[1:length(labels.unique[[idx.labels]])][as.numeric(as.factor(labels[[idx.labels]]))]
+    colours.aligned[[idx.labels]] <- sapply(labels.aligned[[idx.labels]], function(l) gating_colour_vectors[[idx.labels]][which(labels[[idx.labels]] == l)[1]])
+  }
+  
+  observeEvent(input$input_labels_name, {
+    react$labels_name <- input$input_labels_name
+  })
 
   ## Find all trajectories' terminal nodes
   termini              <- c(tv$walks$v[tv$walks$starts[-1] - 1], tail(tv$walks$v, 1))
@@ -160,9 +173,10 @@ shiny_server <- function(input, output, session) {
     session$resetBrush('selector_tracked_markers.B')
   })
 
-  ## Display dimension reduction methods in dropdown menu
+  ## Display dimension reduction methods and labels vector names in dropdown menu
   observe({
     updateSelectInput(session, 'input_dimred_method', choices = names(layout))
+    updateSelectInput(session, 'input_labels_name', choices = names(labels))
   })
   observeEvent(input$input_dimred_method, {
     react$layout_name <- input$input_dimred_method
@@ -247,9 +261,9 @@ shiny_server <- function(input, output, session) {
       }
     }
     if (length(termini.unique) == 1) {
-      points(layout[[react$layout_name]][termini.unique, 1], layout[[react$layout_name]][termini.unique, 2], col = scales::alpha('black', .5), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 + (termini.unique %in% react$termini_processed) * 5 } else { 3 + (termini.unique %in% react$termini_processed) * 5 }, pch = 20)
+      points(layout[[react$layout_name]][termini.unique, 1], layout[[react$layout_name]][termini.unique, 2], col = scales::alpha('black', .5), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 }, pch = 20)
     } else {
-      points(layout[[react$layout_name]][termini.unique, ], col = scales::alpha('black', .5), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 + (termini.unique %in% react$termini_processed) * 5 } else { 3 + (termini.unique %in% react$termini_processed) * 5 }, pch = 20)
+      points(layout[[react$layout_name]][termini.unique, ], col = scales::alpha('black', .5), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 }, pch = 20)
     }
     if (react$image_export.termini) {
       dev.off()
@@ -293,31 +307,29 @@ shiny_server <- function(input, output, session) {
   # Logs
   output$log_termini_selected <- renderPrint({
     react$termini_selected <- as.numeric(rownames(brushedPoints(layout.df[[react$layout_name]][termini.unique, ], input$selector_termini, xvar = 'X', yvar = 'Y')))
-    cat(sapply(react$termini_selected, function(s) paste0(s, ' (label: ', tv$labels[s], '; ', sum(termini == s), ' walks terminate here)')), sep = '\n')
+    cat(sapply(react$termini_selected, function(s) paste0(s, ' (label: ', labels[[react$labels_name]][s], '; ', sum(termini == s), ' walks terminate here)')), sep = '\n')
   })
   observeEvent(input$btn_termini_mark_termini, {
     react$termini_marked <- unique(unlist(c(react$termini_marked, react$termini_selected)))
-    output$log_termini_marked <- renderPrint({ cat(sapply(react$termini_marked, function(s) paste0(s, ' (label: ', tv$labels[s], '; ', sum(termini == s), ' walks terminate here)')), sep = '\n') })
+    output$log_termini_marked <- renderPrint({ cat(sapply(react$termini_marked, function(s) paste0(s, ' (label: ', labels[[react$labels_name]][s], '; ', sum(termini == s), ' walks terminate here)')), sep = '\n') })
   })
 
   ## Gating layout pop-up
   output$plot_gating_layout <- renderPlot({
-    gating_layout.colours <- gating_colour_vector
-
-    pch <- rep(20, length(tv$labels)) # symbols (can be set to different for each population here)
-
+    gating_layout.colours <- gating_colour_vectors[[react$labels_name]]
+    pch <- rep(20, length(labels[[react$labels_name]])) # symbols (can be set to different for each population here)
     par(xpd = TRUE, mar = c(2, 2, 2, 50))
 
     # Plot ungated events distinctly
-    which.ungated <- which(labels.aligned %in% c('ungated', '*ungated*'))
+    which.ungated <- which(labels.aligned[[react$labels_name]] %in% c('ungated', '*ungated*'))
     if (length(which.ungated) == 1) {
-      label.ungated                  <- labels.aligned[which.ungated]
-      idcs.ungated                   <- which(tv$labels == label.ungated)
-      colours.aligned[which.ungated] <- gating_colour_vector[idcs.ungated] <- 'black'
-      plot(layout[[react$layout_name]][idcs.ungated, ], col = scales::alpha('black', .4), axes = FALSE, xlab = '', ylab = '', pch = '.', cex = react$layout_pointsize + 1, xlim = c(0, 1), ylim = c(0, 1))
-      points(layout[[react$layout_name]][-idcs.ungated, 1], layout[[react$layout_name]][-idcs.ungated, 2], col = scales::alpha(gating_colour_vector[-idcs.ungated], 0.4), pch = 20, cex = .18)
+      label.ungated                  <- labels.aligned[[react$labels_name]][which.ungated]
+      idcs.ungated                   <- which(labels[[react$labels_name]] == label.ungated)
+      colours.aligned[[react$labels_name]][which.ungated] <- gating_colour_vectors[[react$labels_name]][idcs.ungated] <- 'black'
+      plot(layout[[react$layout_name]][idcs.ungated, ], col = scales::alpha('black', .4), axes = FALSE, xlab = '', ylab = '', pch = '.', cex = react$layout_pointsize * 2 + .8, xlim = c(0, 1), ylim = c(0, 1))
+      points(layout[[react$layout_name]][-idcs.ungated, 1], layout[[react$layout_name]][-idcs.ungated, 2], col = scales::alpha(gating_colour_vectors[[react$labels_name]][-idcs.ungated], 0.4), pch = 20, cex = react$layout_pointsize * 2 + .8)
     } else {
-      plot(layout[[react$layout_name]], col = scales::alpha(gating_colour_vector, .35), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = react$layout_pointsize - .9, xlim = c(0, 1), ylim = c(0, 1))
+      plot(layout[[react$layout_name]], col = scales::alpha(gating_colour_vectors[[react$labels_name]], .35), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = react$layout_pointsize * 2 + .8, xlim = c(0, 1), ylim = c(0, 1))
     }
     # Plot origin and terminal nodes
     points(layout[[react$layout_name]][tv$origin, 1], layout[[react$layout_name]][tv$origin, 2], col = scales::alpha('yellow', .75), cex = 3, pch = 15)
@@ -327,7 +339,7 @@ shiny_server <- function(input, output, session) {
       points(layout[[react$layout_name]][termini.unique, ], col = scales::alpha('purple', .75), cex = 3, pch = 20)
     }
     # Plot legend for gates colouring
-    legend(x = 1.08, y = 1, legend = labels.aligned, fill = colours.aligned, cex = 1.5, bty = 'n')
+    legend(x = 1.08, y = 1, legend = labels.aligned[[react$labels_name]], fill = colours.aligned[[react$labels_name]], cex = 1.5, bty = 'n')
   })
 
   ## Homology class picker (persistence)
@@ -343,7 +355,7 @@ shiny_server <- function(input, output, session) {
           png(filename = paste0('Persistence_', Sys.time(), '.png'), width = 700, height = 700)
         }
         g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot, size = yplot)) +
-          scale_size_continuous(range = c(3, 15)) +
+          scale_size_continuous(range = c(.2, 8)) +
           scale_colour_gradientn(colours = rainbow(5)) +
           geom_point(size = if (react$image_export_format == 'SVG') { 3.5 + sizes_extra * 1 } else { 5.0  + sizes_extra * 1 }, alpha = .7) +
           theme_light() + theme(legend.position = 'none') +
@@ -364,9 +376,12 @@ shiny_server <- function(input, output, session) {
 
       g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot, size = yplot)) +
         scale_colour_gradientn(colours = rainbow(5)) +
-        scale_size_continuous(range = c(3, 15)) +
-        geom_point(stroke = 3, alpha = .7) +
-        theme_grey() + theme(legend.position = 'none') +
+        scale_size_continuous(range = c(.2, 8)) +
+        geom_point(stroke = 1, alpha = .7) +
+         theme(legend.position = 'none',
+               panel.background = element_rect(fill = '#f2f2f2',
+                                          colour = '#f2f2f2',
+                                          size = 0.5, linetype = 'solid')) +
         xlab('(Birth + Death) / 2')
       if (react$persistence.death_birth_ratio) {
         g <- g + ylab('Death / Birth') 
@@ -865,12 +880,12 @@ shiny_server <- function(input, output, session) {
                               pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
                               pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { react$pseudotime },
                               highlight_in_background = react$layout_trajectories_highlight_in_background,
-                              selected_trajectory_points = react$selected_trajectory_points)
+                              selected_trajectory_points = react$selected_trajectory_points,)
       dev.off()
       react$image_export.trajectories <- FALSE
     } else {
       par(mar = c(0, 0, 0, 0))
-      if (!is.null(react$layout_name) && !is.null(react$layout_pointsize)) {
+      if (!is.null(react$layout_name) && !is.null(react$layout_pointsize) && !is.null(layout[[react$layout_name]])) {
         .plot_trajectories(layout[[react$layout_name]],
                            react$trajectories_random_walks,
                            react$trajectories_marked.A,
@@ -879,7 +894,7 @@ shiny_server <- function(input, output, session) {
                            pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
                            pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { react$pseudotime },
                            highlight_in_background = react$layout_trajectories_highlight_in_background, selected_trajectory_points = react$selected_trajectory_points,
-                           cex = react$layout_pointsize)
+                           pointsize = react$layout_pointsize + .7)
       }
       
     }
@@ -1053,7 +1068,6 @@ shiny_server <- function(input, output, session) {
                            input$selector_tracked_populations.A,
                            xvar = 'segment', yvar = 'count')
       if (nrow(pts)>0){
-        print(pts)
         selected_trajectory_points<-NULL
         pts$inds_char<-as.character(pts$inds_char)
         for (i in 1:nrow(pts)){
@@ -1087,7 +1101,6 @@ shiny_server <- function(input, output, session) {
         }
         react$selected_trajectory_points<-unique(selected_trajectory_points)
 
-        print(pts)
         highlighted_segments <- sort(unique(pts$segment))
         react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments) + 1)]
       } else {
@@ -1200,8 +1213,8 @@ shiny_server <- function(input, output, session) {
     react$tracked_populations_log2_transform <- input$check_tracked_populations_log2_transform
   })
   observe({
-    updateSelectInput(session, 'input_tracked_populations.A', choices = labels.aligned)
-    updateSelectInput(session, 'input_tracked_populations.B', choices = labels.aligned)
+    updateSelectInput(session, 'input_tracked_populations.A', choices = react$labels.aligned)
+    updateSelectInput(session, 'input_tracked_populations.B', choices = react$labels.aligned)
   })
   observeEvent(input$input_tracked_populations.A, {
     react$tracked_populations.A <- input$input_tracked_populations.A
@@ -1303,4 +1316,207 @@ shiny_server <- function(input, output, session) {
       react$tracked_markers_ready.B <- FALSE
     }
   })
+  ## TOOLTIPS ON HOVER
+  addTooltip(session, 
+             id    = 'btn_termini_mark_termini',
+             title = 'Mark selected terminal nodes',
+             trigger = 'hover',
+             options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_termini_clear_termini',
+             title = 'Clear marked terminal nodes',
+             trigger = 'hover',
+             options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_termini_update_walks_by_termini',
+             title = 'Classify walks',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_termini_export_image',
+             title = 'Export image of the layout above',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_left_show_gating',
+             title = 'Show layout with labelled populations',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_persistence_mark_classes',
+             title = 'Mark selected homology classes',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_persistence_clear_classes',
+             title = 'Clear marked homology classes',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_persistence_export_image',
+             title = 'Export image of the above persistence diagram',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'switch_persistence_ratio',
+             title = 'Show ratio of Death and Birth filtration values on y-axis, for data containing regions with dissimilar densities of points',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_dendrogram_mark_leaves',
+             title = 'Mark selected leaves of HCP dendrogram',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_dendrogram_clear_marked_leaves',
+             title = 'Clear marked leaves of the HCP dendrogram',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_dendrogram_zoom',
+             title = 'Generate a zoomed-in view of the selected area',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_trajectories_export_fcs',
+             title = 'Export FCS file with 2-d layout and all pinned walks',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_trajectories_clear_pinned_trajectories',
+             title = 'Clear pinned walks',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_dendrogram_export_image',
+             title = 'Export image of the HCP dendrogram',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_dendrogram_zoom_mark_leaves',
+             title = 'Mark selected leaves of HCP dendrogram',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_dendrogram_zoom_mark_leaves',
+             title = 'Mark selected leaves of HCP dendrogram',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'slider_dendrogram_leaf_cutoff',
+             title = 'Set a threshold minimum percentage of all simulated walks per branch for pruning the HCP dendrogram',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_trajectories_pin_trajectories.A',
+             title = 'Pin walks in group A',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_trajectories_pin_trajectories.B',
+             title = 'Pin walks in group A',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_layout_trajectories_remove_highlight',
+             title = 'Remove pseudotime segment highlighting in the above layout',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_layout_trajectories_highlight_in_background',
+             title = 'Toggle pseudotime segment highlighting in background/foreground with respect to plotted walks',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_layout_trajectories_flip_colours',
+             title = 'Toggle plotting group A walks in foreground/background with respect to group B walks',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_layout_trajectories_export_image',
+             title = 'Export image of the above layout',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'input_trackers_scaling_exponent',
+             title = 'Scaling exponent for pseudotime segmentation',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'input_trackers_n_segments',
+             title = 'Number of pseudotime segments',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'check_trackers_large_base_size',
+             title = 'Use larger font for in the plots below',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_tracked_markers_remove_trajectories.A',
+             title = 'Remove all simulated walks passing through selection from group A',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_tracked_markers_remove_trajectories.B',
+             title = 'Remove all simulated walks passing through selection from group B',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_tracked_markers_undo_remove_trajectories.A',
+             title = 'Undo last removal walks in group A',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_tracked_markers_undo_remove_trajectories.B',
+             title = 'Undo last removal walks in group B',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_tracked_markers_highlight_segments.A',
+             title = 'Highlight selected pseudotime segments in the layout above',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_tracked_markers_highlight_segments.B',
+             title = 'Highlight selected pseudotime segments in the layout above',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_tracked_markers_export_image.A',
+             title = 'Export image of tracked marker expression changes in group A of simulated walks',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_tracked_markers_export_image.B',
+             title = 'Export image of tracked marker expression changes in group B of simulated walks',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_tracked_populations_highlight_segments.A',
+             title = 'Highlight selected pseudotime segments in the layout above',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_tracked_populations_highlight_segments.B',
+             title = 'Highlight selected pseudotime segments in the layout above',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_tracked_populations_export_image.A',
+             title = 'Export image of tracked representation of populations along pseudotime progression in group A of simulated walks',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_tracked_populations_export_image.B',
+             title = 'Export image of tracked representation of populations along pseudotime progression in group B of simulated walks',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'check_tracked_populations_log2_transform',
+             title = 'Apply log2 transform to sizes of labelled populations for tracking representation of populations along pseudotime progression (good for extremely abundant and rare populations)',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
 }

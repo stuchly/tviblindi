@@ -4,6 +4,7 @@
 #' @param data a numeric matrix; the (transformed and compensated) expression data.
 #' @param labels character or factor vector of the same length as \code{nrow(data)};
 #' assignment of cells to population, unassigned cells should be labelled as "ungated" for better plotting.
+#' Alternatively, \code{labels} can be a named list of one or label vectors.
 #' @param fcs_path character (optional); path to fcs file to store the results - typically the fcs file with analysed data.
 #' @param events_sel integer vector (optional); the indices of data in fcs file, defaults to 'code{1:nor(data)}.
 #' @param keep_intermediate bool (default FALSE); if intermediate matrices (transition probability and spar distance matrix)
@@ -19,7 +20,14 @@ tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep_intermediate=
 
 new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=NULL,keep.intermediate=FALSE){
     stopifnot(is.matrix(data))
-    stopifnot(length(labels)==nrow(data) && (is.factor(labels) || is.character(labels)))
+    if (!is.list(labels)) {
+        labels <- list(default = labels)
+    } else if (is.list(labels)) {
+        stopifnot(!is.null(names(labels)))
+    } 
+    for (idx.labels in 1:length(labels)) {
+        stopifnot(length(labels[[idx.labels]])==nrow(data) && (is.factor(labels[[idx.labels]]) || is.character(labels[[idx.labels]])))
+    }
     stopifnot(is.logical(keep.intermediate))
     if (is.null(events_sel)) events_sel<-1:nrow(data) ##for downsampling
     if(is.null(analysis_name)) {
@@ -35,7 +43,8 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=
     out$origin<-NULL
     out$data=data
     out$denoised=NULL
-    out$labels<-as.factor(labels)
+    out$labels<-lapply(labels, as.factor)
+    names(out$labels) <- names(labels)
     out$keep<-keep.intermediate
     out$pseudotime<-NULL
     out$filtration<-NULL
@@ -60,9 +69,11 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=
 
 print.tviblindi<-function(x){
     cat("tviblindi object\n",
-        "data size: ",nrow(x$data),"\n",
-        "labels: ", levels(x$labels),"\n"
-        )
+        "data size: ",nrow(x$data),"\n", sep = "")
+    for (idx.labels in 1:length(x$labels)) {
+        cat("labels (", names(labels)[idx.labels], "): ", levels(x$labels[[idx.labels]]),"\n", sep = "")
+    }
+        
 }
 
 Set_origin<-function(x,...){
@@ -75,18 +86,19 @@ Set_origin<-function(x,...){
 #' @param x tviblindi class object
 #' @param label character or integer; either label of population of origin (cell nearest to the mean of the population will be consider as origin)
 #' or index of cell-of-origin.
+#' @param labels_name name of label vector to use (only needs to be specified if multiple label vectors are present in the \code{x} and \code{label} is a string).
 #'
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Set_origin.tviblindi<-function(x,label){
+Set_origin.tviblindi<-function(x,label, labels_name = 'default'){
     stopifnot(length(label)==1)
     if (is.integer(label)){
         x$origin<-label
         return(invisible(x))
     }
     stopifnot(is.character(label))
-    stems<-which(x$labels==label)
+    stems<-which(x$labels[[labels_name]]==label)
     x$origin <- stems[which.min(rowSums(t(t(x$data[stems,]) - colMeans(x$data[stems, ]))^2))]
     return(invisible(x))
 }
@@ -289,6 +301,7 @@ Walks<-function(x,...){
 #' @param K integer (default 30); number of nearest neighbors to computer transition matrix.
 #' @param equinumerous bool (default FALSE); simulate equal number (\code{N} for each) of walks for every potential end (see details).
 #' @param to integer or character vector; indices of cells or label of target population(s) - force choice of ends (see details).
+#' @param labels_name character; name of label vector to use if \code{x} has multiple label vectors and \code{to} is a string.
 #' @param add bool (default FALSE); add the simulated walks to \code{x} instead of replace.
 #' @param kernel character; see \code{knn.adj2spadjsim}.
 #'
@@ -302,7 +315,7 @@ Walks<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL,add=FALSE,kernel="exp"){
+Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL, labels_name = 'default', add=FALSE,kernel="exp"){
     if (length(x$origin)==0) stop("Origin not set!")
     add.walks<-function(x,walks){
         if(is.null(x$walks)) x$walks<-list(starts=NULL,v=NULL)
@@ -332,12 +345,12 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
     fates<-NULL
     if (!is.null(to)){
         if (is.character(to)){
-            to<-to[which(to %in% levels(x$labels))]
+            to<-to[which(to %in% levels(x$labels[[labels_name]]))]
             if (length(to)==0) stop("Populations not in labels!")
             toc<-to
             to<-NULL
             for (tt in toc){
-                p1<-which(x$labels==tt)
+                p1<-which(x$labels[[labels_name]]==tt)
                 to <- c(to,p1[which.min(rowSums(t(t(x$data[p1,]) - colMeans(x$data[p1, ]))^2))])
             }
         }
@@ -422,6 +435,7 @@ DimRed<-function(x,...){
 #' @param t double; time parameter for "diffuse", if \code{t==0} multi-time scale is used (geometric sum).
 #' @param load_model character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied
 #' @param upsample named list \code{list(N=,takeall=)} or \code{NULL};  sample events by labels (involves recomputation of KNN matrix); affects "vaevictis" only; if NULL nothing happens, \code{N} events per label, takes all events from labels in character vector \code{takeall}
+#' @param labels_name name of label vector if one is used for upsampling and \code{x} has mutliple label vectors.
 #'
 #' @details The pathway analysis visualisation benefits from dimensional reductions which are by definition continuous... to be elaborated
 #'
@@ -447,7 +461,8 @@ DimRed.tviblindi <-
              neigen = 2,
              t = 0,
              load_model=NULL,
-             upsample=NULL) {
+             upsample=NULL,
+             labels_name = 'default') {
         
         vae <- NULL
         if (is.null(layout)) {
@@ -459,7 +474,7 @@ DimRed.tviblindi <-
                     vae <- model
                 } else {
                     if (!is.null(upsample)){
-                        if (is.null(upsample$cluster)) labl<-x$labels
+                        if (is.null(upsample$cluster)) labl<-x$labels[[labels_name]]
                         else {
                             message("running clara clustering...")
                             labl<-cluster::clara(x$data,k=upsample$cluster)$clustering
@@ -596,14 +611,16 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
     x$codes<-NULL
     x$sominfo<-NULL
     x$layout<-x$layout[ss,]
-    x$labels<-x$labels[ss]
+    for (idx.labels in 1:length(x$labels)) {
+        x$labels[[idx.labels]]<-x$labels[[idx.labels]][ss]
+    }
     x$data<-x$data[ss,]
     x$events_sel<-x$events_sel[ss]
     return(invisible(x))
 }
 
 ## Already generic
-plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime"),legend="bottomleft",l_cex=0.5,...){
+plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime"),labels_name='default',legend="bottomleft",l_cex=0.5,...){
     if (is.null(x$layout)) stop("Layout not computed!")
     if (col[1]=="pseudotime"){
         if(is.null(x$pseudotime)) stop("Pseudotime not computed!")
@@ -613,10 +630,10 @@ plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime"),legend="bottomle
         col  <- greenred(10500)
         plot(x$layout,col=col[psc],pch=pch,...)
     } else {
-        KK<-length(levels(x$labels))
+        KK<-length(levels(x$labels[[labels_name]]))
         palette(rainbow(KK))
-        plot(x$layout,col=x$labels,pch=pch,...)
-        legend(legend,legend=levels(x$labels),col=1:KK,pch=19,cex=l_cex)
+        plot(x$layout,col=x$labels[[labels_name]],pch=pch,...)
+        legend(legend,legend=levels(x$labels[[labels_name]]),col=1:KK,pch=19,cex=l_cex)
         palette("default")
     }
 }
