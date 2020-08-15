@@ -69,7 +69,7 @@ shiny_ui <- fluidPage(
     column(
       width = 8,
       column(
-        style = 'color:#000052; padding-top:5px; background-color:#fcffd9',
+        style = 'color:#000052; padding-top:15px; background-color:#fcffd9',
         width = 2,
           titlePanel(
             h2(id = 'app_title', HTML('tvi<b>blindi</b>')),
