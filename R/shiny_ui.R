@@ -45,6 +45,11 @@ shiny_ui <- fluidPage(
             font-size: 24px
   ')),
   
+  tags$head(
+    tags$style(HTML('#btn_left_show_gating {background-color:rgba(210,250,250,1)}')),
+    tags$style(HTML('#btn_help {background-color:#ffb5c9}')),
+  ),
+  
   ## MODALS
   shinyBS::bsModal(
     id      = 'modal_layout_gating',
@@ -105,7 +110,12 @@ shiny_ui <- fluidPage(
             )
           ),
           column(
-            width = 4,
+            width = 1,
+            style = 'text-align: left; margin-top: 26px',
+            actionButton('btn_left_show_gating', '', icon = icon('glyphicon glyphicon-fullscreen', lib = 'glyphicon'))
+          ),
+          column(
+            width = 3,
             style = 'text-align: left',
             radioGroupButtons(
               'btn_image_export_format',
@@ -117,8 +127,6 @@ shiny_ui <- fluidPage(
               justified = TRUE, individual = FALSE,
               width = 150
             )
-            # tags$script("$(\"input:radio[name='btn_image_export_format'][value='PNG']\").parent().css('background-color', '#ffffde');"),
-            # tags$script("$(\"input:radio[name='btn_image_export_format'][value='SVG']\").parent().css('background-color', '#ffe8fd');")
           )
         )
       )  
@@ -174,8 +182,7 @@ shiny_ui <- fluidPage(
             width = 8,
             style = 'text-align:    right;
                      padding-bottom: 10px',
-              actionButton('btn_termini_export_image',           '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon')),
-              actionButton('btn_left_show_gating',             '', icon = icon('glyphicon glyphicon-fullscreen', lib = 'glyphicon')),
+              actionButton('btn_termini_export_image',           '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon'))
           ),
           fluidRow(
             h4('Selected terminal nodes'),
