@@ -1213,8 +1213,8 @@ shiny_server <- function(input, output, session) {
     react$tracked_populations_log2_transform <- input$check_tracked_populations_log2_transform
   })
   observe({
-    updateSelectInput(session, 'input_tracked_populations.A', choices = react$labels.aligned)
-    updateSelectInput(session, 'input_tracked_populations.B', choices = react$labels.aligned)
+    updateSelectInput(session, 'input_tracked_populations.A', choices = labels.aligned[[react$labels_name]])
+    updateSelectInput(session, 'input_tracked_populations.B', choices = labels.aligned[[react$labels_name]])
   })
   observeEvent(input$input_tracked_populations.A, {
     react$tracked_populations.A <- input$input_tracked_populations.A
@@ -1237,6 +1237,7 @@ shiny_server <- function(input, output, session) {
       p <- .plot_tracked_populations(react$trajectories_random_walks,
                                      react$trajectories_marked.A,
                                      tv,
+                                     labels_name = react$labels_name,
                                      react$pseudotime,
                                      populations    = react$tracked_populations.A,
                                      n.part         = react$trackers_n_segments,
@@ -1280,6 +1281,7 @@ shiny_server <- function(input, output, session) {
       p <- .plot_tracked_populations(react$trajectories_random_walks,
                                      react$trajectories_marked.B,
                                      tv,
+                                     labels_name = react$labels_name,
                                      react$pseudotime,
                                      populations    = react$tracked_populations.B,
                                      n.part         = react$trackers_n_segments,

@@ -794,6 +794,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 .plot_tracked_populations <- function(walks,
                                       walk_idcs,
                                       tv,
+                                      labels_name,
                                       pseudotime,
                                       populations,
                                       breaks = NULL,
@@ -838,7 +839,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
       which.walks <- unlist(lapply(1:length(walks), function(j) rep(j, length(walks[[j]]))))[inds]
       pts         <- unique(unlist(walks)[unlist(inds)])
-      counts      <- sum(tv$labels[pts] == p)
+      counts      <- sum(tv$labels[[labels_name]][pts] == p)
       if (log2_transform) {
         counts <- log2(counts)
       }
