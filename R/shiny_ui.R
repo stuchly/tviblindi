@@ -138,7 +138,7 @@ shiny_ui <- fluidPage(
         width = 4,
         style = 'text-align:  right;
                padding-right: 25px;
-               margin-top:   20px',
+               margin-top:   26px',
         textOutput(outputId = 'text_analysis_name', inline = TRUE),
         HTML('&nbsp;&nbsp;&nbsp;'),
         actionButton('btn_help', '', icon = icon('question-circle', lib = 'font-awesome'))
