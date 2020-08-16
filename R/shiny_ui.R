@@ -104,7 +104,7 @@ shiny_ui <- fluidPage(
             radioGroupButtons(
               inputId = 'btn_layout_pointsize',
               label = 'POINT SIZE',
-              choiceValues = c(.08, .4, 1.1),
+              choiceValues = c(.01, .4, 1.1),
               choiceNames = c('·', '•', '⚫'),
               status = 'primary'
             )
