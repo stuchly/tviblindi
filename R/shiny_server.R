@@ -1521,4 +1521,14 @@ shiny_server <- function(input, output, session) {
              title = 'Apply log2 transform to sizes of labelled populations for tracking representation of populations along pseudotime progression (good for extremely abundant and rare populations)',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
+  addTooltip(session, 
+             id    = 'btn_trackers_enlarge',
+             title = 'Display larger marker and population trackers for the two groups of simulated walks',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_help',
+             title = 'Show instructions for new users',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
 }

@@ -4,7 +4,6 @@
 require(shiny)
 require(shinyWidgets)
 
-
 shiny_ui <- fluidPage(
   title = 'tviblindi',
   ## CSS tags
@@ -46,8 +45,8 @@ shiny_ui <- fluidPage(
   ')),
   
   tags$head(
-    tags$style(HTML('#btn_left_show_gating {background-color:rgba(210,250,250,1)}')),
-    tags$style(HTML('#btn_help {background-color:#ffb5c9}')),
+    tags$style(HTML('#btn_left_show_gating {background-color:#337ab7; color:white}')),
+    tags$style(HTML('#btn_help {background-color:#337ab7; color:white}')),
   ),
   
   ## MODALS
@@ -64,12 +63,12 @@ shiny_ui <- fluidPage(
     )
   ),
   fluidRow(
-    style = "background:linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(210,250,250,1) 100%)",
+    style = "background:linear-gradient(0deg, rgba(255,255,255,1) 0%, #d6d6d6 100%)",
     ## APP TITLE
     column(
       width = 8,
       column(
-        style = 'color:#000052; padding-top:15px; background-color:#fcffd9',
+        style = 'color:white; padding-top:15px; background-color:#337ab7',
         width = 2,
           titlePanel(
             h2(id = 'app_title', HTML('tvi<b>blindi</b>')),
@@ -122,7 +121,7 @@ shiny_ui <- fluidPage(
               label = 'IMAGE EXPORT',
               choiceValues = c('PNG', 'SVG'),
               choiceNames  = c('PNG', 'SVG'),
-              selected = 'PNG', status = 'info',
+              selected = 'PNG', status = 'primary',
               size = 's', direction = 'horizontal',
               justified = TRUE, individual = FALSE,
               width = 150
@@ -409,7 +408,7 @@ shiny_ui <- fluidPage(
             style = 'text-align:  right;
                      padding-left: 5px;
                      margin-top:   35px',
-            checkboxInput('check_trackers_large_base_size', label = 'Larger text', value = FALSE),
+            checkboxInput('check_trackers_large_base_size', label = 'Larger text', value = FALSE)
           )
         ),
         tabsetPanel(
