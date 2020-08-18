@@ -161,8 +161,8 @@ shiny_ui <- fluidPage(
                 height = 500,
                 brush = brushOpts(
                   id     = 'selector_termini',
-                  fill   = '#4c969c',
-                  stroke = '#4c969c'
+                  fill   = '#0242f2',
+                  stroke = '#0242f2'
                 )
               ),
               color='#1d2c8f'
@@ -270,17 +270,14 @@ shiny_ui <- fluidPage(
         ),
         tabPanel(
           title = 'Zoom',
-          shinycssloaders::withSpinner(
             plotOutput('plot_dendrogram_zoom',
-                       height = 800,
+                       height = 700,
                        brush  = brushOpts(
                          id        = 'selector_dendrogram_zoom',
                          fill      = 'yellow',
                          stroke    = 'yellow',
                          direction = 'y'
                        )),
-            color='#1d2c8f'
-          ),
           column(
             width = 6,
             actionButton('btn_dendrogram_zoom_mark_leaves',                 '', icon = icon('glyphicon glyphicon-plus',       lib = 'glyphicon')),
