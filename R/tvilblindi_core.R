@@ -271,6 +271,20 @@ knn.adj2spadjsim<-function(adj,kernel=c("Exp"),epsilon=NULL){
         mmm<-apply(mm,MARGIN=1,max)
         adj[3,]<-as.numeric(t(t(mm)/mmm))
         adj[3,]<-exp(-adj[3,])
+    }
+     ##METHOD CHANGE
+    if (kernel=="ExpMer") {
+        mm<- matrix(adj[3,],nrow=N)
+        mmm<-apply(mm,MARGIN=1,median)
+        adj[3,]<-as.numeric(t(t(mm)/mmm))
+        adj[3,]<-exp(-adj[3,])
+    }
+    ##METHOD CHANGE
+    if (kernel=="ExpMer2") {
+        mm<- matrix(adj[3,],nrow=N)
+        mmm<-2*apply(mm,MARGIN=1,median)
+        adj[3,]<-as.numeric(t(t(mm)/mmm))
+        adj[3,]<-exp(-adj[3,])
       }
      if (kernel=="SEMr") {
         mm<- matrix(adj[3,],nrow=N)
