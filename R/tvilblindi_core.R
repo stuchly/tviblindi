@@ -279,14 +279,20 @@ knn.adj2spadjsim<-function(adj,kernel=c("Exp"),epsilon=NULL){
         adj[3,]<-exp(-adj[3,])
      }
 
-    ##METHOD CHANGED
+    ##METHOD CHANGE
       if (kernel=="SEMer") {
         mm<- matrix(adj[3,],nrow=N)
         mmm<-apply(mm,MARGIN=1,median)
         adj[3,]<-as.numeric(t(t(mm^2)/mmm))
         adj[3,]<-exp(-adj[3,])
       }
-
+    ##METHOD CHANGE
+      if (kernel=="SEMer2") {
+        mm<- matrix(adj[3,],nrow=N)
+        mmm<-2*apply(mm,MARGIN=1,median)
+        adj[3,]<-as.numeric(t(t(mm^2)/mmm))
+        adj[3,]<-exp(-adj[3,])
+      }
     if (kernel=="ExpSigma"){
          D<- matrix(adj[3,],nrow=N)
          sigmaV<-C_sigma(D,log2(ncol(D)))
