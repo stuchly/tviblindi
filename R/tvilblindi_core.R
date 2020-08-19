@@ -211,6 +211,11 @@ knn.spadj2sym<-function(adj){
     return(adj)
 }
 
+##METHOD CHANGED
+knn.spadj.symmetrize<-function(adj){
+    adj<-(Matrix::t(adj)+adj)/2
+}
+
 knn.adj2spadj<-function(adj){
     N<-max(adj[1,])
     Matrix::sparseMatrix(i=adj[1,],j=adj[2,],x=adj[3,],dims=c(N,N))
@@ -415,6 +420,8 @@ sparse.Laplacian.construct<-function(adj,kernel=c("Exp"),epsilon=NULL){
     return(K)
 
 }
+
+
 
 ## sparse.Laplacian_alpha.construct<-function(adj,alpha=1){
 ##     cat("constructing Laplacian\n")

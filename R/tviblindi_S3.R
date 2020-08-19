@@ -24,7 +24,7 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=
         labels <- list(default = labels)
     } else if (is.list(labels)) {
         stopifnot(!is.null(names(labels)))
-    } 
+    }
     for (idx.labels in 1:length(labels)) {
         stopifnot(length(labels[[idx.labels]])==nrow(data) && (is.factor(labels[[idx.labels]]) || is.character(labels[[idx.labels]])))
     }
@@ -73,7 +73,7 @@ print.tviblindi<-function(x){
     for (idx.labels in 1:length(x$labels)) {
         cat("labels (", names(labels)[idx.labels], "): ", levels(x$labels[[idx.labels]]),"\n", sep = "")
     }
-        
+
 }
 
 Set_origin<-function(x,...){
@@ -276,7 +276,9 @@ Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-6,kernel="Ex
     d<-KofRawN(x$KNN,K)
     d  <- knn.raw2adj(d)
     dsym <- knn.spadj2sym(knn.adj2spadj(d))
-    sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    ## sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    ##METHOD CHANGED
+    sim <- knn.spadj.symmetrize(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     x$pseudotime  <- assign_distance(sim, x$origin,weights = dsym,nb_it=nb_it,iguess=iguess,eps=eps)
     cat("Pseudotime error:", x$pseudotime$error, "\n")
     if (x$keep) {
@@ -315,7 +317,7 @@ Walks<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL, labels_name = 'default', add=FALSE,kernel="exp"){
+Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL, labels_name = 'default', add=FALSE,kernel="Exp",kepsilon=NULL){
     if (length(x$origin)==0) stop("Origin not set!")
     add.walks<-function(x,walks){
         if(is.null(x$walks)) x$walks<-list(starts=NULL,v=NULL)
@@ -326,8 +328,9 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
     d<-KofRawN(x$KNN,K)
     d  <- knn.raw2adj(d)
     if (x$keep) x$dsym <- knn.spadj2sym(knn.adj2spadj(d))
-
-    sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel))
+    ##METHOD CHANGED
+    ## sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    sim <- knn.spadj.symmetrize(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     if (x$keep) x$sim<-sim
     oriented.sparseMatrix <- orient.sim.matrix(sim, x$pseudotime, breaks = breaks, base = base)
 
@@ -463,7 +466,7 @@ DimRed.tviblindi <-
              load_model=NULL,
              upsample=NULL,
              labels_name = 'default') {
-        
+
         vae <- NULL
         if (is.null(layout)) {
             if (method[1] == "vaevictis") {
@@ -523,8 +526,8 @@ DimRed.tviblindi <-
                     #x$vae_structure<-list(config=layout[[3]]$get_config(),weights=layout[[3]]$get_weights())
                     layout <- layout[[2]](x$data)
                 }
-                
-                
+
+
             } else if (method[1] == "diffuse") {
                 if (is.null(x$KNN)) stop("Compute KNN graph first.")
                 layout<-sparse.diffuse(
@@ -532,7 +535,7 @@ DimRed.tviblindi <-
                     neigen = neigen,
                     t = t
                 )$X
-                
+
             } else if (method[1]=="umap"){
                 if (!require(umap)) stop("install umap first")
                 layout<-umap::umap(x$data)$layout
@@ -540,7 +543,7 @@ DimRed.tviblindi <-
                 message("Unimplemented method. Nothing done.")
             }
         }
-        
+
         if (is.null(x$layout)) {
             x$layout <- list(layout)
             names(x$layout) <- paste0('1_', method[1])
@@ -549,7 +552,7 @@ DimRed.tviblindi <-
             x$layout <- c(x$layout, list(layout))
             names(x$layout)[idx.layout] <- paste0(idx.layout, '_', method[1])
         }
-        
+
         return(invisible(x))
     }
 
