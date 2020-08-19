@@ -300,7 +300,7 @@ knn.adj2spadjsim<-function(adj,kernel=c("Exp"),epsilon=NULL){
     ##METHOD CHANGE
       if (kernel=="SEMer") {
         mm<- matrix(adj[3,],nrow=N)
-        mmm<-apply(mm,MARGIN=1,median)
+        mmm<-apply(mm,MARGIN=1,median)^2
         adj[3,]<-as.numeric(t(t(mm^2)/mmm))
         adj[3,]<-exp(-adj[3,])
       }
