@@ -250,7 +250,11 @@ knn.adj2spadjsim<-function(adj,kernel=c("Exp"),epsilon=NULL){
         if (is.null(epsilon)) epsilon<-2*median(adj[3,])^2 ## underestimating epsilon - sample!
         adj[3,]<-exp(-adj[3,]^2/epsilon)
     }
-
+    ##METHOD CHANGE
+    if (kernel=="SE0") {
+        if (is.null(epsilon)) epsilon<-median(adj[3,]) ## underestimating epsilon - sample!
+        adj[3,]<-exp(-adj[3,]^2/epsilon)
+    }
     if (kernel=="Lap") {
         if (is.null(epsilon)) epsilon<-median(adj[3,]) ## underestimating epsilon - sample!
         adj[3,]<-exp(-adj[3,]/epsilon)
@@ -300,10 +304,18 @@ knn.adj2spadjsim<-function(adj,kernel=c("Exp"),epsilon=NULL){
         adj[3,]<-as.numeric(t(t(mm^2)/mmm))
         adj[3,]<-exp(-adj[3,])
       }
+
+    ##METHOD CHANGE
+      if (kernel=="SEMer0") {
+        mm<- matrix(adj[3,],nrow=N)
+        mmm<-apply(mm,MARGIN=1,median)
+        adj[3,]<-as.numeric(t(t(mm)/mmm))
+        adj[3,]<-exp(-adj[3,])
+      }
     ##METHOD CHANGE
       if (kernel=="SEMer2") {
         mm<- matrix(adj[3,],nrow=N)
-        mmm<-2*apply(mm,MARGIN=1,median)
+        mmm<-2*(apply(mm,MARGIN=1,median)^2)
         adj[3,]<-as.numeric(t(t(mm^2)/mmm))
         adj[3,]<-exp(-adj[3,])
       }
