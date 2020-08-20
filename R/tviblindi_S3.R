@@ -278,7 +278,7 @@ Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-6,kernel="Ex
     dsym <- knn.spadj2sym(knn.adj2spadj(d))
     ## sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     ##METHOD CHANGED
-    sim <- knn.spadj.symmetrize(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    sim <- knn.spadj.symmetrize.P(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     x$pseudotime  <- assign_distance(sim, x$origin,weights = dsym,nb_it=nb_it,iguess=iguess,eps=eps)
     cat("Pseudotime error:", x$pseudotime$error, "\n")
     if (x$keep) {
@@ -330,7 +330,7 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
     if (x$keep) x$dsym <- knn.spadj2sym(knn.adj2spadj(d))
     ##METHOD CHANGED
     ## sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
-    sim <- knn.spadj.symmetrize(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    sim <- knn.spadj.symmetrize.P(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     if (x$keep) x$sim<-sim
     oriented.sparseMatrix <- orient.sim.matrix(sim, x$pseudotime, breaks = breaks, base = base)
 

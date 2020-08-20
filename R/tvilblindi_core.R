@@ -216,6 +216,14 @@ knn.spadj.symmetrize<-function(adj){
     adj<-(Matrix::t(adj)+adj)/2
 }
 
+##METHOD CHANGED
+knn.spadj.symmetrize.P<-function(adj){
+    .D<-Matix::Diagonal(x=1/Matrix::rowSums(adj))
+    adj<-D%*%adj
+    adj<-Matrix::t(adj)+adj-adj*Matrix::t(adj)
+}
+
+
 knn.adj2spadj<-function(adj){
     N<-max(adj[1,])
     Matrix::sparseMatrix(i=adj[1,],j=adj[2,],x=adj[3,],dims=c(N,N))
