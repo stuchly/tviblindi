@@ -324,7 +324,7 @@ Walks<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL, labels_name = 'default', add=FALSE,kernel="Exp",kepsilon=NULL,sym="mean"){
+Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL, labels_name = 'default', add=FALSE,kernel="Exp",kepsilon=NULL,sym="none"){
     if (length(x$origin)==0) stop("Origin not set!")
     add.walks<-function(x,walks){
         if(is.null(x$walks)) x$walks<-list(starts=NULL,v=NULL)
@@ -343,6 +343,8 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
         sim <- knn.spadj.symmetrize.P(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     else if (sym=="max")
         sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    else if (sym=="none")
+        sim <- knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon)
     else stop("symmetrisation not implemented")
 
     if (x$keep) x$sim<-sim
