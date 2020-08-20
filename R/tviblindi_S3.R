@@ -276,6 +276,7 @@ Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-6,kernel="Ex
     d<-KofRawN(x$KNN,K)
     d  <- knn.raw2adj(d)
     dsym <- knn.spadj2sym(knn.adj2spadj(d))
+    DD<<-dsym
     ## sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     ##METHOD CHANGED
     if (sym=="mean")
@@ -284,9 +285,10 @@ Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-6,kernel="Ex
         sim <- knn.spadj.symmetrize.P(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     else if (sym=="max")
         sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
-    else if (sym=="min")
+    else if (sym=="min"){
+        d<-t(summary(dsym))
         sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon),mode="min")
-    else stop("symmetrisation not implemented")
+    } else stop("symmetrisation not implemented")
 
     x$pseudotime  <- assign_distance(sim, x$origin,weights = dsym,nb_it=nb_it,iguess=iguess,eps=eps)
     cat("Pseudotime error:", x$pseudotime$error, "\n")
