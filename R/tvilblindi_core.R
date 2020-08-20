@@ -219,7 +219,7 @@ knn.spadj.symmetrize<-function(adj){
 ##METHOD CHANGED
 knn.spadj.symmetrize.P<-function(adj){
     .D<-Matrix::Diagonal(x=1/Matrix::rowSums(adj))
-    adj<-D %*% adj
+    adj<- .D %*% adj
     adj<-Matrix::t(adj)+adj-adj*Matrix::t(adj)
 }
 
