@@ -287,7 +287,7 @@ Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-6,kernel="Ex
         sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     else if (sym=="min"){
         d<-t(summary(dsym))
-        sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon),mode="min")
+        sim <- knn.adj2spadjsim1(d, kernel = kernel,epsilon=kepsilon)
     } else stop("symmetrisation not implemented")
 
     x$pseudotime  <- assign_distance(sim, x$origin,weights = dsym,nb_it=nb_it,iguess=iguess,eps=eps)
