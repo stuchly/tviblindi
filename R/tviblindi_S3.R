@@ -347,8 +347,9 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
         sim <- knn.spadj.symmetrize.P(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     else if (sym=="max")
         sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
-    else if (sym=="min")
-        sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon),mode="min")
+    else if (sym=="min"){
+        d<-t(summary(dsym))
+        sim <- knn.adj2spadjsim1(d, kernel = kernel,epsilon=kepsilon)
     else if (sym=="none")
         sim <- knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon)
     else stop("symmetrisation not implemented")
