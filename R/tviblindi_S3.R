@@ -266,7 +266,7 @@ Pseudotime<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-6,kernel="Exp",kepsilon=NULL){
+Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-6,kernel="Exp",kepsilon=NULL,sym="mean"){
     stopifnot(!is.null(x$origin))
     if (length(x$origin)==0) stop("Origin not set!")
     if (K>dim(x$KNN$IND)[2]){
@@ -278,7 +278,14 @@ Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-6,kernel="Ex
     dsym <- knn.spadj2sym(knn.adj2spadj(d))
     ## sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     ##METHOD CHANGED
-    sim <- knn.spadj.symmetrize.P(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    if (sym=="mean")
+        sim <- knn.spadj.symmetrize(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    else if (sym=="prob")
+        sim <- knn.spadj.symmetrize.P(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    else if (sym=="max")
+        sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    else stop("symmetrisation not implemented")
+
     x$pseudotime  <- assign_distance(sim, x$origin,weights = dsym,nb_it=nb_it,iguess=iguess,eps=eps)
     cat("Pseudotime error:", x$pseudotime$error, "\n")
     if (x$keep) {
@@ -317,7 +324,7 @@ Walks<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL, labels_name = 'default', add=FALSE,kernel="Exp",kepsilon=NULL){
+Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL, labels_name = 'default', add=FALSE,kernel="Exp",kepsilon=NULL,sym="mean"){
     if (length(x$origin)==0) stop("Origin not set!")
     add.walks<-function(x,walks){
         if(is.null(x$walks)) x$walks<-list(starts=NULL,v=NULL)
@@ -330,7 +337,14 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
     if (x$keep) x$dsym <- knn.spadj2sym(knn.adj2spadj(d))
     ##METHOD CHANGED
     ## sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
-    sim <- knn.spadj.symmetrize.P(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    if (sym=="mean")
+        sim <- knn.spadj.symmetrize(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    else if (sym=="prob")
+        sim <- knn.spadj.symmetrize.P(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    else if (sym=="max")
+        sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
+    else stop("symmetrisation not implemented")
+
     if (x$keep) x$sim<-sim
     oriented.sparseMatrix <- orient.sim.matrix(sim, x$pseudotime, breaks = breaks, base = base)
 
