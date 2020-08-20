@@ -204,8 +204,8 @@ knn.spadj.construct<-function(XX,K,metric="euclid"){
 #' isSymmetric(sim) # TRUE
 #'
 #' @export
-knn.spadj2sym<-function(adj){
-    g1<-igraph::graph_from_adjacency_matrix(adj,weighted=TRUE,mode="max")
+knn.spadj2sym<-function(adj,mode="max"){
+    g1<-igraph::graph_from_adjacency_matrix(adj,weighted=TRUE,mode=mode)
 
     adj<-igraph::as_adjacency_matrix(g1,attr="weight")
     return(adj)
