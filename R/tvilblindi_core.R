@@ -259,6 +259,8 @@ knn.adj2maxgraph<-function(adj,mode="max"){
 knn.adj2spadjsim<-function(adj,kernel=c("Exp"),epsilon=NULL){
     N<-max(adj[1,])
 
+    if (!(kernel %in% c("SE","SE0","Lap","Exp","ExpM","ExpMr","ExpMer","ExpMer2","SEMr",
+                        "SEMer","SEMer0","SEMer2","ExpSigma"))) stop("kernel not implemented")
     if (kernel=="SE") {
         if (is.null(epsilon)) epsilon<-2*median(adj[3,])^2 ## underestimating epsilon - sample!
         adj[3,]<-exp(-adj[3,]^2/epsilon)
@@ -366,32 +368,8 @@ knn.adj2spadjsim<-function(adj,kernel=c("Exp"),epsilon=NULL){
 #'
 #' @export
 knn.adj2spadjsim1<-function(adj,kernel=c("Exp"),epsilon=NULL){
-    N<<-max(adj[1,])
-
-    if (kernel=="SE") {
-        if (is.null(epsilon)) epsilon<-2*median(adj[3,])^2 ## underestimating epsilon - sample!
-        adj[3,]<-exp(-adj[3,]^2/epsilon)
-    }
-    ##METHOD CHANGE
-    if (kernel=="SE0") {
-        if (is.null(epsilon)) epsilon<-median(adj[3,]) ## underestimating epsilon - sample!
-        adj[3,]<-exp(-adj[3,]^2/epsilon)
-    }
-    if (kernel=="Lap") {
-        if (is.null(epsilon)) epsilon<-median(adj[3,]) ## underestimating epsilon - sample!
-        adj[3,]<-exp(-adj[3,]/epsilon)
-    }
-
-    if (kernel=="Exp") {
-        if (is.null(epsilon)) epsilon<-2*median(adj[3,])^2 ## underestimating epsilon - sample!
-        adj[3,]<-exp(-adj[3,]/epsilon)
-    }
-
-      if (kernel=="ExpM") {
-        if (is.null(epsilon)) epsilon<-max(adj[3,]) ## underestimating epsilon - sample!
-        adj[3,]<-exp(-adj[3,]/epsilon)
-      }
-
+    N<-max(adj[1,])
+    if (!(kernel %in% c("ExpMr","ExpMer","ExpMer2","SEMr","SEMer","SEMer0","SEMer2"))) stop("kernel not implemented")
     if (kernel=="ExpMr") {
         adj_s<-summary(Matrix::sparseMatrix(i=adj[1,],j=adj[2,],x=adj[3,],dims=c(N,N)))
         i_list<-split(1:nrow(adj_s),as.integer(adj_s[,1]))
@@ -442,9 +420,9 @@ knn.adj2spadjsim1<-function(adj,kernel=c("Exp"),epsilon=NULL){
 
       if (kernel=="SEMer") {
         adj_s<-summary(Matrix::sparseMatrix(i=adj[1,],j=adj[2,],x=adj[3,],dims=c(N,N)))
-        i_list<<-split(1:nrow(adj_s),as.integer(adj_s[,1]))
+        i_list<-split(1:nrow(adj_s),as.integer(adj_s[,1]))
 
-        mmm<<-lapply(1:N,FUN=function(i,adj_s,i_list) median(adj_s[i_list[[i]],3]),i_list=i_list,adj_s=adj_s)
+        mmm<-lapply(1:N,FUN=function(i,adj_s,i_list) median(adj_s[i_list[[i]],3]),i_list=i_list,adj_s=adj_s)
         adj[3,]<-unlist(lapply(1:N,FUN=function(i,i_list,mmm) adj_s[i_list[[i]],3]/mmm[[i]],i_list=i_list,mmm=mmm))
 
         adj[3,]<-exp(-adj[3,]^2)
