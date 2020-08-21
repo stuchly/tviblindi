@@ -71,7 +71,7 @@ print.tviblindi<-function(x){
     cat("tviblindi object\n",
         "data size: ",nrow(x$data),"\n", sep = "")
     for (idx.labels in 1:length(x$labels)) {
-        cat("labels (", names(labels)[idx.labels], "): ", levels(x$labels[[idx.labels]]),"\n", sep = "")
+        cat("labels (", names(labels)[idx.labels], "): ", paste(levels(x$labels[[idx.labels]]),collapse=", "),"\n", sep = "")
     }
 
 }
