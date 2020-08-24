@@ -130,6 +130,15 @@ shiny_server <- function(input, output, session) {
     layout[[idx.layout]][, 2] <- layout[[idx.layout]][, 2] - min(layout[[idx.layout]][, 2]); layout[[idx.layout]][, 2] <- layout[[idx.layout]][, 2] / max(layout[[idx.layout]][, 2])
   }
   
+  # Compute pseudotime colouring
+  psc   <- as.numeric(as.factor(tv$pseudotime$res))
+  psc   <- psc / max(psc)
+  psc   <- psc * 10000 + 1
+  pal.hex  <- gplots::colorpanel(10500, low = 'yellow', mid = 'brown', high = 'red')
+  pal.rgba <- col2rgb(pal.hex, alpha = 0.7)
+  cols <- pal.hex[psc]
+  cols_as_matrix <- pal.rgba[, psc]
+  
   layout.df <- lapply(layout, function(l) data.frame(l) %>% setNames(c('X', 'Y'))) # for compatibility with brushOpts
   names(layout.df) <- names(layout)
   
@@ -190,6 +199,9 @@ shiny_server <- function(input, output, session) {
   if (!is.null(tv$analysis_name)) {
     output$text_analysis_name <- renderText(if (tv$analysis_name != FALSE) { tv$analysis_name } else { 'Untitled tviblindi analysis' })
   }
+  if (!is.null(tv$fcs)) {
+    output$text_fcs_name <- renderText(paste0('Linked to FCS file: ', tv$fcs))
+  }
   observeEvent(input$btn_help, {
     showModal(modalDialog(
       title = HTML('<h3>How to use the <i>tviblindi</i> Shiny interface</h3>'),
@@ -222,11 +234,6 @@ shiny_server <- function(input, output, session) {
   ## Terminal nodes picker
   # Layout
   output$plot_termini <- renderPlot({
-    # Compute pseudotime colouring
-    psc   <- as.numeric(as.factor(react$pseudotime$res))
-    psc   <- psc / max(psc)
-    psc   <- psc * 10000 + 1
-    cols  <- gplots::colorpanel(10500, low = 'yellow', mid = 'brown', high = 'red')[psc]
     
     if (react$image_export.termini) {
       if (react$image_export_format == 'SVG') {
@@ -235,39 +242,77 @@ shiny_server <- function(input, output, session) {
         png(filename = paste0('Termini_', Sys.time(), '.png'), width = 1000, height = 900)
       }
       par(mar = c(0, 0, 0, 0))
-    }
-    
-    par(mar = c(1, 1, 1, 1))
-    
-    if (react$image_export.termini) {
-      if (react$image_export_format == 'SVG') {
-        svg(filename = paste0('Termini_', Sys.time(), '.svg'))
-      } else {
-        png(filename = paste0('Termini_', Sys.time(), '.png'), width = 1000, height = 900)
+      layout.raster <- scattermore(
+          xy = layout[[react$layout_name]],
+          cex = react$layout_pointsize,
+          rgba = cols_as_matrix,
+          xlim = c(0, 1.2),
+          ylim = c(0, 1)
+      )
+      plot(layout.raster)
+      layout.raster.origin <- scattermore(
+        xy = layout[[react$layout_name]][tv$origin, , drop = FALSE],
+        cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 },
+        rgba = col2rgb('purple', alpha = .75),
+        xlim = c(0, 1.2),
+        ylim = c(0, 1)
+      )
+      layout.raster.termini <- scattermore(
+        xy = layout[[react$layout_name]][termini.unique, , drop = FALSE],
+        cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 },
+        rgba = col2rgb('grey', alpha = .75),
+        xlim = c(0, 1.2),
+        ylim = c(0, 1)
+      )
+      plot(layout.raster.origin, add = TRUE)
+      plot(layout.raster.termini, add = TRUE)
+      if (tv$ShowAllFates) {
+        layout.raster.fates <- scattermore(
+          xy = layout[[react$layout_name]][unique(tv$states), , drop = FALSE],
+          cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 },
+          rgba = col2rgb('grey', alpha = .75),
+          xlim = c(0, 1.2),
+          ylim = c(0, 1)
+        )
+        plot(layout.raster.fates, add = TRUE)
       }
-      par(mar = c(0, 0, 0, 0))
+    } else {
+      par(mar = c(1, 1, 1, 1))
+      plot(
+        layout[[react$layout_name]],
+        col = scales::alpha(cols, .7),
+        axes = FALSE, xlab = '', ylab = '',
+        pch = if (react$layout_pointsize < 0.5) { 16 } else { 20 },
+        cex = if (react$image_export.termini && react$image_export_format != 'SVG') { react$layout_pointsize + .3 } else { react$layout_pointsize },
+        xlim = c(0, 1.2), ylim = c(0, 1)
+      )
+      # Plot origin and terminal nodes
+      points(
+        layout[[react$layout_name]][tv$origin, , drop = FALSE],
+        col = scales::alpha('purple', .75),
+        cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 },
+        pch = 15
+      )
+      if (!is.null(tv$ShowAllFates) && tv$ShowAllFates) {
+        points(
+          layout[[react$layout_name]][unique(tv$states), , drop = FALSE],
+          col = scales::alpha('grey', .75),
+          cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 3 } else { 1.5 },
+          pch = 20
+        )
+      }
+      points(
+        layout[[react$layout_name]][termini.unique, , drop = FALSE],
+        col = scales::alpha('black', .5),
+        cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 },
+        pch = 20
+      )
     }
     
-    plot(layout[[react$layout_name]], col = scales::alpha(cols, .7), axes = FALSE, xlab = '', ylab = '', pch = if (react$layout_pointsize < 0.5) { 16 } else { 20 },
-         cex = if (react$image_export.termini && react$image_export_format != 'SVG') { react$layout_pointsize + .3 } else { react$layout_pointsize },
-         xlim = c(0, 1.2), ylim = c(0, 1))
     rasterImage(as.raster(matrix(colorRampPalette(c('yellow', 'brown', 'red'))(20), nc = 1)), 1.07, 0, 1.1, 0.9)
     text(x = 1.15, y = seq(0.01, 0.89, l = 3), labels = c('late', 'mid', 'early'))
     text(x = 1.10, y = 0.98, labels = 'PSEUDOTIME', font = 2)
-    # Plot origin and terminal nodes
-    points(layout[[react$layout_name]][tv$origin, 1], layout[[react$layout_name]][tv$origin, 2], col = scales::alpha('purple', .75), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 }, pch = 15)
-    if (!is.null(tv$ShowAllFates) && tv$ShowAllFates) {
-      if (length(unique(tv$fates)) == 1) {
-        points(layout[[react$layout_name]][unique(tv$states), 1], layout[[react$layout_name]][unique(tv$fates), 2], col = scales::alpha('grey', .75), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 3 } else { 1.5 }, pch = 20)
-      } else {
-        points(layout[[react$layout_name]][unique(tv$fates), ], col = scales::alpha('grey', .75), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 3 } else { 1.5 }, pch = 20)
-      }
-    }
-    if (length(termini.unique) == 1) {
-      points(layout[[react$layout_name]][termini.unique, 1], layout[[react$layout_name]][termini.unique, 2], col = scales::alpha('black', .5), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 }, pch = 20)
-    } else {
-      points(layout[[react$layout_name]][termini.unique, ], col = scales::alpha('black', .5), cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 }, pch = 20)
-    }
+    
     if (react$image_export.termini) {
       dev.off()
       react$image_export.termini <- FALSE
@@ -318,31 +363,46 @@ shiny_server <- function(input, output, session) {
   })
   
   ## Gating layout pop-up
-  output$plot_gating_layout <- renderPlot({
+  output$plot_gating_layout <- output$plot_gating_termini_layout <- renderPlot({
     gating_layout.colours <- gating_colour_vectors[[react$labels_name]]
     pch <- rep(20, length(labels[[react$labels_name]])) # symbols (can be set to different for each population here)
     par(xpd = TRUE, mar = c(2, 2, 2, 50))
+    layout.raster <- scattermore(
+      xy = layout[[react$layout_name]],
+      cex = rep(react$layout_pointsize * 2 + .8, nrow(layout[[react$layout_name]])),
+      rgba = col2rgb(gating_colour_vectors[[react$labels_name]], alpha = 0.4),
+      size = c(900, 900),
+      xlim = c(0, 1),
+      ylim = c(0, 1)
+    )
+    plot(layout.raster)
     
-    # Plot ungated events distinctly
-    which.ungated <- which(labels.aligned[[react$labels_name]] %in% c('ungated', '*ungated*'))
-    if (length(which.ungated) == 1) {
-      label.ungated                  <- labels.aligned[[react$labels_name]][which.ungated]
-      idcs.ungated                   <- which(labels[[react$labels_name]] == label.ungated)
-      colours.aligned[[react$labels_name]][which.ungated] <- gating_colour_vectors[[react$labels_name]][idcs.ungated] <- 'black'
-      plot(layout[[react$layout_name]][idcs.ungated, ], col = scales::alpha('black', .4), axes = FALSE, xlab = '', ylab = '', pch = '.', cex = react$layout_pointsize * 2 + .8, xlim = c(0, 1), ylim = c(0, 1))
-      points(layout[[react$layout_name]][-idcs.ungated, 1], layout[[react$layout_name]][-idcs.ungated, 2], col = scales::alpha(gating_colour_vectors[[react$labels_name]][-idcs.ungated], 0.4), pch = 20, cex = react$layout_pointsize * 2 + .8)
-    } else {
-      plot(layout[[react$layout_name]], col = scales::alpha(gating_colour_vectors[[react$labels_name]], .35), axes = FALSE, xlab = '', ylab = '', pch = 20, cex = react$layout_pointsize * 2 + .8, xlim = c(0, 1), ylim = c(0, 1))
-    }
-    # Plot origin and terminal nodes
-    points(layout[[react$layout_name]][tv$origin, 1], layout[[react$layout_name]][tv$origin, 2], col = scales::alpha('yellow', .75), cex = 3, pch = 15)
-    if (length(termini.unique) == 1) {
-      points(layout[[react$layout_name]][termini.unique, 1], layout[[react$layout_name]][termini.unique, 2], col = scales::alpha('purple', .75), cex = 3, pch = 20)
-    } else {
-      points(layout[[react$layout_name]][termini.unique, ], col = scales::alpha('purple', .75), cex = 3, pch = 20)
-    }
-    # Plot legend for gates colouring
-    legend(x = 1.08, y = 1, legend = labels.aligned[[react$labels_name]], fill = colours.aligned[[react$labels_name]], cex = 1.5, bty = 'n')
+    layout.raster.origin <- scattermore(
+      layout[[react$layout_name]][tv$origin, , drop = FALSE],
+      rgba = col2rgb('#ded00b', alpha = 1),
+      cex = 8,
+      size = c(900, 900),
+      xlim = c(0, 1),
+      ylim = c(0, 1)
+    )
+    layout.raster.termini <- scattermore(
+      layout[[react$layout_name]][termini.unique, , drop = FALSE],
+      rgba = col2rgb(rep('#525252', length(termini.unique)), alpha = 1),
+      cex = 8,
+      size = c(900, 900),
+      xlim = c(0, 1),
+      ylim = c(0, 1)
+    )
+    suppressWarnings(plot(layout.raster.origin, add = TRUE))
+    suppressWarnings(plot(layout.raster.termini, add = TRUE))
+    par(mfrow = c(1, 1))
+    suppressWarnings(legend(
+      x = 965, y = 825,
+      legend = labels.aligned[[react$labels_name]],
+      fill = colours.aligned[[react$labels_name]],
+      cex = 1.5,
+      bty = 'n'
+    ))
   })
   
   ## Homology class picker (persistence)
@@ -883,12 +943,12 @@ shiny_server <- function(input, output, session) {
                               pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
                               pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { react$pseudotime },
                               highlight_in_background = react$layout_trajectories_highlight_in_background,
-                              selected_trajectory_points = react$selected_trajectory_points,)
+                              selected_trajectory_points = react$selected_trajectory_points)
       dev.off()
       react$image_export.trajectories <- FALSE
     } else {
       par(mar = c(0, 0, 0, 0))
-      if (!is.null(react$layout_name) && !is.null(react$layout_pointsize) && !is.null(layout[[react$layout_name]])) {
+      if (!is.null(react$layout_name) && !is.null(layout[[react$layout_name]])) {
         .plot_trajectories(layout[[react$layout_name]],
                            react$trajectories_random_walks,
                            react$trajectories_marked.A,
@@ -897,7 +957,7 @@ shiny_server <- function(input, output, session) {
                            pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
                            pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { react$pseudotime },
                            highlight_in_background = react$layout_trajectories_highlight_in_background, selected_trajectory_points = react$selected_trajectory_points,
-                           pointsize = react$layout_pointsize + .7)
+                           pointsize = 1)
       }
       
     }
@@ -1346,6 +1406,11 @@ shiny_server <- function(input, output, session) {
   )
   addTooltip(session, 
              id    = 'btn_left_show_gating',
+             title = 'Show layout with labelled populations',
+             trigger = 'hover',     options = list(delay = list(show=500))
+  )
+  addTooltip(session, 
+             id    = 'btn_termini_show_gating',
              title = 'Show layout with labelled populations',
              trigger = 'hover',     options = list(delay = list(show=500))
   )

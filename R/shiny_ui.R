@@ -34,6 +34,11 @@ shiny_ui <- fluidPage(
           width: 1850px
        }
   ')),
+  tags$head(
+    tags$style('#modal_layout_gating_termini .modal-lg {
+          width: 1850px
+       }
+  ')),
   
   tags$head(
     tags$style('
@@ -57,6 +62,18 @@ shiny_ui <- fluidPage(
     trigger = 'btn_left_show_gating',
     shinycssloaders::withSpinner(
       plotOutput('plot_gating_layout',
+                 width  = '1800px',
+                 height = '950px'),
+      color='#1d2c8f'
+    )
+  ),
+  shinyBS::bsModal(
+    id      = 'modal_layout_gating_termini',
+    size    = 'large',
+    title   = '2-dimensional layout with annotated populations',
+    trigger = 'btn_termini_show_gating',
+    shinycssloaders::withSpinner(
+      plotOutput('plot_gating_termini_layout',
                  width  = '1800px',
                  height = '950px'),
       color='#1d2c8f'
@@ -136,12 +153,24 @@ shiny_ui <- fluidPage(
       style = 'color:#000052',
       column(
         width = 4,
-        style = 'text-align:  right;
+        column(
+          width = 11,
+          style = 'text-align:  right;
                padding-right: 25px;
-               margin-top:   26px',
-        textOutput(outputId = 'text_analysis_name', inline = TRUE),
-        HTML('&nbsp;&nbsp;&nbsp;'),
-        actionButton('btn_help', '', icon = icon('question-circle', lib = 'font-awesome'))
+               margin-top:   26px;
+               font-weight: bold',
+          textOutput(outputId = 'text_analysis_name', inline = TRUE),
+          br(),
+          textOutput(outputId = 'text_fcs_name', inline = TRUE),
+        ),
+        column(
+          width = 1,
+          style = 'text-align:  right;
+               padding-right: 25px;
+               margin-top:   26px;
+               font-weight: bold',
+          actionButton('btn_help', '', icon = icon('question-circle', lib = 'font-awesome'))
+        )
       )
     )
   ),
@@ -182,6 +211,7 @@ shiny_ui <- fluidPage(
             width = 8,
             style = 'text-align:    right;
                      padding-bottom: 10px',
+            actionButton('btn_termini_show_gating', '', icon = icon('glyphicon glyphicon-fullscreen', lib = 'glyphicon')),
             actionButton('btn_termini_export_image',           '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon'))
           ),
           fluidRow(
