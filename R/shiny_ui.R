@@ -68,11 +68,12 @@ shiny_ui <- fluidPage(
     column(
       width = 8,
       column(
+        align = 'center',
         style = 'color:white; padding-top:15px; background-color:#337ab7',
         width = 2,
-          titlePanel(
-            h2(id = 'app_title', HTML('tvi<b>blindi</b>')),
-            windowTitle = 'tviblindi'
+        titlePanel(
+          h2(id = 'app_title', HTML('tvi<b>blindi</b>')),
+          windowTitle = 'tviblindi'
         )
       ),
       column(
@@ -103,8 +104,8 @@ shiny_ui <- fluidPage(
             radioGroupButtons(
               inputId = 'btn_layout_pointsize',
               label = 'POINT SIZE',
-              choiceValues = c(.01, .4, 1.1),
-              choiceNames = c('·', '•', '⚫'),
+              choiceValues = c(.065, .4, 1.1),
+              choiceNames = c('S', 'M', 'L'),
               status = 'primary'
             )
           ),
@@ -181,7 +182,7 @@ shiny_ui <- fluidPage(
             width = 8,
             style = 'text-align:    right;
                      padding-bottom: 10px',
-              actionButton('btn_termini_export_image',           '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon'))
+            actionButton('btn_termini_export_image',           '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon'))
           ),
           fluidRow(
             h4('Selected terminal nodes'),
@@ -239,14 +240,14 @@ shiny_ui <- fluidPage(
         tabPanel(
           title = 'Whole dendrogram',
           fluidRow(
-              plotOutput('plot_dendrogram',
-                         height = 700,
-                         brush  = brushOpts(
-                           id        = 'selector_dendrogram',
-                           fill      = 'yellow',
-                           stroke    = 'yellow',
-                           direction = 'y'
-                         ))
+            plotOutput('plot_dendrogram',
+                       height = 700,
+                       brush  = brushOpts(
+                         id        = 'selector_dendrogram',
+                         fill      = 'yellow',
+                         stroke    = 'yellow',
+                         direction = 'y'
+                       ))
           ),
           column(
             width = 8,
@@ -270,14 +271,14 @@ shiny_ui <- fluidPage(
         ),
         tabPanel(
           title = 'Zoom',
-            plotOutput('plot_dendrogram_zoom',
-                       height = 700,
-                       brush  = brushOpts(
-                         id        = 'selector_dendrogram_zoom',
-                         fill      = 'yellow',
-                         stroke    = 'yellow',
-                         direction = 'y'
-                       )),
+          plotOutput('plot_dendrogram_zoom',
+                     height = 700,
+                     brush  = brushOpts(
+                       id        = 'selector_dendrogram_zoom',
+                       fill      = 'yellow',
+                       stroke    = 'yellow',
+                       direction = 'y'
+                     )),
           column(
             width = 6,
             actionButton('btn_dendrogram_zoom_mark_leaves',                 '', icon = icon('glyphicon glyphicon-plus',       lib = 'glyphicon')),
@@ -433,15 +434,15 @@ shiny_ui <- fluidPage(
               )
             ),
             fluidRow(
-                plotOutput(
-                  'plot_tracked_markers.A',
-                  height = 500,
-                  brush = brushOpts(
-                    id     = 'selector_tracked_markers.A',
-                    fill   = 'red',
-                    stroke = 'red'
-                  )
+              plotOutput(
+                'plot_tracked_markers.A',
+                height = 500,
+                brush = brushOpts(
+                  id     = 'selector_tracked_markers.A',
+                  fill   = 'red',
+                  stroke = 'red'
                 )
+              )
             ),
             ## B
             fluidRow(
@@ -462,15 +463,15 @@ shiny_ui <- fluidPage(
               )
             ),
             fluidRow(
-                plotOutput(
-                  'plot_tracked_markers.B',
-                  height = 500,
-                  brush = brushOpts(
-                    id     = 'selector_tracked_markers.B',
-                    fill   = 'red',
-                    stroke = 'red'
-                  )
+              plotOutput(
+                'plot_tracked_markers.B',
+                height = 500,
+                brush = brushOpts(
+                  id     = 'selector_tracked_markers.B',
+                  fill   = 'red',
+                  stroke = 'red'
                 )
+              )
             )
           ),
           tabPanel(
@@ -501,15 +502,15 @@ shiny_ui <- fluidPage(
               )
             ),
             fluidRow(
-                plotOutput(
-                  'plot_tracked_populations.A',
-                  height = 500,
-                  brush = brushOpts(
-                    id     = 'selector_tracked_populations.A',
-                    fill   = 'red',
-                    stroke = 'red'
-                  )
+              plotOutput(
+                'plot_tracked_populations.A',
+                height = 500,
+                brush = brushOpts(
+                  id     = 'selector_tracked_populations.A',
+                  fill   = 'red',
+                  stroke = 'red'
                 )
+              )
             ),
             ## B
             fluidRow(
@@ -530,15 +531,15 @@ shiny_ui <- fluidPage(
             ),
             fluidRow(
               
-                plotOutput(
-                  'plot_tracked_populations.B',
-                  height = 500,
-                  brush = brushOpts(
-                    id     = 'selector_tracked_populations.B',
-                    fill   = 'red',
-                    stroke = 'red'
-                  )
+              plotOutput(
+                'plot_tracked_populations.B',
+                height = 500,
+                brush = brushOpts(
+                  id     = 'selector_tracked_populations.B',
+                  fill   = 'red',
+                  stroke = 'red'
                 )
+              )
               
             )
           )
