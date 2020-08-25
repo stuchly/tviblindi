@@ -99,7 +99,7 @@ Set_origin.tviblindi<-function(x,label, labels_name = 'default'){
     }
     stopifnot(is.character(label))
     stems<-which(x$labels[[labels_name]]==label)
-    x$origin <- stems[which.min(rowSums(t(t(x$data[stems,]) - colMeans(x$data[stems, ]))^2))]
+    x$origin <- stems[which.min(rowSums(t(t(x$data[stems, , drop = FALSE]) - colMeans(x$data[stems, , drop = FALSE]))^2))]
     return(invisible(x))
 }
 
