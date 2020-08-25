@@ -173,7 +173,7 @@ Som<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Som.tviblindi<-function(x,xdim=25,ydim=25,method="som"){
+Som.tviblindi<-function(x,xdim=25,ydim=25,method="som",kmeans_algorithm=c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen")){
     if (is.null(x$denoised)) {
         warning("Using original data!")
         x$denoised<-x$data
@@ -182,7 +182,7 @@ Som.tviblindi<-function(x,xdim=25,ydim=25,method="som"){
     codes <-sample_points(x$denoised,K)
     ###METHOD CHANGED
     if (method!="som"){
-        cl<-kmeans(x$denoised,K,centers=codes)
+        cl<-kmeans(x$denoised,K,centers=codes,algorithm=kmeans_algorithm)
         x$clusters<-cl$cluster
         x$codes<-cl$centers
     }
@@ -276,7 +276,7 @@ Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-6,kernel="Ex
     d<-KofRawN(x$KNN,K)
     d  <- knn.raw2adj(d)
     dsym <- knn.spadj2sym(knn.adj2spadj(d))
-    DD<<-dsym
+
     ## sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     ##METHOD CHANGED
     if (sym=="mean")
