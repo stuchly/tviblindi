@@ -91,7 +91,7 @@ Set_origin<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Set_origin.tviblindi<-function(x,label, labels_name = 'default'){
+Set_origin.tviblindi<-function(x,label, labels_name = names(x$labels)[1]){
     stopifnot(length(label)==1)
     if (is.integer(label)){
         x$origin<-label
@@ -438,6 +438,8 @@ DimRed<-function(x,...){
     UseMethod("DimRed",x)
 }
 
+
+##METHOD CHANGED
 #' Dimensional reduction, modifies x
 #'
 #' \code{DimRed}
@@ -488,7 +490,7 @@ DimRed.tviblindi <-
              t = 0,
              load_model=NULL,
              upsample=NULL,
-             labels_name = 'default') {
+             labels_name = names(x$labels)[1]) {
 
         vae <- NULL
         if (is.null(layout)) {
