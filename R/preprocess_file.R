@@ -15,7 +15,7 @@ tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventpr
   COO<-exprs(fcs)[events_sel,chans]
   colnames(COO)<-as.character(fcs@parameters@data$desc[chans])
   COO<-asinh(COO/5.0)
-  if (normalize) COO<-normalize.perc(COO)
+  if (normalize=="perc") COO<-normalize.perc(COO) else if (normalize=="scale") COO<-scale(COO)
   ##label events
   leafs<-NULL
   for (ii in 1:length(PP)) if (length(grep(PP[ii],PP,fixed=TRUE))==1) leafs<-c(leafs,ii)

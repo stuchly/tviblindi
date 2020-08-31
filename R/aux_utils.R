@@ -22,26 +22,27 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs"){
 
     if(!makefcs){
         data<-NULL
-        labels<-list()[1:labl]
-        names(labels)<-names(x[[1]]$labels)
-        print(names(labels))
+        labels<-list()[1:(labl+1)]
+        names(labels)<-c(names(x[[1]]$labels),"fileID")
         for (i in 1:length(x)){
             data<-rbind(data,x[[i]]$data)
             for (j in 1:labl) labels[[j]]<-c(labels[[j]],as.character(x[[i]]$labels[[j]]))
+            labels[[labl+1]]<-c(labels[[labl+1]],rep(as.character(i),length(labels[[1]])))
         }
         x<-tviblindi(data=data,labels=labels)
         return(x)
     }
 
     data<-events_sel<-NULL
-    labels<-list()[1:labl]
-    names(labels)<-names(x[[1]]$labels)
+    labels<-list()[1:(labl+1)]
+    names(labels)<-c(names(x[[1]]$labels),"fileID")
     offset<-0
     fcs<-list()[1:length(x)]
     for (i in 1:length(x)){
         fcs[[i]]<-flowCore::read.FCS(fcss[i])
         data<-rbind(data,x[[i]]$data)
         for (j in 1:labl) labels[[j]]<-c(labels[[j]],as.character(x[[i]]$labels[[j]]))
+        labels[[labl+1]]<-c(labels[[labl+1]],rep(as.character(i),length(labels[[1]])))
         events_sel<-c(events_sel,x[[i]]$events_sel+offset)
         offset<-offset+nrow(flowCore::exprs(fcs[[i]]))
 
@@ -50,7 +51,7 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs"){
     shuff<-sample(1:nrow(data))
     fcs<-.concat_fcs(fcs,params="fileID")
     flowCore::write.FCS(fcs,filename=fcsout)
-    for (i in 1:labl) labels[[i]]<-labels[[i]][shuff]
+    for (i in 1:(labl)) labels[[i]]<-labels[[i]][shuff]
     x<-tviblindi(data=data[shuff,],labels=labels,events_sel=events_sel[shuff],fcs=fcsout)
     return(x)
 
