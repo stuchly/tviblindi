@@ -32,11 +32,13 @@ tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventpr
 
   gate_ev_non<-gate_ev[events_sel]
   gate_ev_non<-as.factor(gate_ev_non)
-  stems           <- levels(gate_ev_non)[grep(origin,levels(gate_ev_non))]
+
 
   tv1<-tviblindi(COO,labels = gate_ev_non,fcs_path = fcsn,events_sel = events_sel)
-  Set_origin(tv1,stems)
-  if(is.null(tv1$origin)) stop("Wrong population of origin")
-  print(tv1)
+  if (!is.null(origin)){
+      stems           <- levels(gate_ev_non)[grep(origin,levels(gate_ev_non))]
+      Set_origin(tv1,stems)
+      if(is.null(tv1$origin)) stop("Wrong population of origin")
+  }
   return(tv1)
 }
