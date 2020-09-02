@@ -10,6 +10,11 @@ tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventpr
   gs<-flowjo_to_gatingset(ws,name=1,subset=1)
   PP<-gs_get_pop_paths(gs[[1]])
   ppi<-grep(eventsufix,PP)
+  if (length(ppi)==0){
+      cat("Suffix not found - returning NULL","\n")
+      return(NULL)
+
+      }
   cat("events used: ", PP[ppi],"\n")
   events_sel<-NULL;for (i in ppi) events_sel<-c(events_sel,which(gh_pop_get_indices(gs[[1]],PP[i[1]])))
   COO<-exprs(fcs)[events_sel,chans]
