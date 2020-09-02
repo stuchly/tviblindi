@@ -42,7 +42,7 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs"){
         fcs[[i]]<-flowCore::read.FCS(fcss[i])
         data<-rbind(data,x[[i]]$data)
         for (j in 1:labl) labels[[j]]<-c(labels[[j]],as.character(x[[i]]$labels[[j]]))
-        labels[[labl+1]]<-c(labels[[labl+1]],rep(as.character(i),length(labels[[1]])))
+        labels[[labl+1]]<-c(labels[[labl+1]],rep(as.character(i),length(x[[i]]$labels[[1]])))
         events_sel<-c(events_sel,x[[i]]$events_sel+offset)
         offset<-offset+nrow(flowCore::exprs(fcs[[i]]))
 
