@@ -654,7 +654,7 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
 }
 
 ## Already generic
-plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime"),labels_name='default',legend="bottomleft",l_cex=0.5,...){
+plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime"),labels_name = names(x$labels)[1],legend="bottomleft",l_cex=0.5,...){
     if (is.null(x$layout)) stop("Layout not computed!")
     if (col[1]=="pseudotime"){
         if(is.null(x$pseudotime)) stop("Pseudotime not computed!")
