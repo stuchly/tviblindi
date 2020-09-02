@@ -488,6 +488,7 @@ DimRed.tviblindi <-
              shuffle=FALSE,
              neigen = 2,
              t = 0,
+             K=30,
              load_model=NULL,
              upsample=NULL,
              labels_name = names(x$labels)[1]) {
@@ -509,7 +510,7 @@ DimRed.tviblindi <-
                             message("~done\n")
                         }
                         ss<-.upsample.labels(labl,N=upsample$N,takeall = upsample$takeall)
-                        knn_loc<-KNN.annoy(x$data[ss,],  ncol(x$KNN$IND), 150)$IND
+                        knn_loc<-KNN.annoy(x$data[ss,], K, 150)$IND
                         layout = vv$dimred(
                             x$data[ss,],
                             as.integer(dim),
@@ -524,12 +525,16 @@ DimRed.tviblindi <-
                             ww,
                             "euclidean",
                             margin,
-                            ncol(x$KNN$IND),
+                            K,
                             knn_loc
                         )
                     } else {
                         if (shuffle) sshuf<-sample(nrow(x$data)) else sshuf<-1:nrow(x$data)
-                        if (shuffle) knn.plc<-KNN.annoy(x$data[sshuf,],  ncol(x$KNN$IND), 150)$IND else knn.plc<-x$KNN$IND
+                        if (shuffle){
+                            knn.plc<-KNN.annoy(x$data[sshuf,],  K, 150)$IND
+                        } else {
+                            if (!is.null(x$KNN)) knn.plc<-KofRawN(x$KNN,K) else knn.plc<-KNN.annoy(x$data[sshuf,],  K, 150)$IND
+                        }
                         layout = vv$dimred(
                             x$data[sshuf,],
                             as.integer(dim),
@@ -544,7 +549,7 @@ DimRed.tviblindi <-
                             ww,
                             "euclidean",
                             margin,
-                            ncol(x$KNN$IND),
+                            K,
                             knn.plc
                         )
                     }
