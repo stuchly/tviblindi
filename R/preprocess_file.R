@@ -17,6 +17,7 @@ tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventpr
       }
   cat("events used: ", PP[ppi],"\n")
   events_sel<-NULL;for (i in ppi) events_sel<-c(events_sel,which(gh_pop_get_indices(gs[[1]],PP[i[1]])))
+  events_sel<-unique(events_sel)
   COO<-exprs(fcs)[events_sel,chans]
   colnames(COO)<-as.character(fcs@parameters@data$desc[chans])
   COO<-asinh(COO/5.0)
