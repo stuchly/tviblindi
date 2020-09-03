@@ -1,4 +1,5 @@
-tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventprefix="/[A-Z]_",origin="^A_",normalize=FALSE,sep="\t"){
+tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventprefix="/[A-Z]_",origin="^A_",
+                                normalize=FALSE,sep="\t",ftrans=function(x) asinh(x/5.)){
   require(CytoML)
   require(flowWorkspace)
 
@@ -20,7 +21,7 @@ tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventpr
   events_sel<-unique(events_sel)
   COO<-exprs(fcs)[events_sel,chans]
   colnames(COO)<-as.character(fcs@parameters@data$desc[chans])
-  COO<-asinh(COO/5.0)
+  COO<-ftrans(COO)
   if (normalize=="perc") COO<-normalize.perc(COO) else if (normalize=="scale") COO<-scale(COO)
   ##label events
   leafs<-NULL
