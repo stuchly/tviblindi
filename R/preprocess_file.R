@@ -1,11 +1,12 @@
 tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventprefix="/[A-Z]_",origin="^A_",
-                                normalize=FALSE,sep="\t",ftrans=function(x) asinh(x/5.)){
+                                normalize=FALSE,sep="\t",ftrans=function(x) asinh(x/5.),comp=NULL){
   require(CytoML)
   require(flowWorkspace)
 
   ws<-open_flowjo_xml(wsp)
   protilatky<-read.table(fcstable,header=TRUE,sep=sep)
   fcs<-flowCore::read.FCS(fcsn)
+  if(!is.null(comp)) fcs<-compensate(fcs,fcs@description[[comp]])
   chans<-protilatky$name[protilatky$use==1]
   chans<-which(fcs@parameters@data$name %in% chans)
   gs<-flowjo_to_gatingset(ws,name=1,subset=1)
