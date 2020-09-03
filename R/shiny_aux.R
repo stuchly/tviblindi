@@ -887,7 +887,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                      pseudotime,
                                      marked_termini,
                                      termini_per_path,
-                                     death_birth_ratio) {
+                                     death_birth_ratio,
+                                     death_on_x_axis) {
   ## Identify chosen walks
   idcs <- which(termini_per_path %in% marked_termini)
 
@@ -952,7 +953,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
   walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
   
-  p <- .compute_persistence(tv, repre, death_birth_ratio)
+  p <- .compute_persistence(tv, repre, death_birth_ratio, death_on_x_axis)
 
   return(list(random_walks = walks,
               repre        = repre,
@@ -963,10 +964,11 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 .compute_persistence <- function(
   tv,
   repre,
-  death_birth_ratio
+  death_birth_ratio,
+  death_on_x_axis
 ) {
   pers <- pers_diagram(dBr = tv$reduced_boundary, repre = repre, plot = FALSE)
-  pd <- .persistence_diagram(pers, death_birth_ratio)
+  pd <- .persistence_diagram(pers, death_birth_ratio, death_on_x_axis)
   list(
     pers = pers,
     pd = pd
@@ -975,14 +977,15 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
 .persistence_diagram <- function(
   pers,
-  death_birth_ratio
+  death_birth_ratio,
+  death_on_x_axis
 ) {
   pd   <- data.frame(Dimension    = pers$vals$dim,
                      Birth        = pers$vals$birth,
                      Death        = pers$vals$death,
                      BirthSimplex = pers$inds$birth,
                      DeathSimplex = pers$inds$death,
-                     xplot        = (pers$vals$birth + pers$vals$death) / 2,
+                     xplot        = if (death_on_x_axis) { pers$vals$death } else { (pers$vals$birth + pers$vals$death) / 2 },
                      yplot        = if (death_birth_ratio) { pers$vals$death / pers$vals$birth } else { (pers$vals$death - pers$vals$birth) / 2 })
   pd[pd$Dimension > 0, ]
 }

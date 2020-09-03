@@ -49,6 +49,7 @@ shiny_server <- function(input, output, session) {
   react$persistence_selected         <- NULL # selected homology classes idcs
   react$persistence_marked           <- NULL # marked homology classes idcs
   react$persistence.death_birth_ratio <- FALSE
+  react$persistence.death_on_x_axis   <- FALSE
   # Trajectories dendrogram
   react$dendrogram                   <- NA   # dendrogram for clustering of trajectories by homology classes
   react$dendrogram_zoom              <- NA
@@ -332,7 +333,8 @@ shiny_server <- function(input, output, session) {
                                           pseudotime        = react$pseudotime,
                                           marked_termini    = react$termini_processed,
                                           termini_per_path  = termini,
-                                          death_birth_ratio = react$persistence.death_birth_ratio)
+                                          death_birth_ratio = react$persistence.death_birth_ratio,
+                                          death_on_x_axis = react$persistence.death_on_x_axis)
       react$trajectories_random_walks <- updated$random_walks
       react$representations           <- updated$repre
       react$persistence               <- updated$pers
@@ -421,8 +423,12 @@ shiny_server <- function(input, output, session) {
           scale_size_continuous(range = c(.2, 8)) +
           scale_colour_gradientn(colours = rainbow(5)) +
           geom_point(size = if (react$image_export_format == 'SVG') { 3.5 + sizes_extra * 1 } else { 5.0  + sizes_extra * 1 }, alpha = .7) +
-          theme_light() + theme(legend.position = 'none') +
-          xlab('(Birth + Death) / 2')
+          theme_light() + theme(legend.position = 'none')
+        if (react$persistence.death_on_x_axis) {
+          g <- g + xlab('Death')
+        } else {
+          g <- g + xlab('(Birth + Death) / 2')
+        }
         if (react$persistence.death_birth_ratio) {
           g <- g + ylab('Death / Birth') 
         } else {
@@ -444,8 +450,12 @@ shiny_server <- function(input, output, session) {
         theme(legend.position = 'none',
               panel.background = element_rect(fill = '#f2f2f2',
                                               colour = '#f2f2f2',
-                                              size = 0.5, linetype = 'solid')) +
-        xlab('(Birth + Death) / 2')
+                                              size = 0.5, linetype = 'solid'))
+      if (react$persistence.death_on_x_axis) {
+        g <- g + xlab('Death')
+      } else {
+        g <- g + xlab('(Birth + Death) / 2')
+      }
       if (react$persistence.death_birth_ratio) {
         g <- g + ylab('Death / Birth') 
       } else {
@@ -502,9 +512,14 @@ shiny_server <- function(input, output, session) {
     react$image_export.persistence <- TRUE
   })
   
+  observeEvent(input$switch_persistence_death_on_x_axis, {
+    react$persistence.death_on_x_axis <- input$switch_persistence_death_on_x_axis
+    react$persistence_diagram       <- .persistence_diagram(react$persistence, react$persistence.death_birth_ratio, react$persistence.death_on_x_axis)
+  })
+  
   observeEvent(input$switch_persistence_ratio, {
     react$persistence.death_birth_ratio <- input$switch_persistence_ratio
-    react$persistence_diagram       <- .persistence_diagram(react$persistence, react$persistence.death_birth_ratio)
+    react$persistence_diagram       <- .persistence_diagram(react$persistence, react$persistence.death_birth_ratio, react$persistence.death_on_x_axis)
   })
   
   ## Image export format switch
