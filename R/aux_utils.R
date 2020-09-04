@@ -6,7 +6,7 @@
 }
 
 ##METHOD CHANGED - METHOD ADDED
-merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs"){
+merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL){
     stopifnot(is_list(x))
     labl<-unique(sapply(x,FUN=function(x) length(x$labels)))
     if (length(labl)>1) stop("Incompatible labeling")
@@ -48,6 +48,7 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs"){
 
     }
 
+    if (normalize=="perc") data<-normalize.perc(data) else if (normalize=="scale") data<-scale(data)
     shuff<-sample(1:nrow(data))
     fcs<-.concat_fcs(fcs,params="fileID")
     flowCore::write.FCS(fcs,filename=fcsout)
