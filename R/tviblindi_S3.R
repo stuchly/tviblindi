@@ -266,7 +266,7 @@ Pseudotime<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-6,kernel="Exp",kepsilon=NULL,sym="mean"){
+Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="Exp",kepsilon=NULL,sym="mean"){
     stopifnot(!is.null(x$origin))
     if (length(x$origin)==0) stop("Origin not set!")
     if (K>dim(x$KNN$IND)[2]){
