@@ -48,7 +48,9 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL){
 
     }
 
-    if (normalize=="perc") data<-normalize.perc(data) else if (normalize=="scale") data<-scale(data)
+    if (!is.null(normalize)){
+        if (normalize=="perc") data<-normalize.perc(data) else if (normalize=="scale") data<-scale(data)
+    }
     shuff<-sample(1:nrow(data))
     fcs<-.concat_fcs(fcs,params="fileID")
     flowCore::write.FCS(fcs,filename=fcsout)
