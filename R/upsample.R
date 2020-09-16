@@ -27,8 +27,8 @@ upsample<-function(x,N=5,K=30,labname="default",inds=NULL,concentration=0.1){
         inds<-out
         rm(out)
     }
-    K<-min(K,ncol(x$KNN$INDS))
-    ups<-.upsample(x$data,x$KNN$INDS[,1:K]+1,inds,N,concentration,as.character(x$labels[[labname]]))
+    K<-min(K,ncol(x$KNN$IND))
+    ups<-.upsample(x$data,x$KNN$IND[,1:K]+1,inds,N,concentration,as.character(x$labels[[labname]]))
     labels<-c(as.character(x$labels[[labname]]),ups$lab)
     data<-rbind(x$data,ups$out)
     tv<-tviblindi(data=data,labels=labels)
