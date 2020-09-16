@@ -53,7 +53,7 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL){
         if (normalize=="perc") data<-normalize.perc(data) else if (normalize=="scale") data<-scale(data)
     }
     shuff<-sample(1:nrow(data))
-    fcs<-.concat_fcs(fcs,params="fileID")
+    fcs<-.concat_fcs(fcs,params=paste("fileID",Nf,sep="_"))
     flowCore::write.FCS(fcs,filename=fcsout)
     for (i in 1:(labl+1)) labels[[i]]<-labels[[i]][shuff]
     x<-tviblindi(data=data[shuff,],labels=labels,events_sel=events_sel[shuff],fcs=fcsout)
