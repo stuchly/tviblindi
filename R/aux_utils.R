@@ -35,7 +35,8 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL){
 
     data<-events_sel<-NULL
     labels<-list()[1:(labl+1)]
-    names(labels)<-c(names(x[[1]]$labels),"fileID")
+    Nf<-length(grep("fileID",x[[1]]$labels))
+    names(labels)<-c(names(x[[1]]$labels),paste("fileID",Nf,sep="_"))
     offset<-0
     fcs<-list()[1:length(x)]
     for (i in 1:length(x)){
