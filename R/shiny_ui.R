@@ -83,13 +83,13 @@ shiny_ui <- fluidPage(
     style = "background:linear-gradient(0deg, rgba(255,255,255,1) 0%, #d6d6d6 100%)",
     ## APP TITLE
     column(
-      width = 8,
+      width = 10,
       column(
         align = 'center',
         style = 'color:white; padding-top:15px; background-color:#337ab7',
         width = 2,
         titlePanel(
-          h2(id = 'app_title', HTML('tvi<b>blindi</b>')),
+          h1(id = 'app_title', HTML('tvi<b>blindi</b>')),
           windowTitle = 'tviblindi'
         )
       ),
@@ -98,26 +98,35 @@ shiny_ui <- fluidPage(
         style = 'padding-top: 10px; color: #000052',
         fluidRow(
           column(
-            width = 3,
+            width = 2,
             style = 'text-align:    left; padding-left:45px',
             selectInput(
-              'input_dimred_method', label = 'LAYOUT TYPE', c('default'),
-              selected = NULL,
-              multiple = FALSE
-            )
-          ),
-          column(
-            width = 3,
-            style = 'text-align:    left; padding-left:45px',
-            selectInput(
-              'input_labels_name', label = 'LABELS VECTOR', c('default'),
+              'input_dimred_method', label = 'LAYOUT', c('default'),
               selected = NULL,
               multiple = FALSE
             )
           ),
           column(
             width = 2,
-            style = 'text-align:    left; padding-left:40px',
+            style = 'text-align:    left; padding-left:5px',
+            selectInput(
+              'input_pathmodel_name', label = 'PATH MODEL', c('default'),
+              selected = NULL,
+              multiple = FALSE
+            )
+          ),
+          column(
+            width = 2,
+            style = 'text-align:    left; padding-left:5px',
+            selectInput(
+              'input_labels_name', label = 'LABELS', c('default'),
+              selected = NULL,
+              multiple = FALSE
+            )
+          ),
+          column(
+            width = 2,
+            style = 'text-align:    right; padding-left:5px',
             radioGroupButtons(
               inputId = 'btn_layout_pointsize',
               label = 'POINT SIZE',
@@ -152,9 +161,9 @@ shiny_ui <- fluidPage(
     span(
       style = 'color:#000052',
       column(
-        width = 4,
+        width = 2,
         column(
-          width = 11,
+          width = 10,
           style = 'text-align:  right;
                padding-right: 25px;
                margin-top:   26px;
@@ -164,7 +173,7 @@ shiny_ui <- fluidPage(
           textOutput(outputId = 'text_fcs_name', inline = TRUE),
         ),
         column(
-          width = 1,
+          width = 2,
           style = 'text-align:  right;
                padding-right: 25px;
                margin-top:   26px;
@@ -513,7 +522,7 @@ shiny_ui <- fluidPage(
             fluidRow(
               column(
                 width = 12,
-                checkboxInput('check_tracked_populations_log2_transform', label = 'log2', value = FALSE)
+                checkboxInput('check_tracked_populations_log2_transform', label = 'Show log2 counts', value = FALSE)
               )
             ),
             fluidRow(

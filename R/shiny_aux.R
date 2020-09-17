@@ -884,6 +884,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 }
 
 .update_walks_by_termini <- function(tv,
+                                     pathmodel_name,
                                      pseudotime,
                                      marked_termini,
                                      termini_per_path,
@@ -893,7 +894,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   idcs <- which(termini_per_path %in% marked_termini)
 
   ## Remove other walks
-  walks.selected <- lapply(idcs, function(idx) select_paths_points(tv$walks, idx))
+  walks.selected <- lapply(idcs, function(idx) select_paths_points(tv$walks[[pathmodel_name]], idx))
   lens           <- sapply(walks.selected, length)
   walks.selected <- list(v      = unlist(walks.selected),
                          starts = c(1, 1 + cumsum(lens[-length(lens)])))
