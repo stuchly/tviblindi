@@ -40,18 +40,18 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=
 
     out<-new.env(hash=TRUE)
     out$analysis_name<-analysis_name
-    out$origin<-NULL
+    out$origin<-list(default=NULL)
     out$data=data
     out$denoised=NULL
     out$labels<-lapply(labels, as.factor)
     names(out$labels) <- names(labels)
     out$keep<-keep.intermediate
-    out$pseudotime<-NULL
+    out$pseudotime<-list()
     out$filtration<-NULL
     out$boundary<-NULL
     out$reduced_boundary<-NULL
-    out$walks<-NULL
-    out$fates<-NULL
+    out$walks<-list()
+    out$fates<-list()
     out$ShowAllFates=FALSE
     out$KNN<-NULL
     out$sim<-NULL
@@ -91,15 +91,15 @@ Set_origin<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Set_origin.tviblindi<-function(x,label, labels_name = names(x$labels)[1]){
+Set_origin.tviblindi<-function(x,label, labels_name = names(x$labels)[1],origin_name="default"){
     stopifnot(length(label)==1)
     if (is.integer(label)){
-        x$origin<-label
+        x$origin[[origin_name]]<-label
         return(invisible(x))
     }
     stopifnot(is.character(label))
     stems<-which(x$labels[[labels_name]]==label)
-    x$origin <- stems[which.min(rowSums(t(t(x$data[stems, , drop = FALSE]) - colMeans(x$data[stems, , drop = FALSE]))^2))]
+    x$origin[[origin_name]] <- stems[which.min(rowSums(t(t(x$data[stems, , drop = FALSE]) - colMeans(x$data[stems, , drop = FALSE]))^2))]
     return(invisible(x))
 }
 
@@ -266,9 +266,9 @@ Pseudotime<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="Exp",kepsilon=NULL,sym="max"){
-    stopifnot(!is.null(x$origin))
-    if (length(x$origin)==0) stop("Origin not set!")
+Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="Exp",kepsilon=NULL,sym="max",origin_name=names(x$origin[[origin_name]])[1]){
+    stopifnot(!is.null(x$origin[[origin_name]]))
+    if (length(x$origin[[origin_name]])==0) stop("Origin not set!")
     if (K>dim(x$KNN$IND)[2]){
         K<-min(K,dim(x$KNN)[2])
         warning("K > dim(KNN)[2]; K<-min(K,dim(x$KNN)[2])")
@@ -290,8 +290,8 @@ Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="E
         sim <- knn.adj2spadjsim1(d, kernel = kernel,epsilon=kepsilon)
     } else stop("symmetrisation not implemented")
 
-    x$pseudotime  <- assign_distance(sim, x$origin,weights = dsym,nb_it=nb_it,iguess=iguess,eps=eps)
-    cat("Pseudotime error:", x$pseudotime$error, "\n")
+    x$pseudotime[[origin_name]]  <- assign_distance(sim, x$origin[[origin_name]],weights = dsym,nb_it=nb_it,iguess=iguess,eps=eps)
+    cat("Pseudotime error:", x$pseudotime[[origin_name]]$error, "\n")
     if (x$keep) {
         x$sim<-sim
         x$dsym<-dsym
@@ -328,12 +328,12 @@ Walks<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL, labels_name = 'default', add=FALSE,kernel="Exp",kepsilon=NULL,sym="max"){
-    if (length(x$origin)==0) stop("Origin not set!")
-    add.walks<-function(x,walks){
-        if(is.null(x$walks)) x$walks<-list(starts=NULL,v=NULL)
-        x$walks$starts<-c(x$walks$starts,walks$starts+length(x$walks$v))
-        x$walks$v<-c(x$walks$v,walks$v)
+Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL, labels_name = 'default', add=FALSE,kernel="Exp",kepsilon=NULL,sym="max",origin_name=names(x$origin)[1]){
+    if (length(x$origin[[origin_name]])==0) stop("Origin not set!")
+    add.walks<-function(x,walks,origin_name=origin_name){
+        if(is.null(x$walks[[origin_name]])) x$walks[[origin_name]]<-list(starts=NULL,v=NULL)
+        x$walks[[origin_name]]$starts<-c(x$walks[[origin_name]]$starts,walks$starts+length(x$walks[[origin_name]]$v))
+        x$walks[[origin_name]]$v<-c(x$walks[[origin_name]]$v,walks$v)
         return(invisible(0))
     }
     d<-KofRawN(x$KNN,K)
@@ -355,13 +355,13 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
     else stop("symmetrisation not implemented")
 
     if (x$keep) x$sim<-sim
-    oriented.sparseMatrix <- orient.sim.matrix(sim, x$pseudotime, breaks = breaks, base = base)
+    oriented.sparseMatrix <- orient.sim.matrix(sim, x$pseudotime[[origin_name]], breaks = breaks, base = base)
 
     if (!equinumerous & is.null(to)){
         ## Simulate random walks
-        walks           <- random_walk_adj_N_push(oriented.sparseMatrix, x$origin, N)
+        walks           <- random_walk_adj_N_push(oriented.sparseMatrix, x$origin[[origin_name]], N)
         if (!add){
-            x$walks<-walks
+            x$walks[[origin_name]]<-walks
         } else{
             add.walks(x,walks)
         }
@@ -390,7 +390,7 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
         g<-igraph::graph_from_adjacency_matrix(oriented.sparseMatrix,weighted=TRUE,mode="directed")
         V(g)$names<-1:nrow(x$data)
 
-        if (!add) x$walks<-NULL
+        if (!add) x$walks[[origin_name]]<-NULL
         ii<-1
         for (fate in fates){
             cat("fate ",ii, " from ", length(fates),"\n")
@@ -402,7 +402,7 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
             gf[,1]<-nnf[gf[,1]]
             gf[,2]<-nnf[gf[,2]]
             adjro<-sparseMatrix(i=gf$i,j=gf$j,x=gf$x,dims=dim(oriented.sparseMatrix))
-            walks<-random_walk_adj_N_push(adjro, x$origin, N)
+            walks<-random_walk_adj_N_push(adjro, x$origin[[origin_name]], N)
             add.walks(x,walks)
         }
     }
@@ -631,11 +631,11 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
         ss<-which(boundary/dens > runif(length(dens)))
     }
 
-    x$pseudotime<-NULL
+    x$pseudotime<-list()
     x$filtration<-NULL
     x$boundary<-NULL
     x$reduced_boundary<-NULL
-    x$walks<-NULL
+    x$walks<-list()
     x$fates<-NULL
     x$KNN<-NULL
     x$sim<-NULL
@@ -655,11 +655,11 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
 
 ## Already generic
 ##METHOD CHANGED
-plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime"),labels_name = names(x$labels)[1],layout_name=names(x$layout)[1],legend="bottomleft",l_cex=0.5,...){
+plot.tviblindi<-function(x,pch=".",col=c("labels","pseudotime"),labels_name = names(x$labels)[1],layout_name=names(x$layout)[1],legend="bottomleft",l_cex=0.5,origin_name=names(x$origin)[1],...){
     if (is.null(x$layout)) stop("Layout not computed!")
     if (col[1]=="pseudotime"){
-        if(is.null(x$pseudotime)) stop("Pseudotime not computed!")
-        psc  <- as.numeric(as.factor(x$pseudotime$res))
+        if(is.null(x$pseudotime[[origin_name]])) stop("Pseudotime not computed!")
+        psc  <- as.numeric(as.factor(x$pseudotime[[origin_name]]$res))
         psc  <- psc / max(psc)
         psc  <- psc * 10000 + 1
         col  <- greenred(10500)
