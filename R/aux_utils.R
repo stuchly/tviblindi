@@ -44,7 +44,7 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL,selecte
         data<-rbind(data,x[[i]]$data)
         for (j in 1:labl) labels[[j]]<-c(labels[[j]],as.character(x[[i]]$labels[[j]]))
         labels[[labl+1]]<-c(labels[[labl+1]],rep(as.character(i),length(x[[i]]$labels[[1]])))
-        ev_loc<-ifelse(selected_only,1:length(x[[i]]$events_sel),x[[i]]$events_sel)
+        if (selected_only) ev_loc<-1:length(x[[i]]$events_sel) else ev_loc<-x[[i]]$events_sel
         events_sel<-c(events_sel,ev_loc+offset)
         offset<-offset+nrow(flowCore::exprs(fcs[[i]]))
 
