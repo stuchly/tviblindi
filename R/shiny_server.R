@@ -353,6 +353,7 @@ shiny_server <- function(input, output, session) {
                                           death_birth_ratio = react$persistence.death_birth_ratio,
                                           death_on_x_axis = react$persistence.death_on_x_axis)
       react$walks_sel<-which(react$termini %in%  react$termini_processed)  ##METHOD CHANGED
+      react$triangulation<-updated$triangulation ##METHOD CHANGED
       react$trajectories_random_walks <- updated$random_walks
       react$representations <- updated$repre
       react$persistence <- updated$pers
@@ -377,10 +378,13 @@ shiny_server <- function(input, output, session) {
                                           walks_sel = react$walks_sel,
                                           termini_per_path  = react$termini,
                                           death_birth_ratio = react$persistence.death_birth_ratio,
-                                          death_on_x_axis = react$persistence.death_on_x_axis)
+                                          death_on_x_axis = react$persistence.death_on_x_axis,
+                                          triangulation=react$triangulation)
       react$walks_sel<-updated$walks_sel
       react$trajectories_random_walks <- updated$random_walks
       react$representations           <- updated$repre
+      react$triangulation<-updated$triangulation
+      react$repre<-updated$repre
       react$persistence               <- updated$pers
       react$persistence_diagram       <- updated$pers_diag
       react$dendrogram_ready          <- TRUE
