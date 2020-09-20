@@ -300,7 +300,7 @@ shiny_ui <- fluidPage(
             actionButton('btn_trajectories_clear_pinned_trajectories', '', icon = icon('glyphicon glyphicon-trash',      lib = 'glyphicon')),
             HTML('&nbsp;&nbsp;&nbsp;&nbsp;'),
             actionButton('btn_dendrogram_export_image',                  '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon')),
-            actionButton('btn_dendrogram_update_walks_selection', '', icon = icon('glyphicon glyphicon-thumbs-up', lib = 'glyphicon'))
+            actionButton('btn_dendrogram_update_walks_selection', '', icon = icon('glyphicon glyphicon-thumbs-up', lib = 'glyphicon')) ##METHOD CHANGED
           ),
           column(
             width = 4,
