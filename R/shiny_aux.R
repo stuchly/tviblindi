@@ -968,11 +968,12 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                      pseudotime,
                                      marked_termini,
                                      idcs,
+                                     walks_sel,
                                      termini_per_path,
                                      death_birth_ratio,
                                      death_on_x_axis) {
   ## Identify chosen walks
-  ##idcs <- which(termini_per_path %in% marked_termini)
+  idcs <- walks_sel[idcs]
 
   ## Remove other walks
   walks.selected <- lapply(idcs, function(idx) select_paths_points(tv$walks[[pathmodel_name]], idx))
@@ -1040,7 +1041,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   return(list(random_walks = walks,
               repre        = repre,
               pers         = p$pers,
-              pers_diag    = p$pd))
+              pers_diag    = p$pd,
+              walks_sel=idcs))
 }
 
 

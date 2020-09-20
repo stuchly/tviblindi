@@ -341,6 +341,7 @@ shiny_server <- function(input, output, session) {
     output$log_persistence_marked <- renderText('')
   })
 
+  ##METHOD CHANGED - need to store walks_by_termini selection
   observeEvent(input$btn_termini_update_walks_by_termini, {
     react$termini_processed <- react$termini_marked
     if (length(react$termini_marked) > 0) {
@@ -351,6 +352,7 @@ shiny_server <- function(input, output, session) {
                                           termini_per_path  = react$termini,
                                           death_birth_ratio = react$persistence.death_birth_ratio,
                                           death_on_x_axis = react$persistence.death_on_x_axis)
+      react$walks_sel<-which(react$termini %in%  react$termini_processed)  ##METHOD CHANGED
       react$trajectories_random_walks <- updated$random_walks
       react$representations <- updated$repre
       react$persistence <- updated$pers
@@ -371,10 +373,12 @@ shiny_server <- function(input, output, session) {
                                           pathmodel_name    = react$pathmodel_name,
                                           pseudotime        = tv$pseudotime[[react$pathmodel_name]],
                                           marked_termini    = react$termini_processed,
-                                          react$dendrogram_selected_idcs,
+                                          idcs=react$dendrogram_selected_idcs,
+                                          walks_sel = react$walks_sel,
                                           termini_per_path  = react$termini,
                                           death_birth_ratio = react$persistence.death_birth_ratio,
                                           death_on_x_axis = react$persistence.death_on_x_axis)
+      react$walks_sel<-updated$walks_sel
       react$trajectories_random_walks <- updated$random_walks
       react$representations           <- updated$repre
       react$persistence               <- updated$pers
