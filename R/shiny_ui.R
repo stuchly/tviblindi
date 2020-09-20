@@ -39,7 +39,7 @@ shiny_ui <- fluidPage(
           width: 1850px
        }
   ')),
-  
+
   tags$head(
     tags$style('
         .shiny-notification {
@@ -48,12 +48,12 @@ shiny_ui <- fluidPage(
             left: 10%;
             font-size: 24px
   ')),
-  
+
   tags$head(
     tags$style(HTML('#btn_left_show_gating {background-color:#337ab7; color:white}')),
     tags$style(HTML('#btn_help {background-color:#337ab7; color:white}')),
   ),
-  
+
   ## MODALS
   shinyBS::bsModal(
     id      = 'modal_layout_gating',
@@ -155,7 +155,7 @@ shiny_ui <- fluidPage(
             )
           )
         )
-      )  
+      )
     ),
     ## ANALYSIS NAME & HELP BUTTON
     span(
@@ -299,7 +299,8 @@ shiny_ui <- fluidPage(
             actionButton('btn_trajectories_export_fcs',                '', icon = icon('glyphicon glyphicon-save',       lib = 'glyphicon')),
             actionButton('btn_trajectories_clear_pinned_trajectories', '', icon = icon('glyphicon glyphicon-trash',      lib = 'glyphicon')),
             HTML('&nbsp;&nbsp;&nbsp;&nbsp;'),
-            actionButton('btn_dendrogram_export_image',                  '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon'))
+            actionButton('btn_dendrogram_export_image',                  '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon')),
+            actionButton('btn_dendrogram_update_walks_selection', '', icon = icon('glyphicon glyphicon-thumbs-up', lib = 'glyphicon'))
           ),
           column(
             width = 4,
@@ -570,7 +571,7 @@ shiny_ui <- fluidPage(
               )
             ),
             fluidRow(
-              
+
               plotOutput(
                 'plot_tracked_populations.B',
                 height = 500,
@@ -580,7 +581,7 @@ shiny_ui <- fluidPage(
                   stroke = 'red'
                 )
               )
-              
+
             )
           )
         )

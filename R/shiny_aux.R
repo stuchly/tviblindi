@@ -877,7 +877,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   } else {
     g <- g + theme_minimal()
   }
-  
+
   list(plot              = g,
        stats             = cbind(stats, inds_char = 'NULL'),
        pseudotime_bounds = pseudotime_bounds)
@@ -953,7 +953,89 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
   })
 
   walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
-  
+
+  p <- .compute_persistence(tv, repre, death_birth_ratio, death_on_x_axis)
+
+  return(list(random_walks = walks,
+              repre        = repre,
+              pers         = p$pers,
+              pers_diag    = p$pd))
+}
+
+##METHOD CHANGED
+.update_walks_by_dendrogram <- function(tv,
+                                     pseudotime,
+                                     marked_termini,
+                                     idcs,
+                                     termini_per_path,
+                                     death_birth_ratio,
+                                     death_on_x_axis) {
+
+   ## Identify chosen walks
+  ##idcs <- which(termini_per_path %in% marked_termini)[idcs]
+
+  ## Remove other walks
+
+  walks.selected <- lapply(idcs, function(idx) select_paths_points(tv$walks, idx))
+  lens           <- sapply(walks.selected, length)
+  walks.selected <- list(v      = unlist(walks.selected),
+                         starts = c(1, 1 + cumsum(lens[-length(lens)])))
+
+  ## Put terminal node with highest pseudotime at end of each walk
+  if (length(marked_termini) > 1) {
+    max_t             <- marked_termini[which.max(pseudotime$res[marked_termini])][1]
+    ends              <- c(walks.selected$starts[-1] - 1, length(walks.selected$v))
+    walks.selected$v[ends] <- max_t
+  }
+
+  ## Cluster and triangulate walks
+  withProgress(message = 'Contracting trajectories', expr = {
+    walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
+
+    sel          <- 1:length(walks_clusters$starts)
+    s2           <- which(unlist(lapply(tv$filtration$cmplx, function(x) length(x) == 2))) # 2-simplex idcs
+    cmplx        <- tv$filtration$cmplx[s2]                                        # 2-simplices
+    cmplx_hashed <- hash_cmplx(cmplx)                                              # hash the simplices list for faster look-up
+    edges        <- do.call(rbind, lapply(cmplx, function(sim, XX) return(c(sim,
+                                                                            dist(tv$codes[sim,]))),
+                                          XX = tv$codes))
+    colnames(edges) <-c('from', 'to', 'weight')
+
+    graph           <- igraph::graph_from_edgelist(edges[, 1:2])
+    E(graph)$weight <- edges[, 3]
+    triangulation   <- list()[1:length(sel)]
+
+    j <- 0
+  })
+
+  withProgress(message = 'Triangulating paths', expr = {
+    for (i in sel) {
+      j <- j + 1
+      triangulation[[j]] <- s2[onepath_triangulation(select_paths_points(walks_clusters, i),
+                                                      tv$codes, cmplx_hashed, graph)]
+    }
+  })
+
+  N <- length(idcs)
+  repre      <- list()[1:N]
+  repre[[1]] <- integer(0)
+  j          <- 1
+
+  N <- length(idcs)
+  tick <- 1 / N
+
+  withProgress(message = 'Computing representations', value = tick, expr = {
+    for (idx in 2:N) {
+      j          <- j + 1
+      cycle      <- path_sum(triangulation[[1]], triangulation[[idx]])
+      this_repre <- get_rep_straight(cycle, tv$reduced_boundary, tv$boundary, update = TRUE)
+      repre[[j]] <- this_repre
+      incProgress(tick)
+    }
+  })
+
+  walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
+
   p <- .compute_persistence(tv, repre, death_birth_ratio, death_on_x_axis)
 
   return(list(random_walks = walks,

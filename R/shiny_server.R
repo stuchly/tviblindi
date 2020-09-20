@@ -7,28 +7,28 @@ require(shinyBS)
 #### Shiny interface for tviblindi: server function
 
 shiny_server <- function(input, output, session) {
-  
+
   cancel.onSessionEnded <- session$onSessionEnded(function() {
     message('tviblindi Shiny session ended')
     stopApp()
   })
   message(paste0(crayon::blue(crayon::bold('Running tviblindi Shiny UI, working directory is ', getwd()))))
-  
+
   ## Load up tviblindi analysis S3 object
   INPUTS_DIRECTORY <- 'tviblindi_tmp'
   tv_name <- readRDS(file.path(INPUTS_DIRECTORY, 'tv.RDS'))
   tv <- get(tv_name, parent.env(environment()))
-  
+
   input_ff <- if (!is.null(tv$fcs)) flowCore::read.FCS(tv$fcs) else make_valid_fcs(exprs = tv$data)
   layout <- if (is.list(tv$layout)) tv$layout else list(default = tv$layout)
   labels <- if (is.list(tv$labels)) tv$labels else list(default = tv$labels)
   event_sel <- tv$events_sel
   markers <- colnames(tv$data)
-  
+
   if ((is.null(event_sel) && nrow(input_ff) != nrow(tv$data)) || (!is.null(event_sel) && length(event_sel) != nrow(tv$data))) {
     stop('Number of events in expression matrix incongruent with dimensionality of input FCS file. Did you misuse the events_sel parameter?')
   }
-  
+
   ### Reactive values
   react <- reactiveValues()
   react$pathmodel_name <- 1
@@ -132,15 +132,15 @@ shiny_server <- function(input, output, session) {
     react$image_export.tracked_populations.A <-
     react$image_export.tracked_populations.B <- FALSE
   react$image_export_format <- 'PNG' # raster or vector graphics for export
-  
+
   react$labels.aligned <-
-    react$cols <- 
+    react$cols <-
     react$colours.aligned <-
     react$gating_colour_vectors <- NULL
-  
+
   react$termini <-
     react$termini.unique <- NULL
-  
+
   ## Scale 2D projection
   for (idx.layout in names(layout)) {
     layout[[idx.layout]][, 1] <- layout[[idx.layout]][, 1] - min(layout[[idx.layout]][, 1])
@@ -148,11 +148,11 @@ shiny_server <- function(input, output, session) {
     layout[[idx.layout]][, 2] <- layout[[idx.layout]][, 2] - min(layout[[idx.layout]][, 2])
     layout[[idx.layout]][, 2] <- layout[[idx.layout]][, 2] / max(layout[[idx.layout]][, 2])
   }
-  
+
   ## Produce layout data frame compatible with brushOpts
-  layout.df <- lapply(layout, function(l) data.frame(l) %>% setNames(c('X', 'Y'))) 
+  layout.df <- lapply(layout, function(l) data.frame(l) %>% setNames(c('X', 'Y')))
   names(layout.df) <- names(layout)
-  
+
   observeEvent(input$input_labels_name, react$labels_name <- input$input_labels_name)
   observeEvent(input$input_pathmodel_name, {
     react$pathmodel_name <- input$input_pathmodel_name
@@ -164,7 +164,7 @@ shiny_server <- function(input, output, session) {
     pal.rgba <- col2rgb(pal.hex, alpha = 0.7)
     react$cols <- pal.hex[psc]
     cols_as_matrix <- pal.rgba[, psc]
-    
+
     ## Produce event colouring by pseudotime values & sort population labels by pseudotime
     gating_palette <- c(RColorBrewer::brewer.pal(8, 'Dark2'), RColorBrewer::brewer.pal(12, 'Paired')[-11], RColorBrewer::brewer.pal(9, 'Set1')[-6], RColorBrewer::brewer.pal(8, 'Accent')[5:8])
     labels.unique <- lapply(labels, unique) %>% setNames(names(labels))
@@ -180,7 +180,7 @@ shiny_server <- function(input, output, session) {
       }
       label_levels_order <- order(average_pseudotime)
       react$labels.aligned[[idx.labels]] <- labels.unique[[idx.labels]][label_levels_order]
-      
+
       react$gating_colour_vectors[[idx.labels]] <- gating_palette[1:length(labels.unique[[idx.labels]])][as.numeric(as.factor(labels[[idx.labels]]))]
       react$colours.aligned[[idx.labels]] <- sapply(react$labels.aligned[[idx.labels]], function(l) react$gating_colour_vectors[[idx.labels]][which(labels[[idx.labels]] == l)[1]])
     }
@@ -191,9 +191,9 @@ shiny_server <- function(input, output, session) {
     )
     react$termini.unique <- unique(react$termini)
   })
-  
+
   ### OUTPUTS & OBSERVERS
-  
+
   ## Reset all selectors if window is resized (otherwise this causes bugs)
   observeEvent(input$windowSizeChange, {
     session$resetBrush('selector_termini')
@@ -203,7 +203,7 @@ shiny_server <- function(input, output, session) {
     session$resetBrush('selector_tracked_markers.A')
     session$resetBrush('selector_tracked_markers.B')
   })
-  
+
   observe({
     updateSelectInput(session, 'input_dimred_method', choices = names(layout))
     updateSelectInput(session, 'input_labels_name', choices = names(labels))
@@ -211,7 +211,7 @@ shiny_server <- function(input, output, session) {
   })
   observeEvent(input$input_dimred_method, react$layout_name <- input$input_dimred_method)
   observeEvent(input$btn_layout_pointsize, react$layout_pointsize <- as.numeric(input$btn_layout_pointsize))
-  
+
   ## Display FCS file name
   if (!is.null(tv$analysis_name)) {
     output$text_analysis_name <- renderText(if (tv$analysis_name != FALSE) tv$analysis_name else 'Untitled tviblindi analysis')
@@ -247,7 +247,7 @@ shiny_server <- function(input, output, session) {
              To choose whether to export a PNG or an SVG file, use the switch at the bottom of the left pane. PNG files are raster images. These will typically save space on your drive, but are resolution-dependent (they appear pixelated when enlarged). SVG files, on the other hand, typically take up more space (for large single-cell data layouts, possibly hunreds of megabytes), but are resolution-independent. This is especially suitable for further image processing."
       )))
   })
-  
+
   ## Terminal nodes picker
   # Layout
   output$plot_termini <- renderPlot({
@@ -324,23 +324,23 @@ shiny_server <- function(input, output, session) {
         pch = 20
       )
     }
-    
+
     rasterImage(as.raster(matrix(colorRampPalette(c('yellow', 'brown', 'red'))(20), nc = 1)), 1.07, 0, 1.1, 0.9)
     text(x = 1.15, y = seq(0.01, 0.89, l = 3), labels = c('late', 'mid', 'early'))
     text(x = 1.10, y = 0.98, labels = 'PSEUDOTIME', font = 2)
-    
+
     if (react$image_export.termini) {
       dev.off()
       react$image_export.termini <- FALSE
     }
   })
-  
+
   # Buttons
   observeEvent(input$btn_termini_clear_termini, {
     react$termini_marked          <- data.frame()
     output$log_persistence_marked <- renderText('')
   })
-  
+
   observeEvent(input$btn_termini_update_walks_by_termini, {
     react$termini_processed <- react$termini_marked
     if (length(react$termini_marked) > 0) {
@@ -362,11 +362,37 @@ shiny_server <- function(input, output, session) {
       react$tracked_markers_last_removed.A <- react$tracked_markers_last_removed.B <- NULL
     }
   })
-  
+
+##METHOD CHANGED
+    observeEvent(input$btn_dendrogram_update_walks_selection, {
+    react$termini_processed <- react$termini_marked
+    if (length(react$dendrogram_selected_idcs) > 1) {
+      updated <- .update_walks_by_dendrogram(tv                = tv,
+                                          pseudotime        = react$pseudotime,
+                                          marked_termini    = react$termini_processed,
+                                          termini_per_path  = termini,
+                                          react$dendrogram_selected_idcs,
+                                          death_birth_ratio = react$persistence.death_birth_ratio,
+                                          death_on_x_axis = react$persistence.death_on_x_axis)
+      react$trajectories_random_walks <- updated$random_walks
+      react$representations           <- updated$repre
+      react$persistence               <- updated$pers
+      react$persistence_diagram       <- updated$pers_diag
+      react$dendrogram_ready          <- TRUE
+      react$persistence_selected      <- NULL
+      react$persistence_marked        <- NULL
+      output$log_persistence_marked   <- renderPrint({ cat('Freshly marked terminal nodes. No homology classes marked yet\n') })
+      react$trajectories_marked.A     <- NULL
+      react$trajectories_marked.B     <- NULL
+      react$tracked_markers_last_removed.A <- NULL
+      react$tracked_markers_last_removed.B <- NULL
+    }
+    })
+
   observeEvent(input$btn_termini_export_image, {
     react$image_export.termini <- TRUE
   })
-  
+
   # Logs
   output$log_termini_selected <- renderPrint({
     react$termini_selected <- as.numeric(rownames(brushedPoints(layout.df[[react$layout_name]][react$termini.unique, ], input$selector_termini, xvar = 'X', yvar = 'Y')))
@@ -376,7 +402,7 @@ shiny_server <- function(input, output, session) {
     react$termini_marked <- unique(unlist(c(react$termini_marked, react$termini_selected)))
     output$log_termini_marked <- renderPrint({ cat(sapply(react$termini_marked, function(s) paste0(s, ' (label: ', labels[[react$labels_name]][s], '; ', sum(react$termini == s), ' walks terminate here)')), sep = '\n') })
   })
-  
+
   ## Gating layout pop-up
   output$plot_gating_layout <- output$plot_gating_termini_layout <- renderPlot({
     gating_layout.colours <- react$gating_colour_vectors[[react$labels_name]]
@@ -391,7 +417,7 @@ shiny_server <- function(input, output, session) {
       ylim = c(0, 1)
     )
     plot(layout.raster)
-    
+
     layout.raster.origin <- scattermore(
       layout[[react$layout_name]][tv$origin[[react$pathmodel_name]], , drop = FALSE],
       rgba = col2rgb('#ded00b', alpha = 1),
@@ -419,7 +445,7 @@ shiny_server <- function(input, output, session) {
       bty = 'n'
     ))
   })
-  
+
   ## Homology class picker (persistence)
   # Layout
   output$plot_persistence <- renderPlot({
@@ -443,7 +469,7 @@ shiny_server <- function(input, output, session) {
           g <- g + xlab('(Birth + Death) / 2')
         }
         if (react$persistence.death_birth_ratio) {
-          g <- g + ylab('Death / Birth') 
+          g <- g + ylab('Death / Birth')
         } else {
           g <- g + ylab('(Death - Birth) / 2')
         }
@@ -455,7 +481,7 @@ shiny_server <- function(input, output, session) {
         dev.off()
         react$image_export.persistence <- FALSE
       }
-      
+
       g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot, size = yplot)) +
         scale_colour_gradientn(colours = rainbow(5)) +
         scale_size_continuous(range = c(.2, 8)) +
@@ -470,7 +496,7 @@ shiny_server <- function(input, output, session) {
         g <- g + xlab('(Birth + Death) / 2')
       }
       if (react$persistence.death_birth_ratio) {
-        g <- g + ylab('Death / Birth') 
+        g <- g + ylab('Death / Birth')
       } else {
         g <- g + ylab('(Death - Birth) / 2')
       }
@@ -490,7 +516,7 @@ shiny_server <- function(input, output, session) {
       }
     }
   })
-  
+
   observeEvent(input$btn_persistence_mark_classes, {
     graphical_columns        <- which(colnames(react$persistence_selected) %in% c('xplot', 'yplot'))
     react$persistence_marked <- .row_unique(rbind(react$persistence_marked, react$persistence_selected[, -graphical_columns]))
@@ -524,24 +550,24 @@ shiny_server <- function(input, output, session) {
   observeEvent(input$btn_persistence_export_image, {
     react$image_export.persistence <- TRUE
   })
-  
+
   observeEvent(input$switch_persistence_death_on_x_axis, {
     react$persistence.death_on_x_axis <- input$switch_persistence_death_on_x_axis
     react$persistence_diagram       <- .persistence_diagram(react$persistence, react$persistence.death_birth_ratio, react$persistence.death_on_x_axis)
   })
-  
+
   observeEvent(input$switch_persistence_ratio, {
     react$persistence.death_birth_ratio <- input$switch_persistence_ratio
     react$persistence_diagram       <- .persistence_diagram(react$persistence, react$persistence.death_birth_ratio, react$persistence.death_on_x_axis)
   })
-  
+
   ## Image export format switch
-  
+
   observeEvent(input$btn_image_export_format, {
     react$image_export_format <- input$btn_image_export_format
   })
-  
-  
+
+
   ## Trajectories dendrogram
   # Plot
   output$plot_dendrogram <- renderPlot({
@@ -561,7 +587,7 @@ shiny_server <- function(input, output, session) {
           dendrogram_plotted <- TRUE # if TRUE and SVG export button was clicked, also export the SVG
           simplices_selected            <- react$persistence$inds$death[idcs_selected]
           react$representations.reduced <- lapply(react$representations, function(x) x[x %in% simplices_selected])
-          
+
           if (((!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B)) &&
                (react$dendrogram_redraw_highlights || react$image_export.dendrogram)) || react$dendrogram_redraw_zoom) {
             dendrogram_plot               <- trajectories_dendrogram(precomputed_dendrogram        = react$dendrogram,
@@ -599,7 +625,7 @@ shiny_server <- function(input, output, session) {
       .draw_placeholder()
     }
   })
-  
+
   output$plot_dendrogram_zoom <- renderPlot({
     session$resetBrush('selector_dendrogram')
     if (!react$dendrogram_zoom_active) {
@@ -621,8 +647,8 @@ shiny_server <- function(input, output, session) {
           dendrogram_zoom_plotted       <- TRUE # if TRUE and SVG export button was clicked, also export the SVG
           simplices_selected            <- react$persistence$inds$death[idcs_selected]
           react$representations.reduced <- lapply(react$representations, function(x) x[x %in% simplices_selected])
-          
-          
+
+
           if (react$dendrogram_zoom_ready && (!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B) &&
                                               (react$dendrogram_zoom_redraw_highlights || react$image_export.dendrogram_zoom))) {
             dendrogram_zoom_plot        <- trajectories_dendrogram(  precomputed_dendrogram        = react$dendrogram_zoom,
@@ -656,7 +682,7 @@ shiny_server <- function(input, output, session) {
       .draw_placeholder(picture = 'petal')
     }
   })
-  
+
   # Leaf magnitude cutoff slider (in percentages)
   observeEvent(input$slider_dendrogram_leaf_cutoff, {
     react$dendrogram_zoom       <- NA
@@ -666,24 +692,24 @@ shiny_server <- function(input, output, session) {
     react$dendrogram_draw_zoomed_in <- FALSE
     react$dendrogram_leaf_perc_cutoff <- input$slider_dendrogram_leaf_cutoff
   })
-  
+
   # Buttons & logs
   observeEvent((input$btn_dendrogram_mark_leaves | input$btn_dendrogram_zoom_mark_leaves), {
     if (react$trajectories_group == 'A') {
       react$trajectories_marked.A        <- unique(unlist(c(react$trajectories_marked.A,        react$dendrogram_selection)))
       react$dendrogram_marked_leaves.A   <- unique(unlist(c(react$dendrogram_marked_leaves.A,   react$dendrogram_selected_leaves)))
       react$dendrogram_redraw_highlights <- TRUE
-      
+
       react$trajectories_marked_idcs.A   <- unique(unlist(c(react$trajectories_marked_idcs.A),  react$dendrogram_selected_idcs))
     } else if (react$trajectories_group == 'B') {
       react$trajectories_marked.B        <- unique(unlist(c(react$trajectories_marked.B,        react$dendrogram_selection)))
       react$dendrogram_marked_leaves.B   <- unique(unlist(c(react$dendrogram_marked_leaves.B, react$dendrogram_selected_leaves)))
       react$dendrogram_redraw_highlights <- TRUE
-      
+
       react$trajectories_marked_idcs.B   <- unique(unlist(c(react$trajectories_marked_idcs.B),  react$dendrogram_selected_idcs))
     }
   })
-  
+
   observeEvent((input$btn_dendrogram_clear_marked_leaves | input$btn_dendrogram_zoom_clear_marked_leaves), {
     if (react$trajectories_group == 'A') {
       if (!is.null(react$trajectories_marked.A) && is.null(react$trajectories_marked.B) && !is.null(react$dendrogram_zoom_idcs)) {
@@ -703,7 +729,7 @@ shiny_server <- function(input, output, session) {
       react$dendrogram_redraw_highlights   <- TRUE
     }
   })
-  
+
   pin_batch_modal <- function(default_name, failed = FALSE) {
     modalDialog(
       textInput('input_pin_batch_name', 'Pinned batch name', placeholder = '', value = default_name),
@@ -714,7 +740,7 @@ shiny_server <- function(input, output, session) {
       )
     )
   }
-  
+
   observeEvent(react$trajectories_to_pin, {
     if (is.null(react$output_ff)) {
       if (is.null(event_sel)) {
@@ -739,14 +765,14 @@ shiny_server <- function(input, output, session) {
         colname = 'total_pseudotime'
       )
     }
-    
+
     react$trajectories_pinned_batches_count <- react$trajectories_pinned_batches_count + 1
-    
+
     showModal(pin_batch_modal(default_name = paste0('pathway_batch_', sprintf("%03d", react$trajectories_pinned_batches_count))))
   })
-  
+
   observeEvent(input$btn_pin_batch_name, {
-    
+
     if (input$input_pin_batch_name != '') {
       walks        <- list()
       walks$v      <- unlist(react$trajectories_random_walks)
@@ -762,14 +788,14 @@ shiny_server <- function(input, output, session) {
       showModal(pin_batch_modal(failed = TRUE))
     }
   })
-  
+
   observeEvent(react$trajectories_pinned_batches_count, {
     count <- react$trajectories_pinned_batches_count
     output$log_pinned_batches_count <- output$pinned_batches_count_zoom <- renderPrint({
       cat(paste(count, ' ', if (count == 1) { 'batch' } else { 'batches' }, 'pinned'), '\n')
     })
   })
-  
+
   export_fcs_modal <- function(failed = FALSE) {
     modalDialog(
       textInput('input_export_fcs_name', 'Output FCS file name', placeholder = '', value = 'output.FCS'),
@@ -780,9 +806,9 @@ shiny_server <- function(input, output, session) {
       )
     )
   }
-  
-  
-  
+
+
+
   observeEvent((input$btn_trajectories_export_fcs), {
     if (is.null(react$output_ff)) {
       if (is.null(event_sel)) {
@@ -809,7 +835,7 @@ shiny_server <- function(input, output, session) {
     }
     showModal(export_fcs_modal())
   })
-  
+
   observeEvent((input$btn_trajectories_clear_pinned_trajectories), {
     if (is.null(react$output_ff)) {
       if (is.null(event_sel)) {
@@ -845,11 +871,11 @@ shiny_server <- function(input, output, session) {
       showModal(export_fcs_modal(failed = TRUE))
     }
   })
-  
+
   observeEvent((input$btn_dendrogram_export_image), {
     react$image_export.dendrogram <- TRUE
   })
-  
+
   observeEvent(input$btn_dendrogram_zoom, {
     df  <- data.frame(y = seq(0, 1, length.out = length(react$dendrogram_classes)))
     pts <- brushedPoints(df, input$selector_dendrogram, yvar = 'y')
@@ -867,7 +893,7 @@ shiny_server <- function(input, output, session) {
       react$dendrogram_draw_zoomed_in <- TRUE
     }
   })
-  
+
   # observeEvent((input$btn_dendrogram_mark_leaves | input$btn_dendrogram_zoom_mark_leaves), {
   #   if (react$trajectories_group == 'A') {
   #     react$trajectories_marked.A        <- unique(unlist(c(react$trajectories_marked.A,        react$dendrogram_selection)))
@@ -881,20 +907,20 @@ shiny_server <- function(input, output, session) {
   #     react$trajectories_marked_idcs.B   <- unique(unlist(c(react$trajectories_marked_idcs.B),  react$dendrogram_selected_idcs))
   #   }
   # })
-  
-  
+
+
   observeEvent(input$btn_trajectories_group, {
     react$trajectories_group <- input$btn_trajectories_group
   })
-  
+
   observeEvent(input$btn_trajectories_pin_trajectories.A, {
     react$trajectories_to_pin <- sort(unique(react$trajectories_marked.A))
   })
-  
+
   observeEvent(input$btn_trajectories_pin_trajectories.B, {
     react$trajectories_to_pin <- sort(unique(react$trajectories_marked.B))
   })
-  
+
   output$log_dendrogram_selected <- renderPrint({
     if (any(c(!is.na(react$dendrogram), !is.na(react$dendrogram_zoom)))) {
       if (react$dendrogram_zoom_active) {
@@ -921,9 +947,9 @@ shiny_server <- function(input, output, session) {
       cat(sizes, sep = ', ')
     }
   })
-  
+
   output$log_dendrogam_marked.A <- output$log_dendrogam_marked.B <- renderPrint({ cat('(none)') })
-  
+
   observeEvent(react$trajectories_marked.A, {
     react$trajectories_junk.A <- react$trajectories_junk.A[!react$trajectories_junk.A %in% react$trajectories_marked.A]
     junk_count                <- length(react$trajectories_junk.A)
@@ -938,7 +964,7 @@ shiny_server <- function(input, output, session) {
       output$log_trajectories_marked.A <- renderPrint({ cat('(none)\n') })
     }
   })
-  
+
   observeEvent(react$trajectories_marked.B, {
     react$trajectories_junk.B <- react$trajectories_junk.B[!react$trajectories_junk.B %in% react$trajectories_marked.B]
     junk_count                <- length(react$trajectories_junk.B)
@@ -953,7 +979,7 @@ shiny_server <- function(input, output, session) {
       output$log_trajectories_marked.B <- renderPrint({ cat('(none)\n') })
     }
   })
-  
+
   ## Trajectories layout
   # Plot
   output$plot_layout_trajectories <- renderPlot({
@@ -987,10 +1013,10 @@ shiny_server <- function(input, output, session) {
                            highlight_in_background = react$layout_trajectories_highlight_in_background, selected_trajectory_points = react$selected_trajectory_points,
                            pointsize = 1)
       }
-      
+
     }
   })
-  
+
   # Buttons
   observeEvent(input$btn_layout_trajectories_remove_highlight, {
     react$pseudotime_highlight_bounds  <- NULL
@@ -1004,7 +1030,7 @@ shiny_server <- function(input, output, session) {
   observeEvent(input$btn_layout_trajectories_export_image, {
     react$image_export.trajectories <- TRUE
   })
-  
+
   ## Marker expression trackers
   # Inputs
   observe({
@@ -1074,7 +1100,7 @@ shiny_server <- function(input, output, session) {
       }
     }
   })
-  
+
   observeEvent(input$btn_tracked_markers_undo_remove_trajectories.A, {
     if (!is.null(react$tracked_markers_last_removed.A)) {
       react$trajectories_marked.A          <- unique(unlist(c(react$trajectories_marked.A, react$tracked_markers_last_removed.A)))
@@ -1091,28 +1117,28 @@ shiny_server <- function(input, output, session) {
       react$tracked_markers_last_removed.B <- NULL
     }
   })
-  
+
   observeEvent(input$btn_tracked_markers_highlight_segments.A, {
     if (!is.null(react$tracked_markers.A)) {
       pts <- brushedPoints(react$tracked_markers_stats.A,
                            input$selector_tracked_markers.A,
                            xvar = 'segment', yvar = 'expression')
-      
+
       if (nrow(pts)>0){
-        
+
         ##----MODIFIED by JS - temp
         selected_trajectory_points<-NULL
         pts$inds_char<-as.character(pts$inds_char)
         for (i in 1:nrow(pts)){
-          
+
           if (pts$inds_char[i]!="NULL") selected_trajectory_points<-c(selected_trajectory_points,as.numeric(unlist(strsplit(pts$inds_char[i],split=","))))
         }
         react$selected_trajectory_points<-unique(selected_trajectory_points)
       }
-      
+
       ##--END of JS
-      
-      
+
+
       if (nrow(pts) > 0) {
         highlighted_segments <- sort(unique(pts$segment))
         react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.A[c(min(highlighted_segments), max(highlighted_segments) + 1)]
@@ -1122,27 +1148,27 @@ shiny_server <- function(input, output, session) {
       session$resetBrush('selector_tracked_markers.A')
     }
   })
-  
+
   observeEvent(input$btn_tracked_markers_highlight_segments.B, {
     if (!is.null(react$tracked_markers.B)) {
       pts <- brushedPoints(react$tracked_markers_stats.B,
                            input$selector_tracked_markers.B,
                            xvar = 'segment', yvar = 'expression')
-      
+
       if (nrow(pts)>0){
-        
+
         ##----MODIFIED by JS - temp
         selected_trajectory_points<-NULL
         pts$inds_char<-as.character(pts$inds_char)
         for (i in 1:nrow(pts)){
-          
+
           if (pts$inds_char[i]!="NULL") selected_trajectory_points<-c(selected_trajectory_points,as.numeric(unlist(strsplit(pts$inds_char[i],split=","))))
         }
         react$selected_trajectory_points<-unique(selected_trajectory_points)
       }
-      
+
       ##--END of JS
-      
+
       if (nrow(pts) > 0) {
         highlighted_segments <- sort(unique(pts$segment))
         react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments) + 1)]
@@ -1152,7 +1178,7 @@ shiny_server <- function(input, output, session) {
       session$resetBrush('selector_tracked_markers.B')
     }
   })
-  
+
   observeEvent(input$btn_tracked_populations_highlight_segments.A, {
     if (!is.null(react$tracked_populations.A)) {
       pts <- brushedPoints(react$tracked_populations_stats.A,
@@ -1162,11 +1188,11 @@ shiny_server <- function(input, output, session) {
         selected_trajectory_points<-NULL
         pts$inds_char<-as.character(pts$inds_char)
         for (i in 1:nrow(pts)){
-          
+
           if (pts$inds_char[i]!="NULL") selected_trajectory_points<-c(selected_trajectory_points,as.numeric(unlist(strsplit(pts$inds_char[i],split=","))))
         }
         react$selected_trajectory_points<-unique(selected_trajectory_points)
-        
+
         highlighted_segments <- sort(unique(pts$segment))
         react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments) + 1)]
       } else {
@@ -1175,23 +1201,23 @@ shiny_server <- function(input, output, session) {
       session$resetBrush('selector_tracked_populations.A')
     }
   })
-  
+
   observeEvent(input$btn_tracked_populations_highlight_segments.B, {
     if (!is.null(react$tracked_populations.B)) {
       pts <- brushedPoints(react$tracked_populations_stats.B,
                            input$selector_tracked_populations.B,
                            xvar = 'segment', yvar = 'count')
       if (nrow(pts)>0){
-        
+
         ##----MODIFIED by JS - temp
         selected_trajectory_points<-NULL
         pts$inds_char<-as.character(pts$inds_char)
         for (i in 1:nrow(pts)){
-          
+
           if (pts$inds_char[i]!="NULL") selected_trajectory_points<-c(selected_trajectory_points,as.numeric(unlist(strsplit(pts$inds_char[i],split=","))))
         }
         react$selected_trajectory_points<-unique(selected_trajectory_points)
-        
+
         highlighted_segments <- sort(unique(pts$segment))
         react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments) + 1)]
       } else {
@@ -1200,7 +1226,7 @@ shiny_server <- function(input, output, session) {
       session$resetBrush('selector_tracked_populations.B')
     }
   })
-  
+
   observeEvent(input$btn_tracked_markers_export_image.A, {
     react$image_export.tracked_markers.A <- TRUE
   })
@@ -1213,7 +1239,7 @@ shiny_server <- function(input, output, session) {
   observeEvent(input$btn_tracked_populations_export_image.B, {
     react$image_export.tracked_populations.B <- TRUE
   })
-  
+
   # Plots
   output$plot_tracked_markers.A <- renderPlot({
     session$resetBrush('selector_tracked_markers.A')
@@ -1297,7 +1323,7 @@ shiny_server <- function(input, output, session) {
       react$tracked_markers_ready.B <- FALSE
     }
   })
-  
+
   ## Population composition trackers
   # Inputs
   observeEvent(input$check_tracked_populations_log2_transform, {
@@ -1319,7 +1345,7 @@ shiny_server <- function(input, output, session) {
       updateSelectInput(session, 'input_tracked_populations.A', selected = input$input_tracked_populations.B)
     }
   })
-  
+
   # Plots
   output$plot_tracked_populations.A <- renderPlot({
     session$resetBrush('selector_tracked_populations.A')
@@ -1338,7 +1364,7 @@ shiny_server <- function(input, output, session) {
                                      grey = !react$image_export.tracked_populations.A)
       react$tracked_populations_stats.A         <- p$stats
       react$tracked_markers_pseudotime_bounds.A <- p$pseudotime_bounds
-      
+
       if (react$image_export.tracked_populations.A) {
         if (react$image_export_format == 'SVG') {
           svg(filename = paste0('Populations_A_', Sys.time(), '.svg'), width = 10, height = 6)
@@ -1382,7 +1408,7 @@ shiny_server <- function(input, output, session) {
                                      grey = !react$image_export.tracked_populations.B)
       react$tracked_populations_stats.B         <- p$stats
       react$tracked_markers_pseudotime_bounds.B <- p$pseudotime_bounds
-      
+
       if (react$image_export.tracked_populations.B) {
         if (react$image_export_format == 'SVG') {
           svg(filename = paste0('Populations_B_', Sys.time(), '.svg'), width = 10, height = 6)
@@ -1410,219 +1436,219 @@ shiny_server <- function(input, output, session) {
     }
   })
   ## TOOLTIPS ON HOVER
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_termini_mark_termini',
              title = 'Mark selected terminal nodes',
              trigger = 'hover',
              options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_termini_clear_termini',
              title = 'Clear marked terminal nodes',
              trigger = 'hover',
              options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_termini_update_walks_by_termini',
              title = 'Classify walks',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_termini_export_image',
              title = 'Export image of the layout above',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_left_show_gating',
              title = 'Show layout with labelled populations',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_termini_show_gating',
              title = 'Show layout with labelled populations',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_persistence_mark_classes',
              title = 'Mark selected homology classes',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_persistence_clear_classes',
              title = 'Clear marked homology classes',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_persistence_export_image',
              title = 'Export image of the above persistence diagram',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'switch_persistence_ratio',
              title = 'Show ratio of Death and Birth filtration values on y-axis, for data containing regions with dissimilar densities of points',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_dendrogram_mark_leaves',
              title = 'Mark selected leaves of HCP dendrogram',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_dendrogram_clear_marked_leaves',
              title = 'Clear marked leaves of the HCP dendrogram',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_dendrogram_zoom',
              title = 'Generate a zoomed-in view of the selected area',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_trajectories_export_fcs',
              title = 'Export FCS file with 2-d layout and all pinned walks',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_trajectories_clear_pinned_trajectories',
              title = 'Clear pinned walks',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_dendrogram_export_image',
              title = 'Export image of the HCP dendrogram',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_dendrogram_zoom_mark_leaves',
              title = 'Mark selected leaves of HCP dendrogram',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_dendrogram_zoom_mark_leaves',
              title = 'Mark selected leaves of HCP dendrogram',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'slider_dendrogram_leaf_cutoff',
              title = 'Set a threshold minimum percentage of all simulated walks per branch for pruning the HCP dendrogram',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_trajectories_pin_trajectories.A',
              title = 'Pin walks in group A',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_trajectories_pin_trajectories.B',
              title = 'Pin walks in group A',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_layout_trajectories_remove_highlight',
              title = 'Remove pseudotime segment highlighting in the above layout',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_layout_trajectories_highlight_in_background',
              title = 'Toggle pseudotime segment highlighting in background/foreground with respect to plotted walks',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_layout_trajectories_flip_colours',
              title = 'Toggle plotting group A walks in foreground/background with respect to group B walks',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_layout_trajectories_export_image',
              title = 'Export image of the above layout',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'input_trackers_scaling_exponent',
              title = 'Scaling exponent for pseudotime segmentation',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'input_trackers_n_segments',
              title = 'Number of pseudotime segments',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'check_trackers_large_base_size',
              title = 'Use larger font for in the plots below',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_tracked_markers_remove_trajectories.A',
              title = 'Remove all simulated walks passing through selection from group A',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_tracked_markers_remove_trajectories.B',
              title = 'Remove all simulated walks passing through selection from group B',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_tracked_markers_undo_remove_trajectories.A',
              title = 'Undo last removal walks in group A',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_tracked_markers_undo_remove_trajectories.B',
              title = 'Undo last removal walks in group B',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_tracked_markers_highlight_segments.A',
              title = 'Highlight selected pseudotime segments in the layout above',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_tracked_markers_highlight_segments.B',
              title = 'Highlight selected pseudotime segments in the layout above',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_tracked_markers_export_image.A',
              title = 'Export image of tracked marker expression changes in group A of simulated walks',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_tracked_markers_export_image.B',
              title = 'Export image of tracked marker expression changes in group B of simulated walks',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_tracked_populations_highlight_segments.A',
              title = 'Highlight selected pseudotime segments in the layout above',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_tracked_populations_highlight_segments.B',
              title = 'Highlight selected pseudotime segments in the layout above',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_tracked_populations_export_image.A',
              title = 'Export image of tracked representation of populations along pseudotime progression in group A of simulated walks',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_tracked_populations_export_image.B',
              title = 'Export image of tracked representation of populations along pseudotime progression in group B of simulated walks',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'check_tracked_populations_log2_transform',
              title = 'Apply log2 transform to sizes of labelled populations for tracking representation of populations along pseudotime progression (good for extremely abundant and rare populations)',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_trackers_enlarge',
              title = 'Display larger marker and population trackers for the two groups of simulated walks',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
-  addTooltip(session, 
+  addTooltip(session,
              id    = 'btn_help',
              title = 'Show instructions for new users',
              trigger = 'hover',     options = list(delay = list(show=500))
