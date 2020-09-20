@@ -963,20 +963,19 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 }
 
 ##METHOD CHANGED
-.update_walks_by_dendrogram <- function(tv,
+.update_walks_by_dendrogram <-  function(tv,
+                                     pathmodel_name,
                                      pseudotime,
                                      marked_termini,
                                      idcs,
                                      termini_per_path,
                                      death_birth_ratio,
                                      death_on_x_axis) {
-
-   ## Identify chosen walks
-  ##idcs <- which(termini_per_path %in% marked_termini)[idcs]
+  ## Identify chosen walks
+  ##idcs <- which(termini_per_path %in% marked_termini)
 
   ## Remove other walks
-
-  walks.selected <- lapply(idcs, function(idx) select_paths_points(tv$walks, idx))
+  walks.selected <- lapply(idcs, function(idx) select_paths_points(tv$walks[[pathmodel_name]], idx))
   lens           <- sapply(walks.selected, length)
   walks.selected <- list(v      = unlist(walks.selected),
                          starts = c(1, 1 + cumsum(lens[-length(lens)])))
@@ -1043,6 +1042,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
               pers         = p$pers,
               pers_diag    = p$pd))
 }
+
 
 .compute_persistence <- function(
   tv,

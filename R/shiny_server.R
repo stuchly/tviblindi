@@ -368,10 +368,11 @@ shiny_server <- function(input, output, session) {
     react$termini_processed <- react$termini_marked
     if (length(react$dendrogram_selected_idcs) > 1) {
       updated <- .update_walks_by_dendrogram(tv                = tv,
-                                          pseudotime        = react$pseudotime,
+                                          pathmodel_name    = react$pathmodel_name,
+                                          pseudotime        = tv$pseudotime[[react$pathmodel_name]],
                                           marked_termini    = react$termini_processed,
-                                          termini_per_path  = termini,
                                           react$dendrogram_selected_idcs,
+                                          termini_per_path  = react$termini,
                                           death_birth_ratio = react$persistence.death_birth_ratio,
                                           death_on_x_axis = react$persistence.death_on_x_axis)
       react$trajectories_random_walks <- updated$random_walks
