@@ -40,7 +40,7 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=
 
     out<-new.env(hash=TRUE)
     out$analysis_name<-analysis_name
-    out$origin<-list(default=NULL)
+    out$origin<-list()
     out$data=data
     out$denoised=NULL
     out$labels<-lapply(labels, as.factor)
@@ -91,7 +91,7 @@ Set_origin<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Set_origin.tviblindi<-function(x,label, labels_name = names(x$labels)[1],origin_name="default"){
+Set_origin.tviblindi<-function(x,label, labels_name = names(x$labels)[1],origin_name=ifelse(is.character(label),label,"default")){
     stopifnot(length(label)==1)
     if (is.integer(label)){
         x$origin[[origin_name]]<-label
@@ -266,7 +266,7 @@ Pseudotime<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="Exp",kepsilon=NULL,sym="max",origin_name=names(x$origin[[origin_name]])[1]){
+Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="Exp",kepsilon=NULL,sym="max",origin_name=names(x$origin)[1]){
     stopifnot(!is.null(x$origin[[origin_name]]))
     if (length(x$origin[[origin_name]])==0) stop("Origin not set!")
     if (K>dim(x$KNN$IND)[2]){
@@ -384,9 +384,9 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
         equinumerous<-TRUE
     }
 
-    x$fates <- which(!(1:nrow(x$data) %in% Matrix::summary(oriented.sparseMatrix)$i))
+    x$fates[[origin_name]] <- which(!(1:nrow(x$data) %in% Matrix::summary(oriented.sparseMatrix)$i))
     if (equinumerous){
-        if (is.null(fates)) fates<-x$fates
+        if (is.null(fates)) fates<-x$fates[[origin_name]]
         g<-igraph::graph_from_adjacency_matrix(oriented.sparseMatrix,weighted=TRUE,mode="directed")
         V(g)$names<-1:nrow(x$data)
 
@@ -636,7 +636,7 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
     x$boundary<-NULL
     x$reduced_boundary<-NULL
     x$walks<-list()
-    x$fates<-NULL
+    x$fates<-list()
     x$KNN<-NULL
     x$sim<-NULL
     x$dsym<-NULL

@@ -31,7 +31,8 @@ shiny_server <- function(input, output, session) {
 
   ### Reactive values
   react <- reactiveValues()
-  react$pathmodel_name <- 1
+  react$pathmodel_name <- names(tv$origin)[1]
+
   if (!is.list(tv$pseudotime) || names(tv$pseudotime)[1] == 'res') {
     tv$pseudotime <- list(default = tv$pseudotime)
   }
