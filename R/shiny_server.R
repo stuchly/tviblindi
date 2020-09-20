@@ -384,7 +384,6 @@ shiny_server <- function(input, output, session) {
       react$trajectories_random_walks <- updated$random_walks
       react$representations           <- updated$repre
       react$triangulation<-updated$triangulation
-      react$repre<-updated$repre
       react$persistence               <- updated$pers
       react$persistence_diagram       <- updated$pers_diag
       react$dendrogram_ready          <- TRUE
