@@ -46,7 +46,8 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL,selecte
         labels[[labl+1]]<-c(labels[[labl+1]],rep(as.character(i),length(x[[i]]$labels[[1]])))
         if (selected_only) ev_loc<-1:length(x[[i]]$events_sel) else ev_loc<-x[[i]]$events_sel
         events_sel<-c(events_sel,ev_loc+offset)
-        offset<-offset+nrow(flowCore::exprs(fcs[[i]]))
+        offset<-offset+ifelse(selected_only,length(ev_loc),nrow(flowCore::exprs(fcs[[i]])))
+
 
     }
 
@@ -86,10 +87,10 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL,selecte
 
 .enrich_fcs<-function (original, new.column, nw.names = NULL)
 {
-    new_p <- parameters(original)[1, ]
+    new_p <- flowCore::parameters(original)[1, ]
     new_p_number <- as.integer(dim(original)[2] + 1)
     rownames(new_p) <- c(paste0("$P", new_p_number))
-    allPars <- BiocGenerics::combine(parameters(original), new_p)
+    allPars <- BiocGenerics::combine(flowCore::parameters(original), new_p)
     if (is.null(nw.names)) {
         new_p_name <- "new_col"
     }
