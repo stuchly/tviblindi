@@ -6,7 +6,7 @@
 }
 
 ##METHOD CHANGED - METHOD ADDED
-merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL){
+merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL,selected_only=FALSE){
     stopifnot(is_list(x))
     labl<-unique(sapply(x,FUN=function(x) length(x$labels)))
     if (length(labl)>1) stop("Incompatible labeling")
@@ -44,7 +44,8 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL){
         data<-rbind(data,x[[i]]$data)
         for (j in 1:labl) labels[[j]]<-c(labels[[j]],as.character(x[[i]]$labels[[j]]))
         labels[[labl+1]]<-c(labels[[labl+1]],rep(as.character(i),length(x[[i]]$labels[[1]])))
-        events_sel<-c(events_sel,x[[i]]$events_sel+offset)
+        ev_loc<-ifelse(selected_only,1:length(x[[i]]$events_sel),x[[i]]$events_sel)
+        events_sel<-c(events_sel,ev_loc+offset)
         offset<-offset+nrow(flowCore::exprs(fcs[[i]]))
 
     }
@@ -53,7 +54,7 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL){
         if (normalize=="perc") data<-normalize.perc(data) else if (normalize=="scale") data<-scale(data)
     }
     shuff<-sample(1:nrow(data))
-    fcs<-.concat_fcs(fcs,params=paste("fileID",Nf,sep="_"))
+    fcs<-.concat_fcs(fcs,x,params=paste("fileID",Nf,sep="_"))
     flowCore::write.FCS(fcs,filename=fcsout)
     for (i in 1:(labl+1)) labels[[i]]<-labels[[i]][shuff]
     x<-tviblindi(data=data[shuff,],labels=labels,events_sel=events_sel[shuff],fcs=fcsout)
@@ -62,13 +63,13 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL){
 }
 
 ##adapted from package FlowCIPHE.
-.concat_fcs<-function (flow.frames, params = "Flag")
+.concat_fcs<-function (flow.frames,x, params = "Flag")
 {
     stopifnot(is_list(flow.frames))
     ff.concat <- NULL
     n <- length(flow.frames)
     for (i in 1:n) {
-        ff.raw <- flow.frames[[i]]
+        ff.raw <- flow.frames[[i]][x[[i]]$events_sel]
         p <- matrix(i, nrow = nrow(ff.raw), ncol = 1, dimnames = list(NULL,
             params))
         new.col <- as.vector(p)
