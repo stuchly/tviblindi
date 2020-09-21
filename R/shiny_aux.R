@@ -425,7 +425,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                pseudotime,
                                highlight_in_background,
                                selected_trajectory_points=NULL,
-                               pointsize = 1.2,
+                               pointsize = .05,
                                ...) {
     ## Plot trajectories over a 2D layout
     col1 <- c(34, 87, 201, 255)
@@ -449,7 +449,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
             if (!is.null(selected_trajectory_points)) pts<-X[selected_trajectory_points, ,drop=FALSE]
 
-            plot(scattermore(pts, rgba = c(0, 153, 31, 255), xlim = c(0, 1), ylim = c(0, 1), cex = pointsize + 1), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+            plot(scattermore(pts, rgba = c(0, 153, 31, 255), xlim = c(0, 1), ylim = c(0, 1), cex = pointsize), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
         }
     }
 
@@ -498,7 +498,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         if (length(idcs.highlight) > 0) {
             pts <- X[idcs.highlight, , drop = FALSE]
             if (!is.null(selected_trajectory_points)) pts<-X[selected_trajectory_points, ,drop=FALSE]
-            plot(scattermore(pts, rgba = c(0, 153, 31, 255), xlim = c(0, 1), ylim = c(0, 1), cex = pointsize + 1), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+            plot(scattermore(pts, rgba = c(0, 153, 31, 255), xlim = c(0, 1), ylim = c(0, 1), cex = pointsize), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
         }
     }
 }
@@ -511,13 +511,14 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                     pseudotime_highlight_bounds,
                                     pseudotime,
                                     highlight_in_background,
+                                    pointsize = .08,
                                     ...) {
     cols <- c('blue', 'darkred')
     j      <- 0
     sel1   <- walks[walk_idcs.A]
     sel2   <- walks[walk_idcs.B]
 
-    plot(X, pch = 20, cex = 0.2, col = 'darkgrey', xlim = c(0, 1), ylim = c(0, 1), axes = FALSE, xlab = '', ylab = '')
+    plot(X, pch = 20, cex = pointsize, col = 'darkgrey', xlim = c(0, 1), ylim = c(0, 1), axes = FALSE, xlab = '', ylab = '')
 
     if (!is.null(pseudotime_highlight_bounds) && highlight_in_background) {
         p <- pseudotime$res / max(pseudotime$res)

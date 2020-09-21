@@ -1015,7 +1015,7 @@ shiny_server <- function(input, output, session) {
       if (react$image_export_format == 'SVG') {
         svg(filename = paste0('Trajectories_', Sys.time(), '.svg'))
       } else {
-        png(filename = paste0('Trajectories_', Sys.time(), '.png'), width = 1000, height = 900)
+        png(filename = paste0('Trajectories_', Sys.time(), '.png'), width = 1200, height = 950)
       }
       .plot_trajectories_full(layout[[react$layout_name]],
                               react$trajectories_random_walks,
@@ -1025,7 +1025,8 @@ shiny_server <- function(input, output, session) {
                               pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
                               pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { tv$pseudotime[[react$pathmodel_name]] },
                               highlight_in_background = react$layout_trajectories_highlight_in_background,
-                              selected_trajectory_points = react$selected_trajectory_points)
+                              selected_trajectory_points = react$selected_trajectory_points,
+                              pointsize = react$layout_pointsize)
       dev.off()
       react$image_export.trajectories <- FALSE
     } else {
@@ -1039,7 +1040,7 @@ shiny_server <- function(input, output, session) {
                            pseudotime_highlight_bounds = react$pseudotime_highlight_bounds,
                            pseudotime = if (is.null(react$pseudotime_highlight_bounds)) { NULL } else { tv$pseudotime[[react$pathmodel_name]] },
                            highlight_in_background = react$layout_trajectories_highlight_in_background, selected_trajectory_points = react$selected_trajectory_points,
-                           pointsize = 1)
+                           pointsize = react$layout_pointsize)
       }
 
     }
