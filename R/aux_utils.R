@@ -55,7 +55,7 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL,selecte
         if (normalize=="perc") data<-normalize.perc(data) else if (normalize=="scale") data<-scale(data)
     }
     if (shuffle) shuff<-sample(1:nrow(data)) else shuff<-1:nrow(data)
-    fcs<-.concat_fcs(fcs,x,params=paste("fileID",Nf,sep="_"))
+    fcs<-.concat_fcs(fcs,x,params=paste("fileID",Nf,sep="_"),selected_only=selected_only)
     flowCore::write.FCS(fcs,filename=fcsout)
     for (i in 1:(labl+1)) labels[[i]]<-labels[[i]][shuff]
     x<-tviblindi(data=data[shuff,],labels=labels,events_sel=events_sel[shuff],fcs=fcsout)
@@ -64,13 +64,13 @@ merge_tviblindi<-function(x,fcsout="concatenated_fcs.fcs",normalize=NULL,selecte
 }
 
 ##adapted from package FlowCIPHE.
-.concat_fcs<-function (flow.frames,x, params = "Flag")
+.concat_fcs<-function (flow.frames,x, params = "Flag",selected_only=FALSE)
 {
     stopifnot(is_list(flow.frames))
     ff.concat <- NULL
     n <- length(flow.frames)
     for (i in 1:n) {
-        ff.raw <- flow.frames[[i]][x[[i]]$events_sel]
+        if (selected_only) ff.raw <- flow.frames[[i]][x[[i]]$events_sel] else ff.raw <- flow.frames[[i]]
         p <- matrix(i, nrow = nrow(ff.raw), ncol = 1, dimnames = list(NULL,
             params))
         new.col <- as.vector(p)
