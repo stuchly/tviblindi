@@ -644,7 +644,7 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
     x$metaclusters<-NULL
     x$codes<-NULL
     x$sominfo<-NULL
-    x$layout<-x$layout[ss,]
+    for (i in 1:length(x$layout)) x$layout[[i]]<-x$layout[[i]][ss,]
     for (idx.labels in 1:length(x$labels)) {
         x$labels[[idx.labels]]<-x$labels[[idx.labels]][ss]
     }
