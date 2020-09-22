@@ -449,7 +449,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
             if (!is.null(selected_trajectory_points)) pts<-X[selected_trajectory_points, ,drop=FALSE]
 
-            plot(scattermore(pts, rgba = c(0, 153, 31, 255), xlim = c(0, 1), ylim = c(0, 1), cex = pointsize), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+            plot(scattermore(pts, rgba = c(0, 153, 31, 255), xlim = c(0, 1), ylim = c(0, 1), cex = pointsize + 1), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
         }
     }
 
@@ -498,7 +498,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         if (length(idcs.highlight) > 0) {
             pts <- X[idcs.highlight, , drop = FALSE]
             if (!is.null(selected_trajectory_points)) pts<-X[selected_trajectory_points, ,drop=FALSE]
-            plot(scattermore(pts, rgba = c(0, 153, 31, 255), xlim = c(0, 1), ylim = c(0, 1), cex = pointsize), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
+            plot(scattermore(pts, rgba = c(0, 153, 31, 255), xlim = c(0, 1), ylim = c(0, 1), cex = pointsize + 1), add = TRUE, xlim = c(0, 1), ylim = c(0, 1))
         }
     }
 }
@@ -529,7 +529,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
         if (length(idcs.highlight) > 0) {
             pts <- X[idcs.highlight, , drop = FALSE]
-            points(pts, col = 'lightgreen', pch = 20, cex = 0.4)
+            points(pts, col = 'lightgreen', pch = 20, cex = pointsize + 1)
         }
     }
 
@@ -574,7 +574,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
         if (length(idcs.highlight) > 0) {
             pts <- X[idcs.highlight, , drop = FALSE]
-            points(pts, col = 'lightgreen', pch = 20, cex = 0.4)
+            points(pts, col = 'lightgreen', pch = 20, cex = pointsize + 1)
         }
     }
 }
