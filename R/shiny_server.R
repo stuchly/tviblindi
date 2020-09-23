@@ -756,12 +756,18 @@ shiny_server <- function(input, output, session) {
         layout_X <- layout.df[[react$layout_name]]$X * 100
         layout_Y <- layout.df[[react$layout_name]]$Y * 100
         ps       <- as.numeric(as.factor(tv$pseudotime[[react$pathmodel_name]]$res))
+        labels_out<-matrix(NA,ncol=length(tv$labels),nrow=length(tv$labels[[1]]))
+        colnames(labels_out)<-paste("label",names(tv$labels),sep="_")
+        for (i in 1:length(tv$labels)) labels_out[,i]<-as.numeric(tv1$labels[[i]])
       } else {
         layout_X <- layout_Y <- rep(-100, nrow(input_ff))
         layout_X[event_sel] <- layout.df[[react$layout_name]]$X * 100
         layout_Y[event_sel] <- layout.df[[react$layout_name]]$Y * 100
         ps           <- rep(-100, nrow(input_ff))
         ps[event_sel] <- as.numeric(as.factor(tv$pseudotime[[react$pathmodel_name]]$res))
+        labels_out<-matrix(-100,ncol=length(tv$labels),nrow=nrow(input_ff))
+        colnames(labels_out)<-paste("label",names(tv$labels),sep="_")
+        for (i in 1:length(tv$labels)) labels_out[event_sel,i]<-tv1$labels[[i]]
       }
       react$output_ff <- fcs.add_col(
         fcs.add_col(
