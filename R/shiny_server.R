@@ -779,9 +779,9 @@ shiny_server <- function(input, output, session) {
         ps,
         colname = 'total_pseudotime'
       )
-
+      for (i in 1:ncol(labels_out)) react$output_ff<-fcs.add_col(react$output_ff,labels_out[,i],colname=colnames(labels_out)[i])
     }
-    for (i in 1:ncol(labels_out)) react$output_ff<-fcs.add_col(react$output_ff,labels_out[,i],colname=colnames(labels_out)[i])
+
     react$trajectories_pinned_batches_count <- react$trajectories_pinned_batches_count + 1
 
     showModal(pin_batch_modal(default_name = paste0('pathway_batch_', sprintf("%03d", react$trajectories_pinned_batches_count))))
