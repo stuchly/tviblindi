@@ -557,7 +557,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
             points(pts[, 1], pts[, 2], pch = 20, cex = 0.2, col = alpha(cols[1], 0.3))
         }
     }
-    if (length(sel1) > 0) {
+    if (length(sel2) > 0) {
         for (i in sel2) {
             j   <- j + 1
             pts <- X[i, ]

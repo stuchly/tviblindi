@@ -136,6 +136,7 @@ shiny_server <- function(input, output, session) {
 
   react$labels.aligned <-
     react$cols <-
+    react$cols_as_matrix <-
     react$colours.aligned <-
     react$gating_colour_vectors <- NULL
 
@@ -154,9 +155,18 @@ shiny_server <- function(input, output, session) {
   layout.df <- lapply(layout, function(l) data.frame(l) %>% setNames(c('X', 'Y')))
   names(layout.df) <- names(layout)
 
+  observe({
+    updateSelectInput(session, 'input_dimred_method', choices = names(layout))
+    updateSelectInput(session, 'input_labels_name', choices = names(labels))
+    updateSelectInput(session, 'input_pathmodel_name', choices = names(tv$origin))
+  })
+  
   observeEvent(input$input_labels_name, react$labels_name <- input$input_labels_name)
   observeEvent(input$input_pathmodel_name, {
     react$pathmodel_name <- input$input_pathmodel_name
+    if (!react$pathmodel_name %in% names(tv$origin)) {
+      react$pathmodel_name <- names(tv$origin)[1]
+    }
     ## Compute pseudotime colouring
     psc <- as.numeric(as.factor(tv$pseudotime[[react$pathmodel_name]]$res))
     psc <- psc / max(psc)
@@ -164,7 +174,7 @@ shiny_server <- function(input, output, session) {
     pal.hex <- gplots::colorpanel(10500, low = 'yellow', mid = 'brown', high = 'red')
     pal.rgba <- col2rgb(pal.hex, alpha = 0.7)
     react$cols <- pal.hex[psc]
-    cols_as_matrix <- pal.rgba[, psc]
+    react$cols_as_matrix <- pal.rgba[, psc]
 
     ## Produce event colouring by pseudotime values & sort population labels by pseudotime
     gating_palette <- c(RColorBrewer::brewer.pal(8, 'Dark2'), RColorBrewer::brewer.pal(12, 'Paired')[-11], RColorBrewer::brewer.pal(9, 'Set1')[-6], RColorBrewer::brewer.pal(8, 'Accent')[5:8])
@@ -205,11 +215,6 @@ shiny_server <- function(input, output, session) {
     session$resetBrush('selector_tracked_markers.B')
   })
 
-  observe({
-    updateSelectInput(session, 'input_dimred_method', choices = names(layout))
-    updateSelectInput(session, 'input_labels_name', choices = names(labels))
-    updateSelectInput(session, 'input_pathmodel_name', choices = names(tv$origin))
-  })
   observeEvent(input$input_dimred_method, react$layout_name <- input$input_dimred_method)
   observeEvent(input$btn_layout_pointsize, react$layout_pointsize <- as.numeric(input$btn_layout_pointsize))
 
@@ -254,15 +259,15 @@ shiny_server <- function(input, output, session) {
   output$plot_termini <- renderPlot({
     if (react$image_export.termini) {
       if (react$image_export_format == 'SVG') {
-        svg(filename = paste0('Termini_', Sys.time(), '.svg'))
+        svg(filename = paste0('Termini_', Sys.time(), '.svg'), width = 1000, height = 900)
       } else {
         png(filename = paste0('Termini_', Sys.time(), '.png'), width = 1000, height = 900)
       }
-      par(mar = c(0, 0, 0, 0))
+      par(mar = c(1, 1, 1, 1))
       layout.raster <- scattermore(
           xy = layout[[react$layout_name]],
           cex = react$layout_pointsize,
-          rgba = cols_as_matrix,
+          rgba = react$cols_as_matrix,
           xlim = c(0, 1.2),
           ylim = c(0, 1)
       )
@@ -293,6 +298,13 @@ shiny_server <- function(input, output, session) {
         )
         plot(layout.raster.fates, add = TRUE)
       }
+      # rasterImage(as.raster(matrix(colorRampPalette(c('yellow', 'brown', 'red'))(20), nc = 1)), 1.07, 0, 1.1, 0.9)
+      # text(x = 1.15, y = seq(0.01, 0.89, l = 3), labels = c('late', 'mid', 'early'))
+      # text(x = 1.10, y = 0.98, labels = 'PSEUDOTIME', font = 2)
+      rasterImage(as.raster(matrix(colorRampPalette(c('yellow', 'brown', 'red'))(20), nc = 1)), xleft = 465, ybottom = 0, xright = 480, ytop = 485)
+      text(x = 500, y = seq(10, 475, l = 3), labels = c('late', 'mid', 'early'), cex = 1.4)
+      text(x = 485, y = 500, labels = 'PSEUDOTIME', font = 2, cex = 1.4)
+      
     } else {
       par(mar = c(1, 1, 1, 1))
       plot(
@@ -324,11 +336,10 @@ shiny_server <- function(input, output, session) {
         cex = if (react$image_export.termini && react$image_export_format != 'SVG') { 5 } else { 3 },
         pch = 20
       )
+      rasterImage(as.raster(matrix(colorRampPalette(c('yellow', 'brown', 'red'))(20), nc = 1)), 1.07, 0, 1.1, 0.9)
+      text(x = 1.15, y = seq(0.01, 0.89, l = 3), labels = c('late', 'mid', 'early'))
+      text(x = 1.10, y = 0.98, labels = 'PSEUDOTIME', font = 2)
     }
-
-    rasterImage(as.raster(matrix(colorRampPalette(c('yellow', 'brown', 'red'))(20), nc = 1)), 1.07, 0, 1.1, 0.9)
-    text(x = 1.15, y = seq(0.01, 0.89, l = 3), labels = c('late', 'mid', 'early'))
-    text(x = 1.10, y = 0.98, labels = 'PSEUDOTIME', font = 2)
 
     if (react$image_export.termini) {
       dev.off()
