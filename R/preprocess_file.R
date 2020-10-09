@@ -1,5 +1,5 @@
 tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventprefix="/[A-Z]_",origin="^A_",
-                                normalize=FALSE,sep="\t",ftrans=function(x) asinh(x/5.),comp=NULL){
+                                normalize=FALSE,sep="\t",ftrans=function(x) asinh(x/5.),comp=NULL, sampNloc = 'sampleNode'){
   require(CytoML)
   require(flowWorkspace)
 
@@ -9,7 +9,7 @@ tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventpr
   if(!is.null(comp)) fcs<-compensate(fcs,fcs@description[[comp]])
   chans<-protilatky$name[protilatky$use==1]
   chans<-which(fcs@parameters@data$name %in% chans)
-  gs<-flowjo_to_gatingset(ws,name=1,subset=1)
+  gs<-flowjo_to_gatingset(ws,name=1,subset=1, sampNloc = sampleNloc)
   PP<-gs_get_pop_paths(gs[[1]])
   ppi<-grep(eventsufix,PP)
   if (length(ppi)==0){

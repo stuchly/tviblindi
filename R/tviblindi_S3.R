@@ -330,7 +330,7 @@ Walks<-function(x,...){
 #' @export
 Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL, labels_name = 'default', add=FALSE,kernel="Exp",kepsilon=NULL,sym="max",origin_name=names(x$origin)[1]){
     if (length(x$origin[[origin_name]])==0) stop("Origin not set!")
-    add.walks<-function(x,walks,origin_name=origin_name){
+    add.walks<-function(x,walks,origin_name){
         if(is.null(x$walks[[origin_name]])) x$walks[[origin_name]]<-list(starts=NULL,v=NULL)
         x$walks[[origin_name]]$starts<-c(x$walks[[origin_name]]$starts,walks$starts+length(x$walks[[origin_name]]$v))
         x$walks[[origin_name]]$v<-c(x$walks[[origin_name]]$v,walks$v)
@@ -363,7 +363,7 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
         if (!add){
             x$walks[[origin_name]]<-walks
         } else{
-            add.walks(x,walks)
+            add.walks(x,walks,origin_name)
         }
 
     }
@@ -403,7 +403,7 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
             gf[,2]<-nnf[gf[,2]]
             adjro<-sparseMatrix(i=gf$i,j=gf$j,x=gf$x,dims=dim(oriented.sparseMatrix))
             walks<-random_walk_adj_N_push(adjro, x$origin[[origin_name]], N)
-            add.walks(x,walks)
+            add.walks(x,walks,origin_name)
         }
     }
 

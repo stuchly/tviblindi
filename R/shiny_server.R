@@ -19,7 +19,7 @@ shiny_server <- function(input, output, session) {
   tv_name <- readRDS(file.path(INPUTS_DIRECTORY, 'tv.RDS'))
   tv <- get(tv_name, parent.env(environment()))
 
-  input_ff <- if (!is.null(tv$fcs)) flowCore::read.FCS(tv$fcs) else make_valid_fcs(exprs = tv$data)
+  input_ff <- if (!is.null(tv$fcs)) flowCore::read.FCS(tv$fcs) else make_valid_fcs(exprs = tv$data[,1:7])
   layout <- if (is.list(tv$layout)) tv$layout else list(default = tv$layout)
   labels <- if (is.list(tv$labels)) tv$labels else list(default = tv$labels)
   event_sel <- tv$events_sel
@@ -160,7 +160,7 @@ shiny_server <- function(input, output, session) {
     updateSelectInput(session, 'input_labels_name', choices = names(labels))
     updateSelectInput(session, 'input_pathmodel_name', choices = names(tv$origin))
   })
-  
+
   observeEvent(input$input_labels_name, react$labels_name <- input$input_labels_name)
   observeEvent(input$input_pathmodel_name, {
     react$pathmodel_name <- input$input_pathmodel_name
@@ -304,7 +304,7 @@ shiny_server <- function(input, output, session) {
       rasterImage(as.raster(matrix(colorRampPalette(c('yellow', 'brown', 'red'))(20), nc = 1)), xleft = 465, ybottom = 0, xright = 480, ytop = 485)
       text(x = 500, y = seq(10, 475, l = 3), labels = c('late', 'mid', 'early'), cex = 1.4)
       text(x = 485, y = 500, labels = 'PSEUDOTIME', font = 2, cex = 1.4)
-      
+
     } else {
       par(mar = c(1, 1, 1, 1))
       plot(
