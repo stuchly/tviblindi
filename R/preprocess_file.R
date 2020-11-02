@@ -9,7 +9,7 @@ tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventpr
   if(!is.null(comp)) fcs<-compensate(fcs,fcs@description[[comp]])
   chans<-protilatky$name[protilatky$use==1]
   chans<-which(fcs@parameters@data$name %in% chans)
-  gs<-flowjo_to_gatingset(ws,name=1,subset=1, sampNloc = sampleNloc)
+  gs<-flowjo_to_gatingset(ws,name=1,subset=1, sampNloc = sampNloc)
   PP<-gs_get_pop_paths(gs[[1]])
   ppi<-grep(eventsufix,PP)
   if (length(ppi)==0){
@@ -21,7 +21,7 @@ tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventpr
   events_sel<-NULL;for (i in ppi) events_sel<-c(events_sel,which(gh_pop_get_indices(gs[[1]],PP[i[1]])))
   events_sel<-unique(events_sel)
   COO<-exprs(fcs)[events_sel,chans]
-  colnames(COO)<-as.character(fcs@parameters@data$desc[chans])
+  colnames(COO)<-as.character(protilatky$desc[chans])
   COO<-ftrans(COO)
   if(!is.null(normalize)){
       if (normalize=="perc") COO<-normalize.perc(COO) else if (normalize=="scale") COO<-scale(COO)
