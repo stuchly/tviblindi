@@ -1,5 +1,5 @@
 tviblindi_from_flowjo<-function(fcsn,wsp,fcstable,eventsufix="_G[0-9]+$",eventprefix="/[A-Z]_",origin="^A_",
-                                normalize=FALSE,sep="\t",ftrans=function(x) asinh(x/5.),comp=NULL, sampNloc = 'sampleNode'){
+                                normalize=FALSE,sep="\t",ftrans=function(x) asinh(x/5.),comp=NULL, sampNloc = "keyword"){
   require(CytoML)
   require(flowWorkspace)
 
