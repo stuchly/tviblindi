@@ -19,7 +19,7 @@ shiny_server <- function(input, output, session) {
   tv_name <- readRDS(file.path(INPUTS_DIRECTORY, 'tv.RDS'))
   tv <- get(tv_name, parent.env(environment()))
 
-  input_ff <- if (!is.null(tv$fcs)) flowCore::read.FCS(tv$fcs) else make_valid_fcs(exprs = tv$data[,1:7])
+  input_ff <- if (!is.null(tv$fcs)) flowCore::read.FCS(tv$fcs) else make_valid_fcs(exprs = tv$data)
   layout <- if (is.list(tv$layout)) tv$layout else list(default = tv$layout)
   labels <- if (is.list(tv$labels)) tv$labels else list(default = tv$labels)
   event_sel <- tv$events_sel
