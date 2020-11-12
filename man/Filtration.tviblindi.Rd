@@ -13,8 +13,8 @@
 
 \item{K}{integer (default K=30); number of nearest neighbors.}
 
-\item{alpha}{double (default \code{NULL}); relaxation parameter for witness complex. If \code{NULL} mean distance to 
-K-th nerarest witness is used.}
+\item{alpha}{double (default \code{NULL}); relaxation parameter for witness complex. If \code{NULL} mean distance to
+K-th nearest witness is used.}
 }
 \value{
 returns an invisible tviblindi class object.

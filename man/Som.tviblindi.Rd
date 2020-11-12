@@ -4,7 +4,13 @@
 \alias{Som.tviblindi}
 \title{Computes SOM clusters for triangulation, modifies x}
 \usage{
-\method{Som}{tviblindi}(x, xdim = 25, ydim = 25)
+\method{Som}{tviblindi}(
+  x,
+  xdim = 25,
+  ydim = 25,
+  method = "som",
+  kmeans_algorithm = c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen")
+)
 }
 \arguments{
 \item{x}{tviblindi class object.}

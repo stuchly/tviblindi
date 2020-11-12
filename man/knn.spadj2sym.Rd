@@ -4,7 +4,7 @@
 \alias{knn.spadj2sym}
 \title{Symmetrise similarity (or adjacency) matrix}
 \usage{
-knn.spadj2sym(adj)
+knn.spadj2sym(adj, mode = "max")
 }
 \arguments{
 \item{adj}{similarity or adjacency matrix (\code{sparseMatrix} object).}

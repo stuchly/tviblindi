@@ -12,8 +12,12 @@
   K = 30,
   equinumerous = FALSE,
   to = NULL,
+  labels_name = "default",
   add = FALSE,
-  kernel = "exp"
+  kernel = "Exp",
+  kepsilon = NULL,
+  sym = "max",
+  origin_name = names(x$origin)[1]
 )
 }
 \arguments{
@@ -30,6 +34,8 @@
 \item{equinumerous}{bool (default FALSE); simulate equal number (\code{N} for each) of walks for every potential end (see details).}
 
 \item{to}{integer or character vector; indices of cells or label of target population(s) - force choice of ends (see details).}
+
+\item{labels_name}{character; name of label vector to use if \code{x} has multiple label vectors and \code{to} is a string.}
 
 \item{add}{bool (default FALSE); add the simulated walks to \code{x} instead of replace.}
 

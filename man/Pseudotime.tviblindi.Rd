@@ -4,7 +4,17 @@
 \alias{Pseudotime.tviblindi}
 \title{Computes pseudotime, modifies x}
 \usage{
-\method{Pseudotime}{tviblindi}(x, K = 30)
+\method{Pseudotime}{tviblindi}(
+  x,
+  K = 30,
+  nb_it = 1500,
+  iguess = NULL,
+  eps = 1e-15,
+  kernel = "Exp",
+  kepsilon = NULL,
+  sym = "max",
+  origin_name = names(x$origin)[1]
+)
 }
 \arguments{
 \item{x}{tviblindi class object.}

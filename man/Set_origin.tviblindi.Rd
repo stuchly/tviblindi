@@ -4,13 +4,20 @@
 \alias{Set_origin.tviblindi}
 \title{Sets cell-of-origin, modifies x}
 \usage{
-\method{Set_origin}{tviblindi}(x, label)
+\method{Set_origin}{tviblindi}(
+  x,
+  label,
+  labels_name = names(x$labels)[1],
+  origin_name = ifelse(is.character(label), label, "default")
+)
 }
 \arguments{
 \item{x}{tviblindi class object}
 
 \item{label}{character or integer; either label of population of origin (cell nearest to the mean of the population will be consider as origin)
 or index of cell-of-origin.}
+
+\item{labels_name}{name of label vector to use (only needs to be specified if multiple label vectors are present in the \code{x} and \code{label} is a string).}
 }
 \value{
 returns an invisible tviblindi class object.

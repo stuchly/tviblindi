@@ -9,14 +9,16 @@ tviblindi(
   labels,
   fcs_path = NULL,
   events_sel = NULL,
-  keep_intermediate = FALSE
+  keep_intermediate = FALSE,
+  analysis_name = paste0("tviblindi_", Sys.Date())
 )
 }
 \arguments{
 \item{data}{a numeric matrix; the (transformed and compensated) expression data.}
 
 \item{labels}{character or factor vector of the same length as \code{nrow(data)};
-assignment of cells to population, unassigned cells should be labelled as "ungated" for better plotting.}
+assignment of cells to population, unassigned cells should be labelled as "ungated" for better plotting.
+Alternatively, \code{labels} can be a named list of one or label vectors.}
 
 \item{fcs_path}{character (optional); path to fcs file to store the results - typically the fcs file with analysed data.}
 

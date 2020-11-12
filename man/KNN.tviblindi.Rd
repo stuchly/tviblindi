@@ -4,7 +4,7 @@
 \alias{KNN.tviblindi}
 \title{Computes KNN matrix, modifies x}
 \usage{
-\method{KNN}{tviblindi}(x, K = 100, method = "annoy", trees = 150)
+\method{KNN}{tviblindi}(x, K = 100, method = "annoy", trees = 150, denoised = FALSE)
 }
 \arguments{
 \item{x}{tviblindi class object.}

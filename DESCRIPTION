@@ -14,4 +14,4 @@ Suggests: TDA, PRIMME, flowCore
 Imports: Rcpp (>= 0.12.12), RcppEigen (>= 0.3.3.3.0), BiocGenerics
 LinkingTo: RcppArmadillo, Rcpp, RcppEigen, BH
 Encoding: UTF-8
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0

@@ -103,9 +103,6 @@ Set_origin.tviblindi<-function(x,label, labels_name = names(x$labels)[1],origin_
     return(invisible(x))
 }
 
-KNN<-function(x,...){
-    UseMethod("KNN",x)
-}
 
 #' Computes KNN matrix, modifies x
 #'
@@ -130,6 +127,10 @@ KNN.tviblindi<-function(x,K=100,method="annoy",trees=150,denoised=FALSE){
         x$KNN$IND<-matrix(as.integer(x$KNN$IND),ncol=ncol(x$KNN$IND))
     }
     return(invisible(x))
+}
+
+KNN<-function(x,...){
+    UseMethod("KNN",x)
 }
 
 Denoise<-function(x,...){

@@ -16,10 +16,16 @@
   batch_size = 512L,
   epochs = 100L,
   patience = 0L,
-  alpha = 10,
+  ivis_pretrain = 0,
+  ww = c(10, 10, 1, 1),
+  margin = 1,
+  shuffle = FALSE,
   neigen = 2,
   t = 0,
-  load_model = NULL
+  K = 30,
+  load_model = NULL,
+  upsample = NULL,
+  labels_name = names(x$labels)[1]
 )
 }
 \arguments{
@@ -47,13 +53,21 @@ any integer value (for "diffuse" \code{< nrow(data)})).}
 
 \item{patience}{integer; maxim patience for for "vaevictis" training (early stopping).}
 
-\item{alpha}{double; pnealty for tsne regularisation.}
+\item{ww}{vector double; weights for vaevictis in this order - tsne_regularisations, ivis pn loss, reconstruction error, KL divergence}
+
+\item{margin}{double; ivis pn loss margin}
+
+\item{shuffle}{logical; shuffle data before validation split; involves recomputation of KNN matrix}
 
 \item{neigen}{integer; for "diffuse" number of eigen vectors to compute.}
 
 \item{t}{double; time parameter for "diffuse", if \code{t==0} multi-time scale is used (geometric sum).}
 
 \item{load_model}{character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied}
+
+\item{upsample}{named list \code{list(N=,takeall=)} or \code{NULL};  sample events by labels (involves recomputation of KNN matrix); affects "vaevictis" only; if NULL nothing happens, \code{N} events per label, takes all events from labels in character vector \code{takeall}}
+
+\item{labels_name}{name of label vector if one is used for upsampling and \code{x} has mutliple label vectors.}
 }
 \value{
 returns an invisible tviblindi class object.
