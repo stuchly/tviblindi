@@ -509,9 +509,15 @@ DimRed.tviblindi <-
                     if (!is.null(upsample)){
                         if (is.null(upsample$cluster)) labl<-x$labels[[labels_name]]
                         else {
-                            message("running clara clustering...")
-                            labl<-cluster::clara(x$data,k=upsample$cluster)$clustering
-                            message("~done\n")
+                            if (upsample$method=="kmeans"){
+                                message("running kmeans clustering...")
+                                labl<-kmeans(x$data,centers=upsample$cluster)$cluster
+                                message("~done\n")
+                            } else {
+                                message("running clara clustering...")
+                                labl<-cluster::clara(x$data,k=upsample$cluster)$clustering
+                                message("~done\n")
+                            }
                         }
                         ss<-.upsample.labels(labl,N=upsample$N,takeall = upsample$takeall)
                         knn_loc<-KNN.annoy(x$data[ss,], K, 150)$IND
