@@ -507,6 +507,7 @@ DimRed.tviblindi <-
                     vae <- model
                 } else {
                     if (!is.null(upsample)){
+                        if (is.null(upsample$method)) upsample$method<-"CLARA"
                         if (is.null(upsample$cluster)) labl<-x$labels[[labels_name]]
                         else {
                             if (upsample$method=="kmeans"){
