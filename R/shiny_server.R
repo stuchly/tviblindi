@@ -19,13 +19,13 @@ shiny_server <- function(input, output, session) {
   tv_name <- readRDS(file.path(INPUTS_DIRECTORY, 'tv.RDS'))
   tv <- get(tv_name, parent.env(environment()))
 
-  input_ff <- if (!is.null(tv$fcs)) flowCore::read.FCS(tv$fcs) else NULL
+  input_ff <- if (!is.null(tv$fcs)) flowCore::read.FCS(tv$fcs) else make_valid_fcs(exprs = tv$data)
   layout <- if (is.list(tv$layout)) tv$layout else list(default = tv$layout)
   labels <- if (is.list(tv$labels)) tv$labels else list(default = tv$labels)
   event_sel <- tv$events_sel
   markers <- colnames(tv$data)
 
-  if ((is.null(event_sel) && !is.null(input_ff) && nrow(input_ff) != nrow(tv$data)) || (!is.null(event_sel) && length(event_sel) != nrow(tv$data))) {
+  if ((is.null(event_sel) && nrow(input_ff) != nrow(tv$data)) || (!is.null(event_sel) && length(event_sel) != nrow(tv$data))) {
     stop('Number of events in expression matrix incongruent with dimensionality of input FCS file. Did you misuse the events_sel parameter?')
   }
 
@@ -767,30 +767,19 @@ shiny_server <- function(input, output, session) {
         layout_X <- layout.df[[react$layout_name]]$X * 100
         layout_Y <- layout.df[[react$layout_name]]$Y * 100
         ps       <- as.numeric(as.factor(tv$pseudotime[[react$pathmodel_name]]$res))
-        labels_out<-matrix(NA,ncol=length(labels),nrow=length(labels[[1]]))
-        colnames(labels_out)<-paste("label",names(labels),sep="_")
-        for (i in 1:length(labels)) labels_out[,i]<-as.numeric(labels[[i]])
+        labels_out<-matrix(NA,ncol=length(tv$labels),nrow=length(tv$labels[[1]]))
+        colnames(labels_out)<-paste("label",names(tv$labels),sep="_")
+        for (i in 1:length(tv$labels)) labels_out[,i]<-as.numeric(tv$labels[[i]])
       } else {
-        layout_X <- layout_Y <- rep(-100, nrow(tv$data))
+        layout_X <- layout_Y <- rep(-100, nrow(input_ff))
         layout_X[event_sel] <- layout.df[[react$layout_name]]$X * 100
         layout_Y[event_sel] <- layout.df[[react$layout_name]]$Y * 100
-        ps           <- rep(-100, nrow(tv$data))
+        ps           <- rep(-100, nrow(input_ff))
         ps[event_sel] <- as.numeric(as.factor(tv$pseudotime[[react$pathmodel_name]]$res))
-        labels_out<-matrix(-100,ncol=length(labels),nrow=nrow(tv$data))
-        colnames(labels_out)<-paste("label",names(labels),sep="_")
-        for (i in 1:length(labels)) labels_out[event_sel,i]<-labels[[i]]
+        labels_out<-matrix(-100,ncol=length(tv$labels),nrow=nrow(input_ff))
+        colnames(labels_out)<-paste("label",names(tv$labels),sep="_")
+        for (i in 1:length(tv$labels)) labels_out[event_sel,i]<-tv$labels[[i]]
       }
-      
-      if (is.null(input_ff)) {
-        show_modal_spinner(
-          spin = 'flower',
-          color = '#337ab7',
-          text = 'Creating flowFrame...'
-        )
-        input_ff <- make_valid_fcs(tv$data)
-        remove_modal_spinner()
-      }
-      
       react$output_ff <- fcs.add_col(
         fcs.add_col(
           fcs.add_col(
@@ -853,31 +842,20 @@ shiny_server <- function(input, output, session) {
         layout_X <- layout.df[[react$layout_name]]$X * 100
         layout_Y <- layout.df[[react$layout_name]]$Y * 100
         ps       <- as.numeric(as.factor(tv$pseudotime[[react$pathmodel_name]]$res))
-        labels_out<-matrix(NA,ncol=length(labels),nrow=length(labels[[1]]))
-        colnames(labels_out)<-paste("label",names(labels),sep="_")
-        for (i in 1:length(labels)) labels_out[,i]<-as.numeric(labels[[i]])
+        labels_out<-matrix(NA,ncol=length(tv$labels),nrow=length(tv$labels[[1]]))
+        colnames(labels_out)<-paste("label",names(tv$labels),sep="_")
+        for (i in 1:length(tv$labels)) labels_out[,i]<-as.numeric(tv$labels[[i]])
 
       } else {
-        layout_X <- layout_Y <- rep(-100, nrow(tv_data))
+        layout_X <- layout_Y <- rep(-100, nrow(input_ff))
         layout_X[event_sel] <- layout.df[[react$layout_name]]$X * 100
         layout_Y[event_sel] <- layout.df[[react$layout_name]]$Y * 100
-        ps           <- rep(-100, nrow(tv$data))
+        ps           <- rep(-100, nrow(input_ff))
         ps[event_sel] <- as.numeric(as.factor(tv$pseudotime[[react$pathmodel_name]]$res))
-        labels_out<-matrix(-100,ncol=length(labels),nrow=nrow(tv$data))
-        colnames(labels_out)<-paste("label",names(labels),sep="_")
-        for (i in 1:length(labels)) labels_out[event_sel,i]<-labels[[i]]
+        labels_out<-matrix(-100,ncol=length(tv$labels),nrow=nrow(input_ff))
+        colnames(labels_out)<-paste("label",names(tv$labels),sep="_")
+        for (i in 1:length(tv$labels)) labels_out[event_sel,i]<-tv$labels[[i]]
       }
-      
-      if (is.null(input_ff)) {
-        show_modal_spinner(
-          spin = 'flower',
-          color = '#a3009e',
-          text = 'Creating flowFrame'
-        )
-        input_ff <- make_valid_fcs(tv$data)
-        remove_modal_spinner()
-      }
-      
       react$output_ff <- fcs.add_col(
         fcs.add_col(
           fcs.add_col(
@@ -901,30 +879,19 @@ shiny_server <- function(input, output, session) {
         layout_X <- layout.df[[react$layout_name]]$X * 100
         layout_Y <- layout.df[[react$layout_name]]$Y * 100
         ps       <- tv$pseudotime[[react$pathmodel_name]]$res
-        labels_out<-matrix(NA,ncol=length(labels),nrow=length(labels[[1]]))
-        colnames(labels_out)<-paste("label",names(labels),sep="_")
-        for (i in 1:length(labels)) labels_out[,i]<-as.numeric(labels[[i]])
+        labels_out<-matrix(NA,ncol=length(tv$labels),nrow=length(tv$labels[[1]]))
+        colnames(labels_out)<-paste("label",names(tv$labels),sep="_")
+        for (i in 1:length(tv$labels)) labels_out[,i]<-as.numeric(tv$labels[[i]])
       } else {
-        layout_X <- layout_Y <- rep(-100, nrow(tv$data))
+        layout_X <- layout_Y <- rep(-100, nrow(input_ff))
         layout_X[event_sel] <- layout.df[[react$layout_name]]$X * 100
         layout_Y[event_sel] <- layout.df[[react$layout_name]]$Y * 100
-        ps           <- rep(-100, nrow(tv$data))
+        ps           <- rep(-100, nrow(input_ff))
         ps[event_sel] <- tv$pseudotime[[react$pathmodel_name]]$res
-        labels_out<-matrix(-100,ncol=length(labels),nrow=nrow(tv$data))
-        colnames(labels_out)<-paste("label",names(labels),sep="_")
-        for (i in 1:length(labels)) labels_out[event_sel,i]<-labels[[i]]
+        labels_out<-matrix(-100,ncol=length(tv$labels),nrow=nrow(input_ff))
+        colnames(labels_out)<-paste("label",names(tv$labels),sep="_")
+        for (i in 1:length(tv$labels)) labels_out[event_sel,i]<-tv$labels[[i]]
       }
-      
-      if (is.null(input_ff)) {
-        show_modal_spinner(
-          spin = 'flower',
-          color = '#a3009e',
-          text = 'Creating flowFrame'
-        )
-        input_ff <- make_valid_fcs(tv$data)
-        remove_modal_spinner()
-      }
-      
       react$output_ff <- fcs.add_col(
         fcs.add_col(
           fcs.add_col(
@@ -1733,4 +1700,3 @@ shiny_server <- function(input, output, session) {
              trigger = 'hover',     options = list(delay = list(show=500))
   )
 }
-
