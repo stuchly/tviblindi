@@ -1456,7 +1456,7 @@ shiny_server <- function(input, output, session) {
                   plot.subtitle = element_text(size = 19),
                   legend.title  = element_text(size = 24),
                   legend.text   = element_text(size = 22)) +
-            geom_line(size = 2)
+            geom_line(size = 0.8)
         }
         plot(pp)
         dev.off()
@@ -1500,7 +1500,7 @@ shiny_server <- function(input, output, session) {
                   plot.subtitle = element_text(size = 19),
                   legend.title  = element_text(size = 24),
                   legend.text   = element_text(size = 22)) +
-            geom_line(size = 2)
+            geom_line(size = 0.8)
         }
         plot(pp)
         dev.off()
