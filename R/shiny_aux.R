@@ -42,7 +42,8 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
                                     out.data                       = NULL,
                                     out.classif                    = NULL,
                                     out.labels                     = NULL,
-                                    out.dendrogram                 = NULL) {
+                                    out.dendrogram                 = NULL,
+                                    make_png_dendrogram            = FALSE) {
     ## Create ggplot2 trajectories dendrogram & (optionally) output an hclust object
     if (is.null(precomputed_dendrogram)) {
         if (perc == 100) return(FALSE)
@@ -212,7 +213,18 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
         if (length(which_remove) > 0) { data$labels <- data$labels[-which_remove, ] }
     }
 
-    p <- ggplot(data$segments) + geom_segment(aes(x = x, y = y, xend = xend, yend = yend), lineend = 'round', linejoin = 'round',
+    p.png <- NULL
+    
+    if (make_png_dendrogram) {
+        p.png <- ggplot(data$segments) + geom_segment(aes(x = x, y = y, xend = xend, yend = yend), lineend = 'round', linejoin = 'round',
+                                                          size = if (!is.null(zoom_idcs)) { 2 } else { 1 }) +
+            geom_text(data = data$labels, aes(x, y - 0.01, label = label), hjust = 1, angle = 0, size = if (!is.null(zoom_idcs)) { 6 } else { 4.1 }) +
+            cowplot::theme_nothing() +
+            theme(plot.margin = unit(c(-.2, -0.05, -.2, 0), 'cm')) +
+            coord_flip()
+    }
+    
+    p.regular <- ggplot(data$segments) + geom_segment(aes(x = x, y = y, xend = xend, yend = yend), lineend = 'round', linejoin = 'round',
                                               size = if (!is.null(zoom_idcs)) { .8 } else { .5 }) +
         geom_text(data = data$labels, aes(x, y, label = label), hjust = 1, angle = 0, size = if (!is.null(zoom_idcs)) { 5.2 } else { 3.4 }) +
         cowplot::theme_nothing() +
@@ -228,7 +240,11 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
     if (!is.null(leaves_to_highlight.zoom)) {
         lowerbound <- min(branches$xmin[leaves_to_highlight.zoom])
         upperbound <- max(branches$xmin[leaves_to_highlight.zoom])
-        p <- p + geom_rect(xmin = lowerbound - 0.2, xmax = upperbound + 0.2, ymin = ymax *.96, ymax = ymax, fill = '#9cf0d9', alpha = .01)
+        rect <- geom_rect(xmin = lowerbound - 0.2, xmax = upperbound + 0.2, ymin = ymax *.96, ymax = ymax, fill = '#9cf0d9', alpha = .01)
+        p.regular <- p.regular + rect
+        if (make_png_dendrogram) {
+            p.png <- p.png + rect
+        }
     }
 
     if (!is.null(leaves_to_highlight.A) || !is.null(leaves_to_highlight.B)) {
@@ -262,8 +278,12 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
             for (X in subtrees) {
                 lowerbound <- min(X)
                 upperbound <- max(X)
-                p <- p + geom_rect(xmin = lowerbound - 0.25, xmax = upperbound + 0.25, ymin = 0, ymax = ymax * .95, fill = '#c2daff',
-                                   alpha = if (!is.null(zoom_idcs)) { .03 } else { .01 })
+                rect <- geom_rect(xmin = lowerbound - 0.25, xmax = upperbound + 0.25, ymin = 0, ymax = ymax * .95, fill = '#c2daff',
+                                  alpha = if (!is.null(zoom_idcs)) { .03 } else { .01 })
+                p.regular <- p.regular + rect
+                if (make_png_dendrogram) {
+                    p.png <- p.png + rect
+                }
             }
         }
         if (!is.null(leaves_to_highlight.B)) {
@@ -273,13 +293,20 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
             for (X in subtrees) {
                 lowerbound <- min(X)
                 upperbound <- max(X)
-                p <- p + geom_rect(xmin = lowerbound - 0.2, xmax = upperbound + 0.2, ymin = 0, ymax = ymax * .95, fill = 'pink',
-                                   alpha = if (!is.null(zoom_idcs)) { .05 } else { .01 })
+                rect <- geom_rect(xmin = lowerbound - 0.2, xmax = upperbound + 0.2, ymin = 0, ymax = ymax * .95, fill = 'pink',
+                                  alpha = if (!is.null(zoom_idcs)) { .05 } else { .01 })
+                p.regular <- p.regular + rect
+                if (make_png_dendrogram) {
+                    p.png <- p.png + rect
+                }
             }
         }
     }
-
-    return(p)
+    
+    list(
+        regular = p.regular,
+        png     = p.png
+    )
 }
 
 ## Function: resolve binary tree branching (recursive)

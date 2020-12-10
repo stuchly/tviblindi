@@ -479,10 +479,18 @@ shiny_server <- function(input, output, session) {
           png(filename = paste0('Persistence_', Sys.time(), '.png'), width = 700, height = 700)
         }
         g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot, size = yplot)) +
-          scale_size_continuous(range = c(.2, 8)) +
           scale_colour_gradientn(colours = rainbow(5)) +
-          geom_point(size = if (react$image_export_format == 'SVG') { 3.5 + sizes_extra * 1 } else { 5.0  + sizes_extra * 1 }, alpha = .7) +
-          theme_light() + theme(legend.position = 'none')
+          scale_size_continuous(range = c(.6, 13)) +
+          geom_point(stroke = 1, alpha = .7) +
+          theme(legend.position = 'none',
+          panel.background = element_rect(fill = '#f2f2f2',
+                                          colour = '#f2f2f2',
+                                          size = 0.5, linetype = 'solid'))
+          # 
+          # scale_size_continuous(range = c(.2, 8)) +
+          # scale_colour_gradientn(colours = rainbow(5)) +
+          # geom_point(size = if (react$image_export_format == 'SVG') { 3.5 } else { 5.0 }, alpha = .7) +
+          # theme_light() + theme(legend.position = 'none')
         if (react$persistence.death_on_x_axis) {
           g <- g + xlab('Death')
         } else {
@@ -607,36 +615,55 @@ shiny_server <- function(input, output, session) {
           dendrogram_plotted <- TRUE # if TRUE and SVG export button was clicked, also export the SVG
           simplices_selected            <- react$persistence$inds$death[idcs_selected]
           react$representations.reduced <- lapply(react$representations, function(x) x[x %in% simplices_selected])
-
+          
           if (((!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B)) &&
                (react$dendrogram_redraw_highlights || react$image_export.dendrogram)) || react$dendrogram_redraw_zoom) {
+            ## Redrawing an existing dendrogram and overlaying it with new highlights
+            
             dendrogram_plot               <- trajectories_dendrogram(precomputed_dendrogram        = react$dendrogram,
                                                                      precomputed_dendrogram_labels = react$dendrogram_labels,
                                                                      leaves_to_highlight.A         = highlights.A,
                                                                      leaves_to_highlight.B         = highlights.B,
-                                                                     leaves_to_highlight.zoom      = dendrogram_zoom_idcs)
+                                                                     leaves_to_highlight.zoom      = dendrogram_zoom_idcs,
+                                                                     make_png_dendrogram           = (react$image_export.dendrogram &&
+                                                                                                      react$image_export_format == 'PNG'))
+            png_dendrogram_plot <- dendrogram_plot$png
+            dendrogram_plot     <- dendrogram_plot$regular
+            
             react$dendrogram_redraw_zoom       <- FALSE
             react$dendrogram_redraw_highlights <- FALSE
           } else {
-            dendrogram_plot               <- trajectories_dendrogram(pers           = react$persistence,
-                                                                     repre.reduced  = react$representations.reduced,
-                                                                     perc           = perc,
-                                                                     out.dendrogram = react$dendrogram,
-                                                                     out.data       = react$dendrogram_data,
-                                                                     out.classif    = react$dendrogram_classes,
-                                                                     out.labels     = react$dendrogram_labels)
+            ## Drawing a new dendrogram
+            
+            dendrogram_plot               <- trajectories_dendrogram(pers               = react$persistence,
+                                                                     repre.reduced      = react$representations.reduced,
+                                                                     perc               = perc,
+                                                                     out.dendrogram     = react$dendrogram,
+                                                                     out.data           = react$dendrogram_data,
+                                                                     out.classif        = react$dendrogram_classes,
+                                                                     out.labels         = react$dendrogram_labels,
+                                                                     make_png_dendrogram           = (react$image_export.dendrogram &&
+                                                                                                        react$image_export_format == 'PNG'))
+            
+            png_dendrogram_plot <- dendrogram_plot$png
+            dendrogram_plot     <- dendrogram_plot$regular
           }
           plot(dendrogram_plot)
+          
+          message('ALIVE')
         }
       })
       if (dendrogram_plotted && react$image_export.dendrogram) {
         if (react$image_export_format == 'SVG') {
           svg(filename = paste0('Dendrogram_', Sys.time(), '.svg'))
+          plot(dendrogram_plot)
+          dev.off()
         } else {
-          png(filename = paste0('Dendrogram_', Sys.time(), '.png'), width = 480, height = 5400)
+          png(filename = paste0('Dendrogram_', Sys.time(), '.png'), width = 500, height = 600)
+          plot(png_dendrogram_plot)
+          dev.off()
+          react$png_dendrogram <- NULL
         }
-        plot(dendrogram_plot)
-        dev.off()
         react$dendrogram_redraw_highlights <- TRUE
         react$image_export.dendrogram <- FALSE
       }
@@ -676,6 +703,8 @@ shiny_server <- function(input, output, session) {
                                                                      leaves_to_highlight.A         = highlights.A,
                                                                      leaves_to_highlight.B         = highlights.B,
                                                                      zoom_idcs                     = zoom_idcs)
+            dendrogram_zoom_plot    <- dendrogram_zoom_plot$regular
+            
             react$dendrogram_zoom_ready <- TRUE
             react$dendrogram_zoom_redraw_highlights <- FALSE
           } else {
@@ -689,6 +718,8 @@ shiny_server <- function(input, output, session) {
                                                                      out.data       = react$dendrogram_zoom_data,
                                                                      out.classif    = react$dendrogram_zoom_classes,
                                                                      out.labels     = react$dendrogram_zoom_labels)
+            dendrogram_zoom_plot    <- dendrogram_zoom_plot$regular
+            
             react$dendrogram_zoom_ready <- TRUE
             if (!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B)) {
               react$dendrogram_zoom_redraw_highlights <- TRUE
@@ -1316,7 +1347,7 @@ shiny_server <- function(input, output, session) {
                   plot.subtitle = element_text(size = 19),
                   legend.title  = element_text(size = 24),
                   legend.text   = element_text(size = 22)) +
-            geom_line(size = 2)
+            geom_line(size = 0.8)
         }
         plot(pp)
         dev.off()
@@ -1357,7 +1388,7 @@ shiny_server <- function(input, output, session) {
                   plot.subtitle = element_text(size = 19),
                   legend.title  = element_text(size = 24),
                   legend.text   = element_text(size = 22)) +
-            geom_line(size = 2)
+            geom_line(size = 0.8)
         }
         plot(pp)
         dev.off()
