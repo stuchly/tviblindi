@@ -472,16 +472,22 @@ shiny_server <- function(input, output, session) {
     if (!is.null(react$persistence)) {
       quantiles <- quantile(react$persistence_diagram$yplot)
       sizes <- max(1, sapply(react$persistence_diagram$yplot, function(val) first(which(quantiles >= val)) - 1))
+      
+      cols <- rep('#525252', nrow(react$persistence_diagram))
+      if (!is.null(react$persistence_marked)) {
+        cols[as.numeric(rownames(react$persistence_marked))] <- '#00217d'
+      }
+      
       if (react$image_export.persistence) {
         if (react$image_export_format == 'SVG') {
           svg(filename = paste0('Persistence_', Sys.time(), '.svg'))
         } else {
           png(filename = paste0('Persistence_', Sys.time(), '.png'), width = 700, height = 700)
         }
-        g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot, size = yplot)) +
-          scale_colour_gradientn(colours = rainbow(5)) +
+        
+        g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, size = yplot)) +
           scale_size_continuous(range = c(.6, 13)) +
-          geom_point(stroke = 1, alpha = .7) +
+          geom_point(stroke = 1, alpha = .7, colour = cols) +
           theme(legend.position = 'none',
           panel.background = element_rect(fill = '#f2f2f2',
                                           colour = '#f2f2f2',
@@ -510,10 +516,14 @@ shiny_server <- function(input, output, session) {
         react$image_export.persistence <- FALSE
       }
 
-      g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, colour = -yplot, size = yplot)) +
-        scale_colour_gradientn(colours = rainbow(5)) +
+      cols <- rep('#525252', nrow(react$persistence_diagram))
+      if (!is.null(react$persistence_marked)) {
+        cols[as.numeric(rownames(react$persistence_marked))] <- '#00217d'
+      }
+      
+      g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, size = yplot)) +
         scale_size_continuous(range = c(.2, 8)) +
-        geom_point(stroke = 1, alpha = .7) +
+        geom_point(stroke = 1, alpha = .7, colour = cols) +
         theme(legend.position = 'none',
               panel.background = element_rect(fill = '#f2f2f2',
                                               colour = '#f2f2f2',
@@ -649,8 +659,6 @@ shiny_server <- function(input, output, session) {
             dendrogram_plot     <- dendrogram_plot$regular
           }
           plot(dendrogram_plot)
-          
-          message('ALIVE')
         }
       })
       if (dendrogram_plotted && react$image_export.dendrogram) {
