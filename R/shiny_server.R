@@ -380,13 +380,14 @@ shiny_server <- function(input, output, session) {
 
 ##METHOD CHANGED
     observeEvent(input$btn_dendrogram_update_walks_selection, {
-    react$termini_processed <- react$termini_marked
-    if (length(react$dendrogram_selected_idcs) > 1) {
+        react$termini_processed <- react$termini_marked
+         if (react$trajectories_group == 'A') idcs_select<- react$trajectories_marked.A  else idcs_select<- react$trajectories_marked.B
+    if (length(idcs_select) > 1) {
       updated <- .update_walks_by_dendrogram(tv                = tv,
                                           pathmodel_name    = react$pathmodel_name,
                                           pseudotime        = tv$pseudotime[[react$pathmodel_name]],
                                           marked_termini    = react$termini_processed,
-                                          idcs=react$dendrogram_selected_idcs,
+                                          idcs=idcs_select,
                                           walks_sel = react$walks_sel,
                                           termini_per_path  = react$termini,
                                           death_birth_ratio = react$persistence.death_birth_ratio,
@@ -472,19 +473,19 @@ shiny_server <- function(input, output, session) {
     if (!is.null(react$persistence)) {
       quantiles <- quantile(react$persistence_diagram$yplot)
       sizes <- max(1, sapply(react$persistence_diagram$yplot, function(val) first(which(quantiles >= val)) - 1))
-      
+
       cols <- rep('#525252', nrow(react$persistence_diagram))
       if (!is.null(react$persistence_marked)) {
         cols[as.numeric(rownames(react$persistence_marked))] <- '#00217d'
       }
-      
+
       if (react$image_export.persistence) {
         if (react$image_export_format == 'SVG') {
           svg(filename = paste0('Persistence_', Sys.time(), '.svg'))
         } else {
           png(filename = paste0('Persistence_', Sys.time(), '.png'), width = 700, height = 700)
         }
-        
+
         g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, size = yplot)) +
           scale_size_continuous(range = c(.6, 13)) +
           geom_point(stroke = 1, alpha = .7, colour = cols) +
@@ -492,7 +493,7 @@ shiny_server <- function(input, output, session) {
           panel.background = element_rect(fill = '#f2f2f2',
                                           colour = '#f2f2f2',
                                           size = 0.5, linetype = 'solid'))
-          # 
+          #
           # scale_size_continuous(range = c(.2, 8)) +
           # scale_colour_gradientn(colours = rainbow(5)) +
           # geom_point(size = if (react$image_export_format == 'SVG') { 3.5 } else { 5.0 }, alpha = .7) +
@@ -520,7 +521,7 @@ shiny_server <- function(input, output, session) {
       if (!is.null(react$persistence_marked)) {
         cols[as.numeric(rownames(react$persistence_marked))] <- '#00217d'
       }
-      
+
       g <- ggplot(react$persistence_diagram, aes(x = xplot, y = yplot, size = yplot)) +
         scale_size_continuous(range = c(.2, 8)) +
         geom_point(stroke = 1, alpha = .7, colour = cols) +
@@ -625,11 +626,11 @@ shiny_server <- function(input, output, session) {
           dendrogram_plotted <- TRUE # if TRUE and SVG export button was clicked, also export the SVG
           simplices_selected            <- react$persistence$inds$death[idcs_selected]
           react$representations.reduced <- lapply(react$representations, function(x) x[x %in% simplices_selected])
-          
+
           if (((!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B)) &&
                (react$dendrogram_redraw_highlights || react$image_export.dendrogram)) || react$dendrogram_redraw_zoom) {
             ## Redrawing an existing dendrogram and overlaying it with new highlights
-            
+
             dendrogram_plot               <- trajectories_dendrogram(precomputed_dendrogram        = react$dendrogram,
                                                                      precomputed_dendrogram_labels = react$dendrogram_labels,
                                                                      leaves_to_highlight.A         = highlights.A,
@@ -639,12 +640,12 @@ shiny_server <- function(input, output, session) {
                                                                                                       react$image_export_format == 'PNG'))
             png_dendrogram_plot <- dendrogram_plot$png
             dendrogram_plot     <- dendrogram_plot$regular
-            
+
             react$dendrogram_redraw_zoom       <- FALSE
             react$dendrogram_redraw_highlights <- FALSE
           } else {
             ## Drawing a new dendrogram
-            
+
             dendrogram_plot               <- trajectories_dendrogram(pers               = react$persistence,
                                                                      repre.reduced      = react$representations.reduced,
                                                                      perc               = perc,
@@ -654,7 +655,7 @@ shiny_server <- function(input, output, session) {
                                                                      out.labels         = react$dendrogram_labels,
                                                                      make_png_dendrogram           = (react$image_export.dendrogram &&
                                                                                                         react$image_export_format == 'PNG'))
-            
+
             png_dendrogram_plot <- dendrogram_plot$png
             dendrogram_plot     <- dendrogram_plot$regular
           }
@@ -712,7 +713,7 @@ shiny_server <- function(input, output, session) {
                                                                      leaves_to_highlight.B         = highlights.B,
                                                                      zoom_idcs                     = zoom_idcs)
             dendrogram_zoom_plot    <- dendrogram_zoom_plot$regular
-            
+
             react$dendrogram_zoom_ready <- TRUE
             react$dendrogram_zoom_redraw_highlights <- FALSE
           } else {
@@ -727,7 +728,7 @@ shiny_server <- function(input, output, session) {
                                                                      out.classif    = react$dendrogram_zoom_classes,
                                                                      out.labels     = react$dendrogram_zoom_labels)
             dendrogram_zoom_plot    <- dendrogram_zoom_plot$regular
-            
+
             react$dendrogram_zoom_ready <- TRUE
             if (!is.null(react$dendrogram_marked_leaves.A) || !is.null(react$dendrogram_marked_leaves.B)) {
               react$dendrogram_zoom_redraw_highlights <- TRUE
@@ -1736,6 +1737,11 @@ shiny_server <- function(input, output, session) {
   addTooltip(session,
              id    = 'btn_help',
              title = 'Show instructions for new users',
+             trigger = 'hover',     options = list(delay = list(show=500))
+             )
+   addTooltip(session,
+             id    = 'btn_dendrogram_update_walks_selection',
+             title = 'Recompute representation & analyze walks from active group only',
              trigger = 'hover',     options = list(delay = list(show=500))
   )
 }
