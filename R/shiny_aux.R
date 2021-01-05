@@ -214,7 +214,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
     }
 
     p.png <- NULL
-    
+
     if (make_png_dendrogram) {
         p.png <- ggplot(data$segments) + geom_segment(aes(x = x, y = y, xend = xend, yend = yend), lineend = 'round', linejoin = 'round',
                                                           size = if (!is.null(zoom_idcs)) { 2 } else { 1 }) +
@@ -223,7 +223,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
             theme(plot.margin = unit(c(-.2, -0.05, -.2, 0), 'cm')) +
             coord_flip()
     }
-    
+
     p.regular <- ggplot(data$segments) + geom_segment(aes(x = x, y = y, xend = xend, yend = yend), lineend = 'round', linejoin = 'round',
                                               size = if (!is.null(zoom_idcs)) { .8 } else { .5 }) +
         geom_text(data = data$labels, aes(x, y, label = label), hjust = 1, angle = 0, size = if (!is.null(zoom_idcs)) { 5.2 } else { 3.4 }) +
@@ -302,7 +302,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
             }
         }
     }
-    
+
     list(
         regular = p.regular,
         png     = p.png
@@ -424,7 +424,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     efcs.mod           <- cbind(efcs, new_col)
     colnames(efcs.mod) <- c(channel_names, colname)
 
-    ff.mod             <- flowFrame(efcs.mod, params, description = description(ff))
+    ff.mod             <- flowFrame(efcs.mod, params, description = keyword(ff))
 
     keyval                                      <- list()
     keyval[[paste0('$P', channel_number, 'B')]] <- '32'
@@ -437,8 +437,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     flowCoreP_Rmax <- paste0('flowCore_$P', channel_number, 'Rmax')
     flowCoreP_Rmin <- paste0('flowCore_$P', channel_number, 'Rmin')
 
-    description(ff.mod)[flowCoreP_Rmax] <- max(20000, description(ff.mod)$`flowCore_$P1Rmax`)
-    description(ff.mod)[flowCoreP_Rmin] <- 0
+    keyword(ff.mod)[flowCoreP_Rmax] <- max(20000, keyword(ff.mod)$`flowCore_$P1Rmax`)
+    keyword(ff.mod)[flowCoreP_Rmin] <- 0
 
     ff.mod
 }
