@@ -5,7 +5,9 @@ Xquartz necessary on macos.... so it seems
 
 Witness complexes require CGAL library version 4.*.*
 brew tap-new CGAL/legacy   
+
 brew extract --version=4.14 CGAL CGAL/legacy
+
 brew install CGAL/legacy/CGAL@4.14  
 
 MacOS Catalina:
