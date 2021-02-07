@@ -947,6 +947,8 @@ shiny_server <- function(input, output, session) {
     }
     react$trajectories_pinned_batches_count <- 0
     react$trajectories_pinned               <- NULL
+    tv$pinned.A<-NULL
+    tv$pinned.B<-NULL
   })
   observeEvent(input$btn_export_fcs_modal_save, {
     if (input$input_export_fcs_name != '') {
@@ -1000,10 +1002,12 @@ shiny_server <- function(input, output, session) {
 
   observeEvent(input$btn_trajectories_pin_trajectories.A, {
     react$trajectories_to_pin <- sort(unique(react$trajectories_marked.A))
+    tv$pinned.A<-react$trajectories_to_pin
   })
 
   observeEvent(input$btn_trajectories_pin_trajectories.B, {
     react$trajectories_to_pin <- sort(unique(react$trajectories_marked.B))
+    tv$pinned.B<-react$trajectories_to_pin
   })
 
   output$log_dendrogram_selected <- renderPrint({
