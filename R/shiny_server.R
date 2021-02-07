@@ -1002,12 +1002,12 @@ shiny_server <- function(input, output, session) {
 
   observeEvent(input$btn_trajectories_pin_trajectories.A, {
     react$trajectories_to_pin <- sort(unique(react$trajectories_marked.A))
-    tv$pinned.A<-react$trajectories_to_pin
+    tv$pinned.A<-react$walks_sel[react$trajectories_to_pin]
   })
 
   observeEvent(input$btn_trajectories_pin_trajectories.B, {
     react$trajectories_to_pin <- sort(unique(react$trajectories_marked.B))
-    tv$pinned.B<-react$trajectories_to_pin
+    tv$pinned.B<-react$walks_sel[react$trajectories_to_pin]
   })
 
   output$log_dendrogram_selected <- renderPrint({
