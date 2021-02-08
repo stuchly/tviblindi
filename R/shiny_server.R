@@ -18,7 +18,8 @@ shiny_server <- function(input, output, session) {
   INPUTS_DIRECTORY <- 'tviblindi_tmp'
   tv_name <- readRDS(file.path(INPUTS_DIRECTORY, 'tv.RDS'))
   tv <- get(tv_name, parent.env(environment()))
-
+  ##METHOD CHANGED
+  tv$pinned<-list()
   input_ff <- if (!is.null(tv$fcs)) flowCore::read.FCS(tv$fcs) else make_valid_fcs(exprs = tv$data)
   layout <- if (is.list(tv$layout)) tv$layout else list(default = tv$layout)
   labels <- if (is.list(tv$labels)) tv$labels else list(default = tv$labels)
@@ -841,6 +842,8 @@ shiny_server <- function(input, output, session) {
   observeEvent(input$btn_pin_batch_name, {
 
     if (input$input_pin_batch_name != '') {
+      ##METHOD CHANGED
+      tv$pinned[[input$input_pin_batch_name]]<-react$walks_sel[react$trajectories_to_pin]
       walks        <- list()
       walks$v      <- unlist(react$trajectories_random_walks)
       walks$starts <- c(1, cumsum(sapply(react$trajectories_random_walks, length)) + 1)
@@ -947,8 +950,8 @@ shiny_server <- function(input, output, session) {
     }
     react$trajectories_pinned_batches_count <- 0
     react$trajectories_pinned               <- NULL
-    tv$pinned.A<-NULL
-    tv$pinned.B<-NULL
+    ##METHOD CHANGED
+    tv$pinned<-list()
   })
   observeEvent(input$btn_export_fcs_modal_save, {
     if (input$input_export_fcs_name != '') {
@@ -1002,12 +1005,12 @@ shiny_server <- function(input, output, session) {
 
   observeEvent(input$btn_trajectories_pin_trajectories.A, {
     react$trajectories_to_pin <- sort(unique(react$trajectories_marked.A))
-    tv$pinned.A<-react$walks_sel[react$trajectories_to_pin]
+    
   })
 
   observeEvent(input$btn_trajectories_pin_trajectories.B, {
     react$trajectories_to_pin <- sort(unique(react$trajectories_marked.B))
-    tv$pinned.B<-react$walks_sel[react$trajectories_to_pin]
+    
   })
 
   output$log_dendrogram_selected <- renderPrint({
