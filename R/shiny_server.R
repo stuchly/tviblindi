@@ -18,8 +18,7 @@ shiny_server <- function(input, output, session) {
   INPUTS_DIRECTORY <- 'tviblindi_tmp'
   tv_name <- readRDS(file.path(INPUTS_DIRECTORY, 'tv.RDS'))
   tv <- get(tv_name, parent.env(environment()))
-  ##METHOD CHANGED
-  tv$pinned<-list()
+  
   input_ff <- if (!is.null(tv$fcs)) flowCore::read.FCS(tv$fcs) else make_valid_fcs(exprs = tv$data)
   layout <- if (is.list(tv$layout)) tv$layout else list(default = tv$layout)
   labels <- if (is.list(tv$labels)) tv$labels else list(default = tv$labels)
@@ -120,6 +119,10 @@ shiny_server <- function(input, output, session) {
   react$trajectories_group <- 'A'
   react$output_ff <- NULL
   react$trajectories_pinned_batches_count <- 0 # before export, batches of marked walks are pinned iteratively
+  
+  ##METHOD CHANGED - remeber trajectories pinned to object - only new trajectories are pinned to fcs for now
+  if (is.null(tv$pinned)) tv$pinned<-list() else react$trajectories_pinned_batches_count<-length(tv$pinned)
+  
     react$trajectories_random_walks <-
     react$trajectories_to_pin <-
     react$trajectories_pinned <- NULL
