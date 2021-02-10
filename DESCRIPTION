@@ -10,7 +10,7 @@ License: open
 biocViews:
 Depends: R (>= 3.0.0), Matrix, igraph, RcppArmadillo, Rcpp, RcppEigen, BH, FlowSOM, shiny, shinyBS, shinyWidgets, shinyFiles, tidyverse, ggdendro, dendextend, scales, gplots, scattermore, jpeg, cowplot, reticulate, shinycssloaders, cluster, shinybusy
 Remotes: github::exaexa/scattermore
-Suggests: TDA, PRIMME, flowCore
+Suggests: PRIMME, flowCore
 Imports: Rcpp (>= 0.12.12), RcppEigen (>= 0.3.3.3.0), BiocGenerics
 LinkingTo: RcppArmadillo, Rcpp, RcppEigen, BH
 Encoding: UTF-8
