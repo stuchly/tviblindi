@@ -181,7 +181,7 @@ Som.tviblindi<-function(x,xdim=25,ydim=25,method="som",kmeans_algorithm=c("Harti
     }
     K<-xdim*ydim
     codes <-sample_points(x$denoised,K)
-    ###METHOD CHANGED
+###METHOD CHANGED
     if (method!="som"){
         cl<-kmeans(x$denoised,K,centers=codes,algorithm=kmeans_algorithm)
         x$clusters<-cl$cluster
@@ -231,7 +231,7 @@ Filtration.tviblindi<-function(x,method="witness",K=30,alpha2=NULL){
     }
 
     if (method=="traingulation"){
-        ###METHOD CHANGED
+###METHOD CHANGED
         if (is.null(x$sominfo)) stop("traingulation works only with SOM clustering")
         x$filtration<-traingulation(x$codes,x$sominfo[1],x$sominfo[2])
     }
@@ -339,6 +339,15 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
         x$walks[[origin_name]]$gprobs<-c(x$walks[[origin_name]]$gprobs,walks$gprobs)
         return(invisible(0))
     }
+    ##METHOD CHANGED
+    fetch.walks<-function(walks0,walks){
+
+        if(is.null(walks0)) walks0<-list(starts=NULL,v=NULL,gprobs=NULL)
+        walks0$starts<-c(walks0$starts,walks$starts+length(walks0$v))
+        walks0$v<-c(walks0$v,walks$v)
+        walks0$gprobs<-c(walks$gprobs,walks$gprobs)
+        return(walks0)
+    }
     d<-KofRawN(x$KNN,K)
     d  <- knn.raw2adj(d)
     if (x$keep) x$dsym <- knn.spadj2sym(knn.adj2spadj(d))
@@ -362,7 +371,24 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
 
     if (!equinumerous & is.null(to)){
         ## Simulate random walks
-        walks           <- random_walk_adj_N_push(oriented.sparseMatrix, x$origin[[origin_name]], N)
+        ##METHOD CHANGED
+        if (N>=1000){
+            K<-N
+
+            walks<-NULL
+            while (TRUE){
+                ## print(K)
+                step<-min(500,K)
+                walks<-fetch.walks(walks,random_walk_adj_N_push(oriented.sparseMatrix, x$origin[[origin_name]], step))
+                K<-K-step
+                if (K<=0) break
+            }
+
+
+        } else {
+            walks <- random_walk_adj_N_push(oriented.sparseMatrix, x$origin[[origin_name]], N)
+        }
+
         if (!add){
             x$walks[[origin_name]]<-walks
         } else{
@@ -523,22 +549,22 @@ DimRed.tviblindi <-
                         ss<-.upsample.labels(labl,N=upsample$N,takeall = upsample$takeall)
                         knn_loc<-KNN.annoy(x$data[ss,], K, 150)$IND
                         layout = vv$dimred(
-                            x$data[ss,],
-                            as.integer(dim),
-                            vsplit,
-                            enc_shape,
-                            dec_shape,
-                            perplexity,
-                            as.integer(batch_size),
-                            as.integer(epochs),
-                            as.integer(patience),
-                            as.integer(ivis_pretrain),
-                            ww,
-                            "euclidean",
-                            margin,
-                            K,
-                            knn_loc
-                        )
+                                        x$data[ss,],
+                                        as.integer(dim),
+                                        vsplit,
+                                        enc_shape,
+                                        dec_shape,
+                                        perplexity,
+                                        as.integer(batch_size),
+                                        as.integer(epochs),
+                                        as.integer(patience),
+                                        as.integer(ivis_pretrain),
+                                        ww,
+                                        "euclidean",
+                                        margin,
+                                        K,
+                                        knn_loc
+                                    )
                     } else {
                         if (shuffle) sshuf<-sample(nrow(x$data)) else sshuf<-1:nrow(x$data)
                         if (shuffle){
@@ -547,25 +573,25 @@ DimRed.tviblindi <-
                             if (!is.null(x$KNN)) knn.plc<-KofRawN(x$KNN,K) else knn.plc<-KNN.annoy(x$data[sshuf,],  K, 150)$IND
                         }
                         layout = vv$dimred(
-                            x$data[sshuf,],
-                            as.integer(dim),
-                            vsplit,
-                            enc_shape,
-                            dec_shape,
-                            perplexity,
-                            as.integer(batch_size),
-                            as.integer(epochs),
-                            as.integer(patience),
-                            as.integer(ivis_pretrain),
-                            ww,
-                            "euclidean",
-                            margin,
-                            K,
-                            knn.plc
-                        )
+                                        x$data[sshuf,],
+                                        as.integer(dim),
+                                        vsplit,
+                                        enc_shape,
+                                        dec_shape,
+                                        perplexity,
+                                        as.integer(batch_size),
+                                        as.integer(epochs),
+                                        as.integer(patience),
+                                        as.integer(ivis_pretrain),
+                                        ww,
+                                        "euclidean",
+                                        margin,
+                                        K,
+                                        knn.plc
+                                    )
                     }
                     x$vae <- layout[[3]]
-                    #x$vae_structure<-list(config=layout[[3]]$get_config(),weights=layout[[3]]$get_weights())
+                                        #x$vae_structure<-list(config=layout[[3]]$get_config(),weights=layout[[3]]$get_weights())
                     layout <- layout[[2]](x$data)
                 }
 
