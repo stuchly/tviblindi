@@ -605,8 +605,8 @@ DimRed.tviblindi <-
                 )$X
 
             } else if (method[1]=="umap"){
-                if (!require(umap)) stop("install umap first")
-                layout<-umap::umap(x$data)$layout
+                if (!require(uwot)) stop("install package 'uwot' first")
+                layout<-uwot::umap(x$data,verbose=TRUE)
             }  else {
                 message("Unimplemented method. Nothing done.")
             }
