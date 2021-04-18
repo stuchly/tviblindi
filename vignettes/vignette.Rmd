@@ -1,0 +1,81 @@
+---
+title: '*tviblindi*: semi-automated trajectory inference using persistent homology'
+output: rmarkdown::pdf_document
+vignette: >
+  %\VignetteIndexEntry{tviblindi}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+`tviblindi` puts concepts from graph theory and algebraic topology to use for trajectory inference (TI) in high-dimensional biological data.
+
+# Overview of functionality
+
+Single-cell cytometric and transcriptomic data provide a snapshot of cellular marker expression in cells from experimental subjects, healthy human donors and patients alike. Some of these data are representative of multiple consecutive stages in the development of a cell population, *e.g.* of B lymphocytes in bone marrow or of T lymphocytes in the thymus. Cell types and cell states comprising known developmental pathways can be detected and described using computational tools from the realm of trajectory inference (TI). We present a novel TI tool for semi-supervised discovery of developmental pathways called `tviblindi`.
+
+First, `tviblindi` derives an ordering of cell profiles that describes differentiation patterns in measured cells. We refer to this step as *pseudotemporal ordering*. Once the desired sequence of measured events (cells in samples) is available, `tviblindi` simulates 'random walks' through our high-dimensional point cloud. These are stochastic simulated traversals from early progenitors to mature cells, governed partially by dissimilarities between data points in Euclidean or other metric space.
+
+Second, `tviblindi` triangulates the input high-dimensional point cloud using *filtration*, inserting lines and triangles sequentially until all the points of interest shaping our data are connected in a graph. Results of filtration allow us to re-create the simulated random walks as combinations of lines with useful mathematical properties. With the aid of *persistent homology*, filtration-based trajectories can be manipulated algebraically and classified into distinct groups.
+
+In the third step, we make the following assumption: any high-dimensional dataset will contain relatively dense regions and sparse regions. Wherever we detect a sparse region (a 'hole'), we can identify trajectories which navigate around this hole in different directions. This is similar to a navigation system listing different routes on a map, circumnavigating a traffic jam in different ways while keeping the starting point and endpoint of a journey fixed. The step of discriminating between ways to navigate around sparse regions is key in classifying tentative pathways of cell differentiation.
+
+`tviblindi` provides an easy-to-use toolbox for identifying potential developmental trajectories and grouping them in a classification tree. We provide a graphical user interface which enables the user to
+
+* inspect trajectories in different classes by topological relationships,
+
+* view the trajectories drawn on a 2-dimensional layout of input data,
+
+* track progression of expression levels for markers of interest at different stages of development,
+
+* check the composition of tracked populations in terms of labelled cell populations and
+
+* export enhanced FCS files for viewing results of the TI analysis in FlowJo or other gating software.
+
+# Tutorial
+
+You can run the `tviblindi` trajectory-inference pipeline easily using only two functions from `tviblindi`: the first for generating a `tviblindi` object and simulating tentative developmental pathways, and the second for opening an interactive graphical user interface that helps you discover and classify pathways. For simplicity, you can use a sample mass-cytometry human thymus dataset included with the package. All parameters of the analysis are described in the documentation for each function.
+
+```
+library(tviblindi)
+data('Thymus_expression') # load thymus expression data (coordinate matrix)
+data('Thymus_labels')     # load labels per cell
+tv <- InferTrajectories(
+  expression = Thymus_expression,
+  labels_per_event = Thymus_labels,
+  origin_label = 'CD34+CD1a- DN T precursor'
+)
+Interactive(tv)
+```
+
+Alternatively, you can run the constituent functions that comprise the trajectory-inference pipeline one-by-one.
+
+```
+tv <- tviblindi(data = Thymus_expression, labels = Thymus_labels)
+SetOrigin(tv, 'CD34+CD1a- DN T precursor')
+ConstructkNNG(tv)
+Denoise(tv)
+AddLayout(tv, method = 'umap')
+Plot(tv)
+Cluster(tv)
+Filter(tv)
+ComputePseudotime(tv)
+SimulateRandomWalks(tv)
+Interactive(tv)
+```
+
+To inspect the connectedness of different populations in your dataset based on Louvain clustering, use the 'connectome' functionality.
+
+```
+Connectome(tv)
+```
+
+Additionally, to make a part of your point cloud denser, you can sample extra data points from an artificial distribution simulated over the neighbourhood of existing points.
+You can choose, for instance, to inflate a single specific population of interest, changing the result of simulating developmental pathways as a result.
+
+```
+Upsample(tv, idcs = 'CD4+CD3+CD1a+ SP')
+```
