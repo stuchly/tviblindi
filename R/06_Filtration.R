@@ -48,7 +48,7 @@ Filter.tviblindi <- function(
     )
     if (is.null(alpha)) {
       alpha <- mean(matched_vertices$nn.dist[, k])
-      .msg_alt(paste0('alpha = ', alpha))
+      .msg_alt(paste0('alpha = ', round(alpha, 2)))
     }
     index_list <- split(matched_vertices$nn.index, seq(nrow(matched_vertices$nn.index)))
     distance_list <- split(matched_vertices$nn.dist,  seq(nrow(matched_vertices$nn.index)))

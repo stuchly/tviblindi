@@ -1,9 +1,6 @@
-#' Downsample expression data prior to trajectory inference
+#' Create downsampled version of tviblindi object
 #'
-#' This method modified slots \code{data}, \code{layout}, \code{labels} and \code{fcs_subset_idcs} of a \code{tviblindi} object 
-#' and assigns 'code{NULL} to slots \code{pseudotime}, \code{filtration}, \code{boundary}, \code{reduced_boundary}, \code{walks}, \code{fates}, \code{kNN},
-#' \code{dist}, \code{trans}, \code{clusters} and \code{codes}.
-#' The expression data is downsampled to make analysis more time-efficient.
+#' This method takes a \code{tviblindi} object and creates a modified version with downsampled expression data.
 #' 
 #' However, working with the full data (without downsampling), if possible, is encouraged.
 #'
@@ -22,7 +19,7 @@
 #' Label-based downsampling (for \code{method == 'labels'}) prevents the vanishing of smaller populations while downsampling, and works with a previously specified vector of population labels.
 #'
 #' @export
-Downsample.tviblindi <- function(
+Downsample <- function(
   tv,
   N = 10000,
   k = 10,
@@ -114,40 +111,11 @@ Downsample.tviblindi <- function(
   
   gc(verbose = FALSE)
   
-  .msg('Clearing results of downstream analysis (transition model, pseudotime, filtration, boundary matrices, SOM, random walks)')
-  
-  tv$downsampling     <- paste0('method ', method[1], '; original number of events=', original_N <- nrow(tv$data))
-  tv$pseudotime       <- NULL
-  tv$filtration <- tv$filtration_method <- NULL
-  tv$boundary         <- NULL
-  tv$reduced_boundary <- NULL
-  tv$walks            <- NULL
-  tv$n_walks <- tv$walks_equinumerous <- NULL
-  tv$fates            <- NULL
-  tv$kNN              <- NULL
-  tv$dist             <- NULL
-  tv$dist.oriented    <- NULL
-  tv$trans            <- NULL
-  tv$trans.oriented   <- NULL
-  tv$trans_kernel     <- NULL
-  tv$som_xgrid        <- NULL
-  tv$som_ygrid        <- NULL
-  tv$clusters         <- NULL
-  tv$codes            <- NULL
-  tv$layout           <- tv$layout[s, ]
-  if (!is.null(tv$denoised))
-    tv$denoised <- tv$denoised[s, ]
-  tv$layout_method    <- NULL
-  for (idx.labels in seq_len(tv$labels))
-    tv$labels[[idx.labels]] <- tv$labels[[idx.labels]][s]
-  tv$data             <- tv$data[s, ]
-  tv$events_sel       <- tv$events_sel[s]
-
-  .msg('2-d layout and denoised data were filtered to only include downsampled events (better re-compute these)')
-  
-  gc(verbose = FALSE)
-  
-  invisible(tv)
+  tv <- tviblindi(data = data, labels = labels)
+  tv$origin <- origin
+  tv$events_sel <- events_sel
+  tv$downsampling <- downsampling
+  tv$layout <- layout
+  tv$labels <- labels
+  tv
 }
-
-Downsample <- function(tv, N, k, method, intrinsic_dim, labels_name, threshold, ignore_labels) UseMethod('Downsample', tv)

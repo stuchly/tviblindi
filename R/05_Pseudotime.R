@@ -322,11 +322,15 @@ ComputePseudotime.tviblindi <- function(
   OrientMatrices(tv, 'dist', base = base, pseudotime_name = name, breaks = breaks)
   OrientMatrices(tv, 'trans', name = name, pseudotime_name = name, base = base, breaks = breaks)
   gc(verbose = FALSE)
-  .msg_alt(paste0('Pseudotime computation error: ', tv$pseudotime[[name]]$error))
+  .msg_alt(paste0('Pseudotime computation error: ', signif(tv$pseudotime[[name]]$error), digits = 2))
   
   if (is.null(tv$trans_kernel))
     tv$trans_kernel <- list()
   tv$trans_kernel[[name]] <- kernel
+  
+  if (is.null(tv$trans_k))
+    tv$trans_k <- list()
+  tv$trans_k[[name]] <- k
   
   if (is.null(tv$trans_name_origin))
     tv$trans_name_origin <- list()

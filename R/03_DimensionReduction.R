@@ -73,7 +73,7 @@ AddLayout.tviblindi <- function(
       if (!av.numpy)
         reticulate::py_install('numpy', pip = TRUE)
       if (!av.vae)
-        reticulate::py_install('git+https://github.com/davnovak/vaevictis.git@master', pip = TRUE)
+        reticulate::py_install('git+https://github.com/stuchly/vaevictis', pip = TRUE)
       
       .msg_alt_good('All required modules installed')
     }

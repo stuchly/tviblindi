@@ -31,21 +31,45 @@ SimulateRandomWalks.tviblindi <- function(
   stopifnot(!is.null(tv$trans))
   
   add_walks <- function(tv, walks, name) {
-    if (is.null(tv$walks)) {
+    if (is.null(tv$walks))
       tv$walks <- list()
-      tv$walks[[name]] <- list(starts = NULL, v = NULL)
-    }
+    if (is.null(tv$walks[[name]]))
+      tv$walks[[name]] <- list(starts = NULL, v = NULL, gprobs = NULL)
     tv$walks[[name]]$starts <- c(tv$walks[[name]]$starts, walks$starts + length(tv$walks[[name]]$v))
     tv$walks[[name]]$v <- c(tv$walks[[name]]$v, walks$v)
+    tv$walks[[name]]$grobs <- c(tv$walks[[name]]$gprobs, walks$gprobs)
     return(invisible(tv))
   }
   
+  fetch_walks <- function(w0, w) {
+    if (is.null(w0))
+      w0 <- list(starts = NULL, v = NULL, gprobs = NULL)
+    w0$starts <- c(w0$starts, w$starts + length(w0$v))
+    w0$v <- c(w0$v, w$v)
+    w0$gprobs <- c(w0$grobs, w$grobs)
+    w0
+  }
+  
   if (!equinumerous & is.null(enforced_terminal_nodes)) {
-    walks <- random_walks(tv$trans[[transition_model_name]], tv$origin[[tv$trans_name_origin[[transition_model_name]]]], n_walks)
+    
+    if (n_walks >= 1000) {
+      walks <- NULL
+      k <- n_walks
+      while (TRUE) {
+        step <- min(500, k)
+        walks <- fetch_walks(walks, random_walks(tv$trans[[transition_model_name]], tv$origin[[tv$trans_name_origin[[transition_model_name]]]], n_walks))
+        k <- k - step
+        if (k <= 0)
+          break
+      }
+    } else {
+      walks <- random_walks(tv$trans[[transition_model_name]], tv$origin[[tv$trans_name_origin[[transition_model_name]]]], n_walks)
+    }
     if (add) { 
       add_walks(tv, walks, transition_model_name)
     } else {
-      if (is.null(tv$walks)) tv$walks <- list()
+      if (is.null(tv$walks))
+        tv$walks <- list()
       tv$walks[[transition_model_name]] <- walks
     }
   }
@@ -140,7 +164,7 @@ random_walks <- function(
   origin,
   N
 ) {
-  C_random_walk_adj_N(Matrix::t(transition_matrix), origin, 1000, N)
+  C_random_walk_adj_N_push(Matrix::t(transition_matrix), origin, N)
 }
 
 #' Remove cycles from simulated random walks
