@@ -934,7 +934,7 @@ shiny_server <- function(
   })
   
   ##METHOD CHANGED - add all labels to file
-  observeEvent((input$btn_trajectories_clear_pinned_trajectories), {
+  observeEvent(input$btn_trajectories_clear_pinned_trajectories, {
     if (is.null(react$output_ff)) {
       if (is.null(fcs_subset_idcs)) {
         layout_X <- layout.df[[react$layout_name]]$X * 100
@@ -979,6 +979,7 @@ shiny_server <- function(
     }
     react$trajectories_pinned_batches_count <- 0
     react$trajectories_pinned               <- NULL
+    tv$pinned_pathways                      <- list()
   })
   observeEvent(input$btn_export_fcs_modal_save, {
     if (input$input_export_fcs_name != '') {
@@ -1032,10 +1033,12 @@ shiny_server <- function(
   
   observeEvent(input$btn_trajectories_pin_trajectories.A, {
     react$trajectories_to_pin <- sort(unique(react$trajectories_marked.A))
+    tv$pinned_pathways[[tv$pinned_pathways + 1]] <- react$trajectories_to_pin
   })
   
   observeEvent(input$btn_trajectories_pin_trajectories.B, {
     react$trajectories_to_pin <- sort(unique(react$trajectories_marked.B))
+    tv$pinned_pathways[[tv$pinned_pathways + 1]] <- react$trajectories_to_pin
   })
   
   output$log_dendrogram_selected <- renderPrint({

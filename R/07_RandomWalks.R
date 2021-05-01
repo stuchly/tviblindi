@@ -164,7 +164,7 @@ random_walks <- function(
   origin,
   N
 ) {
-  C_random_walk_adj_N_push(Matrix::t(transition_matrix), origin, N)
+  C_random_walk(Matrix::t(transition_matrix), origin, N)
 }
 
 #' Remove cycles from simulated random walks

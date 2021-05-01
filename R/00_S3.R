@@ -78,6 +78,7 @@ new_tviblindi <- function(
   tv$denoising_iterations <- 0
   tv$labels               <- if (!is.list(labels)) list(default = as.factor(labels)) else labels
   tv$pseudotime           <- NULL
+  tv$pinned_pathways      <- list()
   tv$filtration           <- NULL
   tv$filtration_method    <- NULL
   tv$boundary             <- NULL

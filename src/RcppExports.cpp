@@ -296,6 +296,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// C_random_walk
+RcppExport SEXP C_random_walk(const Eigen::Map<Eigen::SparseMatrix<double> > sim, int start, const Eigen::Index N);
+RcppExport SEXP _tviblindi_C_random_walk(SEXP simSEXP, SEXP startSEXP, SEXP NSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::SparseMatrix<double> > >::type sim(simSEXP);
+    Rcpp::traits::input_parameter< int >::type start(startSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Index >::type N(NSEXP);
+    rcpp_result_gen = Rcpp::wrap(C_random_walk(sim, start, N));
+    return rcpp_result_gen;
+END_RCPP
+}
 // remove_cycles_int_list
 std::vector< std::vector<int> > remove_cycles_int_list(std::vector< std::vector<int> > series_list, std::vector< std::vector<int> > series_list_unique);
 RcppExport SEXP _tviblindi_remove_cycles_int_list(SEXP series_listSEXP, SEXP series_list_uniqueSEXP) {
@@ -384,6 +397,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tviblindi_C_random_walk_adj", (DL_FUNC) &_tviblindi_C_random_walk_adj, 3},
     {"_tviblindi_C_random_walk_adj_N", (DL_FUNC) &_tviblindi_C_random_walk_adj_N, 4},
     {"_tviblindi_C_random_walk_adj_N_push", (DL_FUNC) &_tviblindi_C_random_walk_adj_N_push, 3},
+    {"_tviblindi_C_random_walk", (DL_FUNC) &_tviblindi_C_random_walk, 3},
     {"_tviblindi_remove_cycles_int_list", (DL_FUNC) &_tviblindi_remove_cycles_int_list, 2},
     {"_tviblindi_get_rep_straight", (DL_FUNC) &_tviblindi_get_rep_straight, 4},
     {"_tviblindi_get_rep_straight_modified", (DL_FUNC) &_tviblindi_get_rep_straight_modified, 3},

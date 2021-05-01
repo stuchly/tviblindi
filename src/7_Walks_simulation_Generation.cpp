@@ -170,6 +170,48 @@ RcppExport SEXP  C_random_walk_adj_N_push(const Eigen::Map<Eigen::SparseMatrix<d
   return Rcpp::List::create(Rcpp::Named("v", v[v>0]), Rcpp::Named("starts",ind_s), Rcpp::Named("gprobs",gprobs));
 }
 
+// [[Rcpp::export]]
+RcppExport SEXP C_random_walk(const Eigen::Map<Eigen::SparseMatrix<double> > sim,
+                              int start,
+                              const Eigen::Index N=1) {
+  std::vector<int> walks;
+  std::vector<int> ind_s(N);
+  int origin = start;
+  int jj = 0;
+  
+  for (int j=0; j<N; j++)
+  {
+    ind_s[j] = jj+1;
+    walks.push_back(origin);
+    start = origin-1;
+    
+    while (true)
+    {
+      std::vector<double> probs;
+      std::vector<int> vert;
+      
+      for (Eigen::Map<Eigen::SparseMatrix<double> >::InnerIterator it(sim, start); it; ++it)
+      {
+        probs.push_back(it.value());
+        vert.push_back(it.index());
+      }
+      
+      if (probs.size()==0) break;
+      
+      Rcpp::NumericVector r_probs = Rcpp::wrap(probs);
+      Rcpp::IntegerVector r_vert = Rcpp::wrap(vert);
+      
+      Rcpp::IntegerVector ret = sample(r_vert, 1, FALSE, r_probs);
+      
+      jj++;
+      walks.push_back(ret[0]+1);
+      start = ret[0];
+    }
+    jj++;
+  }
+  return Rcpp::List::create(Rcpp::Named("v", Rcpp::wrap(walks)),Rcpp::Named("starts",ind_s));
+}
+
 namespace remove_cycles {
   template <typename T>
     std::vector<T> remove_cycles_generic(

@@ -89,6 +89,10 @@ C_random_walk_adj_N_push <- function(A, start, N = 1L) {
     .Call('_tviblindi_C_random_walk_adj_N_push', PACKAGE = 'tviblindi', A, start, N)
 }
 
+C_random_walk <- function(sim, start, N = 1L) {
+    .Call('_tviblindi_C_random_walk', PACKAGE = 'tviblindi', sim, start, N)
+}
+
 remove_cycles_int_list <- function(series_list, series_list_unique) {
     .Call('_tviblindi_remove_cycles_int_list', PACKAGE = 'tviblindi', series_list, series_list_unique)
 }
