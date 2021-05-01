@@ -4,7 +4,7 @@
 
 - - - - -
 
-`tviblindi` puts concepts from graph theory and algebraic topology to use for trajectory inference (TI) in high-dimensional biological data.
+`tviblindi` puts concepts from graph theory and algebraic topology to use for trajectory inference (TI) in high-dimensional biological data (cytometry, scRNA-seq, CITE-seq).
 
 We provide easy-to-use tools for identifying potential developmental trajectories and grouping them in a classification tree.
 This includes a graphical user interface that enables the user to
@@ -69,6 +69,13 @@ You can choose, for instance, to inflate a single specific population of interes
 ```
 Upsample(tv, idcs = 'CD4+CD3+CD1a+ SP')
 ```
+
+On the other hand, you can use `Downsample` to reduce the number of points.
+However, it is preferrable to use the full data whenever possible.
+
+In the process of running your TI pipeline (after generating a 2-d layout), you can call `Plot` to view your data.
+
+Each user-level function is documented, so finding out about all its parameters (or references to literature which describe relevant concepts), use `?FunctionName` to view the documentation.
 
 ## How `tviblindi` works
 
