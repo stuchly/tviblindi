@@ -27,7 +27,7 @@ The `CGAL` library version 4 is required (`tviblindi` has not been adapted to wo
 
 ## Usage
 
-You can run the `tviblindi` trajectory-inference pipeline easily using only two functions from `tviblindi`: the first for generating a `tviblindi` object and simulating tentative developmental pathways, and the second for opening an interactive graphical user interface that helps you discover and classify pathways. For simplicity, you can use a sample mass-cytometry human thymus dataset included with the package. All parameters of the analysis are described in the documentation for each function.
+You can run the `tviblindi` trajectory-inference pipeline easily using only two user-level functions: the first for generating a `tviblindi` object and simulating tentative developmental pathways, and the second for opening an interactive graphical user interface that helps you discover and classify pathways. For simplicity, you can use a sample mass-cytometry human thymus dataset included with the package. All parameters of the analysis are described in the documentation for each function.
 
 ```
 library(tviblindi)
