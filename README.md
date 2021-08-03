@@ -4,6 +4,10 @@
 
 - - - - -
 
+<kbd>
+  <img src="tviblindi_workflow.png">
+</kbd>
+
 `tviblindi` puts concepts from graph theory and algebraic topology to use for trajectory inference (TI) in high-dimensional biological data (cytometry, scRNA-seq, CITE-seq).
 
 We provide easy-to-use tools for identifying potential developmental trajectories and grouping them in a classification tree.
@@ -41,6 +45,10 @@ tv <- InferTrajectories(
 Interactive(tv)
 ```
 
+<kbd>
+  <img src="tviblindi_gui.png">
+</kbd>
+
 Alternatively, you can run the constituent functions that comprise the trajectory-inference pipeline one-by-one.
 
 ```
@@ -66,6 +74,10 @@ Connectome(tv)
 Additionally, to make a part of your point cloud denser, you can sample extra data points from an artificial distribution simulated over the neighbourhood of existing points.
 You can choose, for instance, to inflate a single specific population of interest, changing the result of simulating developmental pathways as a result.
 
+<kbd>
+  <img src="tviblindi_connectome.png">
+</kbd>
+
 ```
 Upsample(tv, idcs = 'CD4+CD3+CD1a+ SP')
 ```
@@ -80,4 +92,8 @@ Each user-level function is documented, so finding out about all its parameters 
 ## How `tviblindi` works
 
 For an explanation of the inner workings of `tviblindi`, check out `supplementary.pdf`.
+
+<kbd>
+  <img src="tviblindi_sparsity.png">
+</kbd>
 
