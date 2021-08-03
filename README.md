@@ -1,4 +1,4 @@
- <img src="tviblindi_logo.png" width=150>
+ <img src="tviblindi_logo.png" width=220>
 
 
 **Single-cell trajectory inference toolkit**
