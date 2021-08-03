@@ -1,6 +1,4 @@
-<kbd>
-  <img src="tviblindi_logo.png">
-</kbd>
+ <img src="tviblindi_logo.png" width=350>
 
 
 **Single-cell trajectory inference toolkit**
@@ -10,6 +8,7 @@
 <kbd>
   <img src="tviblindi_workflow.png">
 </kbd>
+
 
 
 `tviblindi` puts concepts from graph theory and algebraic topology to use for trajectory inference (TI) in high-dimensional biological data (cytometry, scRNA-seq, CITE-seq).
@@ -54,6 +53,7 @@ Interactive(tv)
 </kbd>
 
 
+
 Alternatively, you can run the constituent functions that comprise the trajectory-inference pipeline one-by-one.
 
 ```
@@ -83,6 +83,7 @@ Connectome(tv)
 </center>
 
 
+
 Additionally, to make a part of your point cloud denser, you can sample extra data points from an artificial distribution simulated over the neighbourhood of existing points.
 You can choose, for instance, to inflate a single specific population of interest, changing the result of simulating developmental pathways as a result.
 
@@ -104,6 +105,6 @@ For an explanation of the inner workings of `tviblindi`, check out `supplementar
 
 <center>
 <kbd>
-  <img src="tviblindi_sparsity.png" width=400>
+  <img src="tviblindi_sparsity.png" width=500>
 </kbd>
 </center>
