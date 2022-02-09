@@ -267,7 +267,7 @@ Pseudotime<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="Exp",kepsilon=NULL,sym="max",origin_name=names(x$origin)[1]){
+Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="Exp",kepsilon=NULL,sym="max",origin_name=names(x$origin)[1],weighted=TRUE){
     stopifnot(!is.null(x$origin[[origin_name]]))
     if (length(x$origin[[origin_name]])==0) stop("Origin not set!")
     if (K>dim(x$KNN$IND)[2]){
@@ -280,7 +280,12 @@ Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="E
 
     ## sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     ##METHOD CHANGED
-    if (sym=="mean")
+    symB<-TRUE
+    if (sym=="none"){
+        sim<-knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon)
+        symB<-FALSE
+    }
+    else if (sym=="mean")
         sim <- knn.spadj.symmetrize(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
     else if (sym=="prob")
         sim <- knn.spadj.symmetrize.P(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
@@ -291,7 +296,8 @@ Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="E
         sim <- knn.adj2spadjsim1(d, kernel = kernel,epsilon=kepsilon)
     } else stop("symmetrisation not implemented")
 
-    x$pseudotime[[origin_name]]  <- assign_distance(sim, x$origin[[origin_name]],weights = dsym,nb_it=nb_it,iguess=iguess,eps=eps)
+    if (!weighted) weighted<-NULL
+    x$pseudotime[[origin_name]]  <- assign_distance(sim, x$origin[[origin_name]],weights = weighted,nb_it=nb_it,iguess=iguess,eps=eps,sym=symB)
     cat("Pseudotime error:", x$pseudotime[[origin_name]]$error, "\n")
     if (x$keep) {
         x$sim<-sim
@@ -377,7 +383,7 @@ Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,
 
             walks<-NULL
             while (TRUE){
-                ## print(K)
+                print(K)
                 step<-min(500,K)
                 walks<-fetch.walks(walks,random_walk_adj_N_push(oriented.sparseMatrix, x$origin[[origin_name]], step))
                 K<-K-step

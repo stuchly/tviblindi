@@ -7,6 +7,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // bicgSparse
 RcppExport SEXP bicgSparse(const Eigen::Map<Eigen::SparseMatrix<double> > A, const Eigen::VectorXd b, const Eigen::Index nb_iter, const double err);
 RcppExport SEXP _tviblindi_bicgSparse(SEXP ASEXP, SEXP bSEXP, SEXP nb_iterSEXP, SEXP errSEXP) {

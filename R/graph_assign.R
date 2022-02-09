@@ -135,6 +135,7 @@ assign_distance <- function(A, origin, big = 1000,nb_it=1500,eps=1E-6,sym=FALSE,
     if (length(unlabeled) > big) {
         message("iterative")
         if (class(L)!="dgCMatrix") stop("use dgCMatrix for big data!")
+        print(sym)
         if (!sym) res<- bicgSparse(L,B,nb_it,eps) else res<- cgSparse(L,B,iguess[unlabeled],nb_it,eps)
     }
 
