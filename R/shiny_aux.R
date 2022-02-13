@@ -981,6 +981,22 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     })
 
 
+    ##METHOD CHANGED
+    ss<-which(unlist(lapply(repre[-1],function(x) any(x<0))))+1
+    if (length(ss)>0){
+        print(length(ss))
+        withProgress(message = 'Recalculating Inf value representations - just this once', value = tick, expr = {
+            for (idx in ss) {
+                print(idx)
+                cycle      <- path_sum(triangulation[[1]], triangulation[[idx]])
+                this_repre <- get_rep_straight(cycle, tv$reduced_boundary, tv$boundary, update = TRUE)
+                repre[[idx]] <- this_repre
+                incProgress(tick)
+            }
+        })
+
+    }
+
     walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
 
 
@@ -1098,8 +1114,9 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         ##print(-max(pers$vals$death[-ss]))
         m_ypos<-max((pers$vals$death[-ss]-pers$vals$birth[-ss])/2)
         m_ssb<-min(pers$vals$birth[ss])
-        print(m_ypos)
-
+        #print(m_ypos)
+        ## print(str(tv1$reduced_boundary))
+        ## print(str(tv1$boundary))
         pers$vals$death[ss]<-(2.1*m_ypos+m_ssb)
         message(length(ss), " infinite-size homology classes detected.")
         message("position: x=(",paste((pers$vals$death[ss]+pers$vals$birth[ss])/2,collapse=","),"), assigned death=(",paste(pers$vals$death[ss],collapse=","),", assigned position=(",paste((pers$vals$death[ss]-pers$vals$birth[ss])/2,collapse=","))
