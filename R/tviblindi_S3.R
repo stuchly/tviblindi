@@ -268,6 +268,7 @@ Pseudotime<-function(x,...){
 #'
 #' @export
 Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="Exp",kepsilon=NULL,sym="max",origin_name=names(x$origin)[1],weighted=TRUE){
+    ##METHOD CHANGED - weighted, sym
     stopifnot(!is.null(x$origin[[origin_name]]))
     if (length(x$origin[[origin_name]])==0) stop("Origin not set!")
     if (K>dim(x$KNN$IND)[2]){
@@ -517,7 +518,7 @@ DimRed.tviblindi <-
              perplexity = 10.,
              batch_size = 512L,
              epochs = 100L,
-             patience = 0L,
+             patience = 1L,
              ivis_pretrain=0,
              ww=c(10.,10.,1.,1.),
              margin=1.,
@@ -613,6 +614,7 @@ DimRed.tviblindi <-
             } else if (method[1]=="umap"){
                 if (!require(uwot)) stop("install package 'uwot' first")
                 layout<-uwot::umap(x$data,verbose=TRUE)
+                rownames(layout)<-NULL ##METHOD CHANGED
             }  else {
                 message("Unimplemented method. Nothing done.")
             }

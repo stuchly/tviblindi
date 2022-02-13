@@ -980,7 +980,9 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         }
     })
 
+
     walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
+
 
     p <- .compute_persistence(tv, repre, death_birth_ratio, death_on_x_axis)
 
@@ -1088,6 +1090,23 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                  death_on_x_axis
                                  ) {
     pers <- pers_diagram(dBr = tv$reduced_boundary, repre = repre, plot = FALSE)
+    ##METHOD CHANGED
+    if(any(is.infinite(pers$vals$death))){
+
+        ##print("Yes!!")
+        ss<-which(is.infinite(pers$vals$death))
+        ##print(-max(pers$vals$death[-ss]))
+        m_ypos<-max((pers$vals$death[-ss]-pers$vals$birth[-ss])/2)
+        m_ssb<-min(pers$vals$birth[ss])
+        print(m_ypos)
+
+        pers$vals$death[ss]<-(2.1*m_ypos+m_ssb)
+        message(length(ss), " infinite-size homology classes detected.")
+        message("position: x=(",paste((pers$vals$death[ss]+pers$vals$birth[ss])/2,collapse=","),"), assigned death=(",paste(pers$vals$death[ss],collapse=","),", assigned position=(",paste((pers$vals$death[ss]-pers$vals$birth[ss])/2,collapse=","))
+        ##ss1<-which.max(pers$vals$death[-ss])
+        ##print((pers$vals$birth[-ss][ss1]+pers$vals$death[-ss][ss1])/2)
+        ##print((pers$vals$death[ss]+pers$vals$birth[ss])/2)
+    }
     pd <- .persistence_diagram(pers, death_birth_ratio, death_on_x_axis)
     list(
         pers = pers,
