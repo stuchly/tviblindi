@@ -1117,7 +1117,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         #print(m_ypos)
         ## print(str(tv1$reduced_boundary))
         ## print(str(tv1$boundary))
-        pers$vals$death[ss]<-(2.1*m_ypos+m_ssb)
+        pers$vals$death[ss]<-(2.5*m_ypos+m_ssb)
         message(length(ss), " essential homology class(es) detected.")
         message("position: x=(",paste((pers$vals$death[ss]+pers$vals$birth[ss])/2,collapse=","),")\n assigned death=(",paste(pers$vals$death[ss],collapse=","),"\n assigned (death-birth)/2 =(",paste((pers$vals$death[ss]-pers$vals$birth[ss])/2,collapse=","))
         ##ss1<-which.max(pers$vals$death[-ss])
