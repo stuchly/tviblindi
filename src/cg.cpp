@@ -4,7 +4,7 @@
 
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::export]]
-RcppExport SEXP  cgSparse(const Eigen::Map<Eigen::SparseMatrix<double> > A, const  Eigen::VectorXd b,const Eigen::VectorXd iguess, const Eigen::Index nb_iter=100,const double err=10^-6) {
+RcppExport SEXP  cgSparse(const Eigen::Map<Eigen::SparseMatrix<double> > A, const  Eigen::VectorXd b,const Eigen::VectorXd iguess, const Eigen::Index nb_iter=100,const double err=1e-15) {
 
   Eigen::VectorXd x;
 

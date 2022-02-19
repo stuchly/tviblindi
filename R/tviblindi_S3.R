@@ -297,8 +297,8 @@ Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="E
         sim <- knn.adj2spadjsim1(d, kernel = kernel,epsilon=kepsilon)
     } else stop("symmetrisation not implemented")
 
-    if (!weighted) weighted<-NULL
-    x$pseudotime[[origin_name]]  <- assign_distance(sim, x$origin[[origin_name]],weights = weighted,nb_it=nb_it,iguess=iguess,eps=eps,sym=symB)
+    if (!weighted) weights<-NULL else weights<-dsym
+    x$pseudotime[[origin_name]]  <- assign_distance(sim, x$origin[[origin_name]],weights = weights,nb_it=nb_it,iguess=iguess,eps=eps,sym=symB)
     cat("Pseudotime error:", x$pseudotime[[origin_name]]$error, "\n")
     if (x$keep) {
         x$sim<-sim
