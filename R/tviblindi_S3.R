@@ -217,7 +217,12 @@ Filtration<-function(x,...){
 Filtration.tviblindi<-function(x,method="witness",K=30,alpha2=NULL){
     if (!(method %in% c("traingulation","witness"))) stop("Not yet implemented")
     stopifnot(!is.null(x$codes))
-
+    ##METHOD CHANGED
+    if (ncol(x$codes)==2){
+        message("dimension of the data is 2, AlphaComplexFiltration forced")
+        x$filtration<-TDA::alphaComplexFiltration(x$codes)
+        method<-"alphacomplex"
+    }
     if (method=="witness"){
         xy <- FNN::get.knnx(x$codes, x$denoised, k = K)
         if (is.null(alpha2)){
