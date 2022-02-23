@@ -256,8 +256,8 @@ shiny_ui <- fluidPage(
           HTML('&nbsp;&nbsp;'),
           # textOutput('log_persistence_available', inline = TRUE),
           # br()
-          checkboxInput('switch_persistence_ratio', label = 'Adjust for dissimilar densities', value = FALSE),
-          checkboxInput('switch_persistence_death_on_x_axis', label = 'Death on x-axis', value = FALSE),
+          checkboxInput('switch_persistence_ratio', label = 'Adjust for dissimilar densities', value = TRUE),
+          checkboxInput('switch_persistence_death_on_x_axis', label = 'Death on x-axis', value = TRUE),
           fluidRow(
             h4('Selected homology classes'),
             verbatimTextOutput('log_persistence_selected', placeholder = TRUE)#,

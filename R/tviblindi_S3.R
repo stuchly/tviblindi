@@ -536,7 +536,7 @@ DimRed.tviblindi <-
              t = 0,
              K=30,
              load_model=NULL,
-             upsample=NULL,
+             upsample=list(N=2000,cluster=15,method="kmeans"),
              labels_name = names(x$labels)[1]) {
 
         vae <- NULL
