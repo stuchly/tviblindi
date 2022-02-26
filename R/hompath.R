@@ -732,11 +732,17 @@ triangulate_pathways<-function(walks,X,cmplx){
 #' @export
 pers_diagram<-function(dBr,plot=TRUE,repre=NULL){
     if (!is.null(repre)) repre<-unique(unlist(repre)) else repre<-dBr$nonzero_col
-
+    ## ss<-which(dBr$low==dBr$nonzero_col)
+    ## print("tutu")
+    ## print(ss)
+    ## print(min(dBr$low[dBr$nonzero_col %in% repre]))
+    ## dBr$low[ss]<-min(dBr$low[dBr$nonzero_col %in% repre])
     ss<-which((dBr$values[dBr$low]!=dBr$values[dBr$nonzero_col]) & (dBr$nonzero_col %in% repre))
     if (plot) plot(dBr$values[dBr$nonzero_col[ss]]~dBr$values[dBr$low[ss]],col=dBr$dim[ss]+1,pch=dBr$dim[ss]+1)
     return(list(inds=data.frame(dim=dBr$dim[ss],birth=dBr$low[ss],death=dBr$nonzero_col[ss]),vals=data.frame(dim=dBr$dim[ss],birth=dBr$values[dBr$low[ss]],death=dBr$values[dBr$nonzero_col[ss]])))
 }
+
+
 
 
 

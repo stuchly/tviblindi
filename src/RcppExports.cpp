@@ -211,8 +211,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_rep_straight
-SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R, Rcpp::List B, bool update);
-RcppExport SEXP _tviblindi_get_rep_straight(SEXP cycleSEXP, SEXP RSEXP, SEXP BSEXP, SEXP updateSEXP) {
+SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R, Rcpp::List B, bool update, int add1simplex);
+RcppExport SEXP _tviblindi_get_rep_straight(SEXP cycleSEXP, SEXP RSEXP, SEXP BSEXP, SEXP updateSEXP, SEXP add1simplexSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -220,7 +220,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::List >::type R(RSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type B(BSEXP);
     Rcpp::traits::input_parameter< bool >::type update(updateSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_rep_straight(cycle, R, B, update));
+    Rcpp::traits::input_parameter< int >::type add1simplex(add1simplexSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_rep_straight(cycle, R, B, update, add1simplex));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -651,7 +652,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tviblindi_get_rep_lazy", (DL_FUNC) &_tviblindi_get_rep_lazy, 4},
     {"_tviblindi_get_rep_lazy_2", (DL_FUNC) &_tviblindi_get_rep_lazy_2, 4},
     {"_tviblindi_get_cycle_representation", (DL_FUNC) &_tviblindi_get_cycle_representation, 4},
-    {"_tviblindi_get_rep_straight", (DL_FUNC) &_tviblindi_get_rep_straight, 4},
+    {"_tviblindi_get_rep_straight", (DL_FUNC) &_tviblindi_get_rep_straight, 5},
     {"_tviblindi_get_rep_straight_modified", (DL_FUNC) &_tviblindi_get_rep_straight_modified, 3},
     {"_tviblindi_get_reps_straight_modified", (DL_FUNC) &_tviblindi_get_reps_straight_modified, 3},
     {"_tviblindi_interpolate_trajectories", (DL_FUNC) &_tviblindi_interpolate_trajectories, 2},

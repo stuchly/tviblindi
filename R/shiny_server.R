@@ -367,9 +367,11 @@ shiny_server <- function(input, output, session) {
                                           marked_termini    = react$termini_processed,
                                           termini_per_path  = react$termini,
                                           death_birth_ratio = react$persistence.death_birth_ratio,
-                                          death_on_x_axis = react$persistence.death_on_x_axis)
+                                          death_on_x_axis = react$persistence.death_on_x_axis,
+                                          add1simplicis_tick = react$add1simplicis_tick)
       react$walks_sel<-which(react$termini %in%  react$termini_processed)  ##METHOD CHANGED
       react$triangulation<-updated$triangulation ##METHOD CHANGED
+      react$add1simplicis<-updated$add1simplicis ##METHOD CHANGED
       react$trajectories_random_walks <- updated$random_walks
       react$representations <- updated$repre
       react$persistence <- updated$pers
@@ -396,7 +398,8 @@ shiny_server <- function(input, output, session) {
                                           termini_per_path  = react$termini,
                                           death_birth_ratio = react$persistence.death_birth_ratio,
                                           death_on_x_axis = react$persistence.death_on_x_axis,
-                                          triangulation=react$triangulation)
+                                          triangulation=react$triangulation,
+                                           add1simplicis_tick = react$add1simplicis)
       react$walks_sel<-updated$walks_sel
       react$trajectories_random_walks <- updated$random_walks
       react$representations           <- updated$repre
@@ -592,6 +595,12 @@ shiny_server <- function(input, output, session) {
   })
   observeEvent(input$btn_persistence_export_image, {
     react$image_export.persistence <- TRUE
+  })
+
+
+  observeEvent(input$add1simplicis_tick, {
+    react$add1simplicis_tick<- input$add1simplicis_tick
+
   })
 
   observeEvent(input$switch_persistence_death_on_x_axis, {

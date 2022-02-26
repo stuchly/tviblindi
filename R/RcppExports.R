@@ -61,8 +61,8 @@ get_cycle_representation <- function(cycle, reduced_boundary_matrix, nonreduced_
     .Call('_tviblindi_get_cycle_representation', PACKAGE = 'tviblindi', cycle, reduced_boundary_matrix, nonreduced_boundaries, update_rb)
 }
 
-get_rep_straight <- function(cycle, R, B, update = FALSE) {
-    .Call('_tviblindi_get_rep_straight', PACKAGE = 'tviblindi', cycle, R, B, update)
+get_rep_straight <- function(cycle, R, B, update = FALSE, add1simplex = 0L) {
+    .Call('_tviblindi_get_rep_straight', PACKAGE = 'tviblindi', cycle, R, B, update, add1simplex)
 }
 
 get_rep_straight_modified <- function(cycle, R, update = FALSE) {

@@ -124,7 +124,7 @@ namespace straight {
 // }
 
 // [[Rcpp::export]]
-SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool update=false) {
+SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool update=false, int add1simplex=0) {
   
   IntegerVector low(R[2]);
   std::vector<int > nzc=R[1];
@@ -134,8 +134,8 @@ SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool up
   Rcpp::List BV=B[0];
   
   
-  std::vector<int> Ilow(BV.length(),-1); //1-simplex last (complex size safe)
-  // std::cout<<"hu1"<<std::endl;
+  std::vector<int> Ilow(BV.length()+add1simplex+1,-1); //1-simplex last (complex size safe)
+  //std::cout<<Ilow.size()<<std::endl;
   for(int ii = 0; ii < low.length(); ii++) {
     Ilow[low[ii]] = ii;                 // Ilow[i] ~ which non-zero column has entry 1 in given row
   }
@@ -156,9 +156,12 @@ SEXP get_rep_straight(std::vector<int> cycle, Rcpp::List R,Rcpp::List B, bool up
     int ll = cycle.back();       // ll <- max(cycle)
     // std::cout<<"hu3.1"<<std::endl;
     int rr = Ilow[ll];                            // rr <- Ilow[ll]
-    //std::cout<<rr<<std::endl;
+    // std::cout<<ll<<std::endl;
+    // std::cout<<rr<<std::endl;
     if(rr < 0){
-      // std::cout<<"hurr"<<std::endl;
+      // std::cout<<ll<<std::endl;
+      // std::cout<<rr<<std::endl;
+      //std::cout<<"hurr"<<std::endl;
       cycle.pop_back();
       Vl.push_back(ll);
       repre.push_back(-ll);

@@ -223,6 +223,8 @@ shiny_ui <- fluidPage(
             actionButton('btn_termini_show_gating', '', icon = icon('glyphicon glyphicon-fullscreen', lib = 'glyphicon')),
             actionButton('btn_termini_export_image',           '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon'))
           ),
+          HTML('&nbsp;&nbsp;'),
+          checkboxInput('add1simplicis_tick', label = 'Add 1-simplices when connecting termini - experimental', value = FALSE),
           fluidRow(
             h4('Selected terminal nodes'),
             verbatimTextOutput('log_termini_selected', placeholder = TRUE)
