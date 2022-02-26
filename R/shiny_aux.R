@@ -940,6 +940,34 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
 }
 
+.add_ends_to_walks_f<-function(walks,ends,endP){
+    inds<-to_add<-NULL
+    j<-0
+    tick<-1/length(ends)
+    withProgress(message = 'Fixing walks termini', expr = {
+        wl<- lapply(1:length(ends), function(idx) select_paths_points(walks, idx))
+
+        for (i in 1:length(wl)){
+            j<-j+1
+            L<-length(wl[[i]])
+            if (wl[[i]][L]!=endP){
+                to_add<-c(to_add,wl[[i]][L])
+                wl[[i]]<-c(wl[[i]],endP)
+
+                inds<-c(inds,j)
+
+            }
+           incProgress(tick)
+        }
+
+        lens           <- sapply(wl, length)
+        walks <- list(v      = unlist(wl),
+                      starts = c(1, 1 + cumsum(lens[-length(lens)])))
+    })
+    return(list(walks=walks,to_add=to_add,inds=inds))
+
+}
+
 .update_walks_by_termini <- function(tv,
                                      pathmodel_name,
                                      pseudotime,
@@ -963,7 +991,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         max_t             <- marked_termini[which.max(pseudotime$res[marked_termini])][1]
         ends              <- c(walks.selected$starts[-1] - 1, length(walks.selected$v))
         Pends<-walks.selected$v[ends]
-        addedw<-.add_ends_to_walks(walks.selected,ends,max_t)
+        addedw<-.add_ends_to_walks_f(walks.selected,ends,max_t)
 
         walks.selected<-addedw$walks
 
@@ -1119,7 +1147,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
         ## thiswalkmax <- which.max(pseudotime$res[marked_termini])[1]
         ##walks.selected$v[ends] <- max_t ## move this to triangulation object
-        addedw<-.add_ends_to_walks(walks.selected,ends,max_t)
+        addedw<-.add_ends_to_walks_f(walks.selected,ends,max_t)
 
         walks.selected<-addedw$walks
 
