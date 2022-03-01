@@ -379,16 +379,16 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
     rasterImage(j, 0, 0, 1, 1)
 }
 
-.add_path_info_to_fcs <- function(ff, pseudotime, all_walks, trajectories_of_interest, event_sel = NULL, id = NULL) {
+.add_path_info_to_fcs <- function(N,pseudotime, all_walks, trajectories_of_interest, event_sel = NULL, id = NULL) {
     pp            <- unique(select_paths_points(all_walks, trajectories_of_interest))
-    out           <- matrix(-1, nrow = nrow(ff@exprs), ncol = 2)
+    out           <- matrix(-1, nrow = N, ncol = 2)
     colnames(out) <- c(paste(id,'which_event', sep = '_'), paste(id, 'local_pseudotime', sep = '_'))
-    if (is.null(event_sel)) event_sel <- 1:nrow(ff@exprs)
+    if (is.null(event_sel)) event_sel <- 1:N
 
     out[event_sel[pp], 1] <- 1000
     out[event_sel[pp], 2] <- as.numeric(as.factor(pseudotime$res[pp]))
-
-    make_valid_fcs(cbind(ff@exprs, out), desc1 = as.character(ff@parameters@data$desc))
+    out
+    ## make_valid_fcs(cbind(ff@exprs, out), desc1 = as.character(ff@parameters@data$desc))
 }
 
 ## Function: add a column (~ channel) to an FCS file
