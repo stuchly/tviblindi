@@ -58,7 +58,8 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
         })
         H              <- unlist(H)
         H.vals         <- sort(pers$vals$death[H])        # filtration values associated with deaths of relevant homology classes
-        Ru             <- Ru[order(H)]                    # sort simplex idcs by corresponding filtration values
+        ##when adding essential class, this is kind of broken!!!
+        Ru             <- Ru[order(pers$vals$death[H])]                    # METHOD CHANGED - bylo  <- Ru[order(H)), sort simplex idcs by corresponding filtration values
         Rl             <- .label(R)                       # string hashes for reduced trajectory representations
         R.unique_idcs  <- sapply(unique(Rl), function(r) which(Rl == r)[1])
                                         # idcs of unique reduced trajectory representations
@@ -968,6 +969,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
 }
 
+
+##METHOD CHANGED - heavilly rewriten to include new 1simplices and to fix remove_cycles bug
 .update_walks_by_termini <- function(tv,
                                      pathmodel_name,
                                      pseudotime,
@@ -985,34 +988,56 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     walks.selected <- list(v      = unlist(walks.selected),
                            starts = c(1, 1 + cumsum(lens[-length(lens)])))
 
+
+    ## Cluster  walks
+    withProgress(message = 'Contracting trajectories', expr = {
+        walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
+    })
+
     ## Put terminal node with highest pseudotime at end of each walk
+
     Pends<-NULL
     if (length(marked_termini) > 1) {
-        max_t             <- marked_termini[which.max(pseudotime$res[marked_termini])][1]
-        ends              <- c(walks.selected$starts[-1] - 1, length(walks.selected$v))
-        Pends<-walks.selected$v[ends]
-        addedw<-.add_ends_to_walks_f(walks.selected,ends,max_t)
+        max_t             <- tv$clusters[marked_termini[which.max(pseudotime$res[marked_termini])][1]]
+        ends              <- c(walks_clusters$starts[-1] - 1, length(walks_clusters$v))
+        Pends<-walks_clusters$v[ends]
+        addedw<-.add_ends_to_walks_f(walks_clusters,ends,max_t)
 
-        walks.selected<-addedw$walks
+        ##walks.selected<-addedw$walks
 
 
     }
 
-    ## Cluster and triangulate walks
-    withProgress(message = 'Contracting trajectories', expr = {
-        walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
-        add1simplex <- 0
-        to_remove<-NULL
-        if (length(Pends)>0 && add1simplicis_tick){
-            PendsP<- unique(tv$clusters[Pends[addedw$inds]])
-            to_add<-as.list(as.data.frame(t(data.frame(PendsP,tail(walks_clusters$v,1)))))
+    add1simplex <- 0
+    to_remove<-NULL
+    if (length(Pends)>0 && add1simplicis_tick){
+        PendsP<- unique(tv$clusters[Pends[addedw$inds]])
+        to_add<-as.data.frame(t(data.frame(PendsP,tail(walks_clusters$v,1))))
+        if (any(to_add[1,]==to_add[2,])) {
+            ss<-which(to_add[1,]==to_add[2,])
+            to_add<-as.list(to_add)
             names(to_add)<-NULL
-            message(" temporarily adding following simpices: ", to_add, " - this will create ", length(to_add), " essential class(es).")
+            to_add<-to_add[-ss]
+        }
+
+        if (length(to_add)>0){
+            message(" temporarily adding following simplices: ", to_add, " - this will create ", length(to_add), " essential class(es).\n")
             orig_length<-length(tv$filtration$cmplx)
             tv$filtration$cmplx<-c(tv$filtration$cmplx,to_add)
             to_remove<-(orig_length+1):(length(tv$filtration$cmplx))
             add1simplex<-length(to_add)
         }
+    }
+
+
+
+
+    ##  Triangulate walks
+    j <- 0
+    N <- length(idcs)
+    tick <- 1 / N
+    withProgress(message = 'Triangulating paths', expr = {
+
         sel          <- 1:length(walks_clusters$starts)
         s2           <- which(unlist(lapply(tv$filtration$cmplx, function(x) length(x) == 2))) # 2-simplex idcs
         cmplx        <- tv$filtration$cmplx[s2]                                        # 2-simplices
@@ -1025,15 +1050,11 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         graph           <- igraph::graph_from_edgelist(edges[, 1:2])
         E(graph)$weight <- edges[, 3]
         triangulation   <- list()[1:length(sel)]
-
-        j <- 0
-    })
-
-    withProgress(message = 'Triangulating paths', expr = {
         for (i in sel) {
             j <- j + 1
             triangulation[[j]] <- s2[onepath_triangulation(select_paths_points(walks_clusters, i),
                                                            tv$codes, cmplx_hashed, graph)]
+            incProgress(tick)
         }
     })
 
@@ -1052,6 +1073,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
             this_repre <- get_rep_straight(cycle, tv$reduced_boundary, tv$boundary, update = TRUE,add1simplex = add1simplex)
             repre[[j]] <- this_repre
+
             incProgress(tick)
         }
     })
@@ -1065,13 +1087,14 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
             for (idx in ss) {
                 ## print(idx)
                 cycle      <- path_sum(triangulation[[1]], triangulation[[idx]])
-                this_repre <- get_rep_straight(cycle, tv$reduced_boundary, tv$boundary, update = TRUE)
+                this_repre <- get_rep_straight(cycle, tv$reduced_boundary, tv$boundary, update = TRUE,add1simplex = add1simplex)
                 repre[[idx]] <- this_repre
                 incProgress(tick)
             }
         })
 
     }
+
 
     walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
 
@@ -1080,12 +1103,23 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         tv$reduced_boundary$low[ss_toremove]<-nrow(tv1$codes)+1
     }
 
-    p <- .compute_persistence(tv, repre, death_birth_ratio, death_on_x_axis)
+    p <- .compute_persistence(tv, repre, death_birth_ratio, death_on_x_axis,to_remove)
 
     if (!is.null(to_remove)){
         tv$filtration$cmplx<-tv$filtration$cmplx[-to_remove]
         ## print(to_remove)
-        ss<-ss_toremove
+        ## ss<-ss_toremove
+        ## tv$reduced_boundary$boundary<- tv$reduced_boundary$boundary[-ss]
+        ## tv$reduced_boundary$values<- tv$reduced_boundary$values[-tv$reduced_boundary$nonzero_col[ss]]
+        ## tv$reduced_boundary$nonzero_col<- tv$reduced_boundary$nonzero_col[-ss]
+        ## tv$reduced_boundary$low<- tv$reduced_boundary$low[-ss]
+        ## tv$reduced_boundary$dim<- tv$reduced_boundary$dim[-ss]
+
+    }
+
+    essential_left<-which( is.infinite(tv$reduced_boundary$values))
+    if (length(essential_left)>0){
+        ss<-which(tv$reduced_boundary$nonzero_col %in% essential_left)
         tv$reduced_boundary$boundary<- tv$reduced_boundary$boundary[-ss]
         tv$reduced_boundary$values<- tv$reduced_boundary$values[-tv$reduced_boundary$nonzero_col[ss]]
         tv$reduced_boundary$nonzero_col<- tv$reduced_boundary$nonzero_col[-ss]
@@ -1093,7 +1127,6 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         tv$reduced_boundary$dim<- tv$reduced_boundary$dim[-ss]
 
     }
-
 
     return(list(random_walks = walks,
                 repre        = repre,
@@ -1105,6 +1138,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 }
 
 ##METHOD CHANGED
+##METHOD CHANGED - heavilly rewriten to include new 1simplices and to fix remove_cycles bug
 .update_walks_by_dendrogram <-  function(tv,
                                          pathmodel_name,
                                          pseudotime,
@@ -1138,36 +1172,48 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     add1simplex <- 0
     to_remove<-NULL
 
-    max_t             <- marked_termini[which.max(pseudotime$res[marked_termini])][1]
-    ends              <- c(walks.selected$starts[-1] - 1, length(walks.selected$v))
-    Pends<-walks.selected$v[ends]
+    max_t             <- tv$clusters[marked_termini[which.max(pseudotime$res[marked_termini])][1]]
+    ends              <- c(walks_clusters$starts[-1] - 1, length(walks_clusters$v))
+    Pends<-walks_clusters$v[ends]
     if (add1simplicis_tick && length(unique(Pends))>1){
 
-
+        ## Cluster walks
+        withProgress(message = 'Contracting trajectories', expr = {
+            walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
+        })
 
         ## thiswalkmax <- which.max(pseudotime$res[marked_termini])[1]
         ##walks.selected$v[ends] <- max_t ## move this to triangulation object
         addedw<-.add_ends_to_walks_f(walks.selected,ends,max_t)
 
-        walks.selected<-addedw$walks
+        ##walks.selected<-addedw$walks
 
 
 
 
-        ## Cluster and triangulate walks
-        withProgress(message = 'Contracting trajectories', expr = {
-            walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
 
-            if (length(Pends)>0 && add1simplicis_tick){
-                PendsP<- unique(tv$clusters[Pends[addedw$inds]])
-                to_add<-as.list(as.data.frame(t(data.frame(PendsP,tail(walks_clusters$v,1)))))
+
+        if (length(Pends)>0 && add1simplicis_tick){
+            PendsP<- unique(tv$clusters[Pends[addedw$inds]])
+            to_add<-as.data.frame(t(data.frame(PendsP,tail(walks_clusters$v,1))))
+            if (any(to_add[1,]==to_add[2,])) {
+                ss<-which(to_add[1,]==to_add[2,])
+                to_add<-as.list(to_add)
                 names(to_add)<-NULL
-                message(" temporarily adding following simpices: ", to_add, " - this will create ", length(to_add), " essential classes.")
+                to_add<-to_add[-ss]
+            }
+            if (length(to_add)>0){
+                message(" temporarily adding following simplices: ", to_add, " - this will create ", length(to_add), " essential class(es).\n")
                 orig_length<-length(tv$filtration$cmplx)
                 tv$filtration$cmplx<-c(tv$filtration$cmplx,to_add)
                 to_remove<-(orig_length+1):(length(tv$filtration$cmplx))
                 add1simplex<-length(to_add)
             }
+        }
+
+
+        withProgress(message = 'Triangulating paths', expr = {
+
             sel          <- 1:length(walks_clusters$starts)
             s2           <- which(unlist(lapply(tv$filtration$cmplx, function(x) length(x) == 2))) # 2-simplex idcs
             cmplx        <- tv$filtration$cmplx[s2]                                        # 2-simplices
@@ -1182,9 +1228,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
             triangulation   <- list()[1:length(sel)]
 
             j <- 0
-        })
 
-        withProgress(message = 'Triangulating paths', expr = {
             for (i in sel) {
                 j <- j + 1
                 triangulation[[j]] <- s2[onepath_triangulation(select_paths_points(walks_clusters, i),
@@ -1221,7 +1265,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
             for (idx in ss) {
                 ## print(idx)
                 cycle      <- path_sum(triangulation[[1]], triangulation[[idx]])
-                this_repre <- get_rep_straight(cycle, tv$reduced_boundary, tv$boundary, update = TRUE)
+                this_repre <- get_rep_straight(cycle, tv$reduced_boundary, tv$boundary, update = TRUE,add1simplex = add1simplex)
                 repre[[idx]] <- this_repre
                 incProgress(tick)
             }
@@ -1236,12 +1280,24 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     }
 
 
-    p <- .compute_persistence(tv, repre, death_birth_ratio, death_on_x_axis)
+    p <- .compute_persistence(tv, repre, death_birth_ratio, death_on_x_axis,to_remove)
 
      if (!is.null(to_remove)){
         tv$filtration$cmplx<-tv$filtration$cmplx[-to_remove]
         ## print(to_remove)
-        ss<-ss_toremove
+        ## ss<-ss_toremove
+        ## tv$reduced_boundary$boundary<- tv$reduced_boundary$boundary[-ss]
+        ## tv$reduced_boundary$values<- tv$reduced_boundary$values[-tv$reduced_boundary$nonzero_col[ss]]
+        ## tv$reduced_boundary$nonzero_col<- tv$reduced_boundary$nonzero_col[-ss]
+        ## tv$reduced_boundary$low<- tv$reduced_boundary$low[-ss]
+        ## tv$reduced_boundary$dim<- tv$reduced_boundary$dim[-ss]
+
+     }
+
+    essential_left<-which( is.infinite(tv$reduced_boundary$values))
+    if (length(essential_left)>0){
+
+        ss<-which(tv$reduced_boundary$nonzero_col %in% essential_left)
         tv$reduced_boundary$boundary<- tv$reduced_boundary$boundary[-ss]
         tv$reduced_boundary$values<- tv$reduced_boundary$values[-tv$reduced_boundary$nonzero_col[ss]]
         tv$reduced_boundary$nonzero_col<- tv$reduced_boundary$nonzero_col[-ss]
@@ -1258,12 +1314,13 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                 triangulation=triangulation))
 }
 
-
+##METHOD CHANGED -  rewriten to include essential classes
 .compute_persistence <- function(
                                  tv,
                                  repre,
                                  death_birth_ratio,
-                                 death_on_x_axis
+                                 death_on_x_axis,
+                                 to_remove=NULL
                                  ) {
     pers <- pers_diagram(dBr = tv$reduced_boundary, repre = repre, plot = FALSE)
 
@@ -1272,18 +1329,20 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
         ##print("Yes!!")
         ss<-which(is.infinite(pers$vals$death))
-        ##print(-max(pers$vals$death[-ss]))
-        m_ypos<-max((pers$vals$death[-ss]/pers$vals$birth[-ss])/2)
-        m_ssb<-pers$vals$birth[ss]
-        #print(m_ypos)
-        ## print(str(tv1$reduced_boundary))
-        ## print(str(tv1$boundary))
-        pers$vals$death[ss]<-(2.5*m_ypos*m_ssb)
+
+        m_ypos<-1.5*max((pers$vals$death[-ss]/pers$vals$birth[-ss]))
+        m_death<-1.01*max(pers$vals$death[-ss])
+
+        pers$vals$death[ss]<-m_death
+        ## if (!is.null(to_remove)) {
+
+        ##     nn<-which(pers$inds$death[ss] %in% to_remove)
+        ##     pers$vals$death[ss[nn]]<-1.2*m_death
+        ## }
+        pers$vals$birth[ss]<-( pers$vals$death[ss]/m_ypos)
         message(length(ss), " essential homology class(es) detected.")
-        message("position: x=(",paste((pers$vals$death[ss]+pers$vals$birth[ss])/2,collapse=","),")\n assigned death=(",paste(pers$vals$death[ss],collapse=","),"\n assigned (death-birth)/2 =(",paste((pers$vals$death[ss]-pers$vals$birth[ss])/2,collapse=","))
-        ##ss1<-which.max(pers$vals$death[-ss])
-        ##print((pers$vals$birth[-ss][ss1]+pers$vals$death[-ss][ss1])/2)
-        ##print((pers$vals$death[ss]+pers$vals$birth[ss])/2)
+        message("position: x=(",paste((pers$vals$death[ss]+pers$vals$birth[ss])/2,collapse=","),")\n assigned birth=(",paste(pers$vals$birth[ss],collapse=","),")\n assigned (death-birth)/2 =(",paste((pers$vals$death[ss]-pers$vals$birth[ss])/2,collapse=","),")\n")
+
     }
     pd <- .persistence_diagram(pers, death_birth_ratio, death_on_x_axis)
     list(
