@@ -1014,7 +1014,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
     add1simplex <- 0
     to_remove<-NULL
-    if (length(Pends)>0 && add1simplicis_tick){
+
+    if (length(unique(Pends))>0 && add1simplicis_tick){
         PendsP<- unique(Pends[addedw$inds])
         to_add<-as.data.frame(t(data.frame(PendsP,max_t)))
 
@@ -1031,6 +1032,13 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
             tv$filtration$cmplx<-c(tv$filtration$cmplx,to_add)
             to_remove<-(orig_length+1):(length(tv$filtration$cmplx))
             add1simplex<-length(to_add)
+
+            ##to fix
+            ## tv$reduced_boundary$boundary<- c(tv$reduced_boundary$boundary,to_remove)
+            ## tv$reduced_boundary$values<- c(tv$reduced_boundary$values,rep(Inf,length(to_remove)))
+            ## tv$reduced_boundary$nonzero_col<- c(tv$reduced_boundary$nonzero_col,which(is.infinite( tv$reduced_boundary$values)))
+            ## tv$reduced_boundary$low<- c(tv$reduced_boundary$low,to_remove-1)
+            ## tv$reduced_boundary$dim<- c(tv$reduced_boundary$dim,rep(2,length(to_remove)))
         }
     }
 
@@ -1103,6 +1111,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     }
 
     ## tv2<<-Copy(tv)
+    ## RR<<-repre
     walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
 
     if (!is.null(to_remove)){
@@ -1169,6 +1178,9 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     walks.selected <- list(v      = unlist(walks.selected),
                            starts = c(1, 1 + cumsum(lens[-length(lens)])))
 
+    ends              <- c(walks.selected$starts[-1] - 1, length(walks.selected$v))
+    termini_A<-unique(walks.selected$v[ends])
+
     ## Put terminal node with highest pseudotime at end of each walk
     ## if (length(marked_termini) > 1) {
     ##     max_t             <- marked_termini[which.max(pseudotime$res[marked_termini])][1]
@@ -1180,31 +1192,28 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     add1simplex <- 0
     to_remove<-NULL
 
-
-    if (add1simplicis_tick){
+    ##print(add1simplicis_tick)
+    print(termini_A)
+    print(tv$clusters[termini_A])
+    if (add1simplicis_tick && length(termini_A) > 1){
 
 
         ## Cluster walks
         withProgress(message = 'Contracting trajectories', expr = {
             walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
         })
-        max_t             <- tv$clusters[marked_termini[which.max(pseudotime$res[marked_termini])][1]]
+        max_t             <- tv$clusters[termini_A[which.max(pseudotime$res[termini_A])][1]]
         ends              <- c(walks_clusters$starts[-1] - 1, length(walks_clusters$v))
         Pends<-walks_clusters$v[ends]
         ## thiswalkmax <- which.max(pseudotime$res[marked_termini])[1]
         ##walks.selected$v[ends] <- max_t ## move this to triangulation object
-        addedw<-.add_ends_to_walks_f(walks.selected,ends,max_t)
-
-        ##walks.selected<-addedw$walks
+        addedw<-.add_ends_to_walks_f(walks_clusters,ends,max_t)
 
 
-
-
-
-
-        if (length(Pends)>0 && add1simplicis_tick){
+        if (length(unique(Pends))>0 && add1simplicis_tick){
             PendsP<- unique(Pends[addedw$inds])
             to_add<-as.data.frame(t(data.frame(PendsP,tail(walks_clusters$v,1))))
+            print(to_add)
             if (any(to_add[1,]==to_add[2,])) {
                 ss<-which(to_add[1,]==to_add[2,])
                 to_add<-as.list(to_add)
@@ -1221,6 +1230,12 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         }
 
 
+        walks_clusters <- addedw$walks
+
+        ##  Triangulate walks
+        j <- 0
+        N <- length(idcs)
+        tick <- 1 / N
         withProgress(message = 'Triangulating paths', expr = {
 
             sel          <- 1:length(walks_clusters$starts)
@@ -1242,10 +1257,13 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                 j <- j + 1
                 triangulation[[j]] <- s2[onepath_triangulation(select_paths_points(walks_clusters, i),
                                                                tv$codes, cmplx_hashed, graph)]
+                incProgress(tick)
             }
         })
 
     }
+
+    ## TT<<-triangulation
     N <- length(idcs)
     repre      <- list()[1:N]
     repre[[1]] <- integer(0)
@@ -1281,6 +1299,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         })
 
     }
+    ## RR<<-repre
     walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
 
     if (!is.null(to_remove)){
@@ -1305,7 +1324,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
     essential_left<-which( is.infinite(tv$reduced_boundary$values))
     if (length(essential_left)>0){
-
+        ##print(ss)
         ss<-which(tv$reduced_boundary$nonzero_col %in% essential_left)
         tv$reduced_boundary$boundary<- tv$reduced_boundary$boundary[-ss]
         tv$reduced_boundary$values<- tv$reduced_boundary$values[-tv$reduced_boundary$nonzero_col[ss]]
@@ -1343,12 +1362,11 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         m_death<-1.01*max(pers$vals$death[-ss])
         min_death<-1.01*min(pers$vals$death[-ss])
         ss1<-ss
-        if (!is.null(to_remove)) {
+
+        if (!is.null(to_remove) && length(ss1)>1) {
             ass<-NULL
-            for (i in 1:length(ss)){
-
+            for (i in 1:length(ss1)){
                 ii<-which(tv$reduced_boundary$nonzero_col==pers$inds$death[ss[i]]) ##ugly and slow!!!!
-
                 if (length(intersect(to_remove,tv$reduced_boundary$boundary[[ii]]))>0) ass<-c(ass,i)
 
             }
@@ -1356,6 +1374,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
             ss1<-c(ss[-ass],ss[ass])
 
         }
+
         pers$vals$death[ss1]<-seq(m_death,m_death+(0.5*(m_death-min_death)),length.out=length(ss))
 
         pers$vals$birth[ss]<-( pers$vals$death[ss]/m_ypos)
