@@ -1340,12 +1340,22 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         m_ypos<-1.5*max((pers$vals$death[-ss]/pers$vals$birth[-ss]))
         m_death<-1.01*max(pers$vals$death[-ss])
         min_death<-1.01*min(pers$vals$death[-ss])
-        pers$vals$death[ss]<-seq(min_death,m_death,length.out=length(ss))
-        ## if (!is.null(to_remove)) {
+        ss1<-ss
+        if (!is.null(to_remove)) {
+            ass<-NULL
+            for (i in 1:length(ss)){
 
-        ##     nn<-which(pers$inds$death[ss] %in% to_remove)
-        ##     pers$vals$death[ss[nn]]<-1.2*m_death
-        ## }
+                ii<-which(tv$reduced_boundary$nonzero_col==pers$inds$death[ss[i]]) ##ugly and slow!!!!
+
+                if (length(intersect(to_remove,tv$reduced_boundary$boundary[[ii]]))>0) ass<-c(ass,i)
+
+            }
+
+            ss1<-c(ss[-ass],ss[ass])
+
+        }
+        pers$vals$death[ss1]<-seq(m_death,m_death+(0.5*(m_death-min_death)),length.out=length(ss))
+
         pers$vals$birth[ss]<-( pers$vals$death[ss]/m_ypos)
         message(length(ss), " essential homology class(es) detected.")
         message("position: x=(",paste((pers$vals$death[ss]+pers$vals$birth[ss])/2,collapse=","),")\n assigned birth=(",paste(pers$vals$birth[ss],collapse=","),")\n assigned (death-birth)/2 =(",paste((pers$vals$death[ss]-pers$vals$birth[ss])/2,collapse=","),")\n")
