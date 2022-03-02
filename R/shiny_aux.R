@@ -1193,8 +1193,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     to_remove<-NULL
 
     ##print(add1simplicis_tick)
-    print(termini_A)
-    print(tv$clusters[termini_A])
+    ## print(termini_A)
+    ## print(tv$clusters[termini_A])
     if (add1simplicis_tick && length(termini_A) > 1){
 
 
@@ -1213,7 +1213,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         if (length(unique(Pends))>0 && add1simplicis_tick){
             PendsP<- unique(Pends[addedw$inds])
             to_add<-as.data.frame(t(data.frame(PendsP,tail(walks_clusters$v,1))))
-            print(to_add)
+            ## print(to_add)
             if (any(to_add[1,]==to_add[2,])) {
                 ss<-which(to_add[1,]==to_add[2,])
                 to_add<-as.list(to_add)
