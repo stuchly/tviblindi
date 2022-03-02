@@ -219,7 +219,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
 
     if (make_png_dendrogram) {
         p.png <- ggplot(data$segments) + geom_segment(aes(x = x, y = y, xend = xend, yend = yend), lineend = 'round', linejoin = 'round',
-                                                          size = if (!is.null(zoom_idcs)) { 2 } else { 1 }) +
+                                                      size = if (!is.null(zoom_idcs)) { 2 } else { 1 }) +
             geom_text(data = data$labels, aes(x, y - 0.01, label = label), hjust = 1, angle = 0, size = if (!is.null(zoom_idcs)) { 6 } else { 4.1 }) +
             cowplot::theme_nothing() +
             theme(plot.margin = unit(c(-.2, -0.05, -.2, 0), 'cm')) +
@@ -227,7 +227,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
     }
 
     p.regular <- ggplot(data$segments) + geom_segment(aes(x = x, y = y, xend = xend, yend = yend), lineend = 'round', linejoin = 'round',
-                                              size = if (!is.null(zoom_idcs)) { .8 } else { .5 }) +
+                                                      size = if (!is.null(zoom_idcs)) { .8 } else { .5 }) +
         geom_text(data = data$labels, aes(x, y, label = label), hjust = 1, angle = 0, size = if (!is.null(zoom_idcs)) { 5.2 } else { 3.4 }) +
         cowplot::theme_nothing() +
         theme(plot.margin = unit(c(-.2, 0, -.2, 0), 'cm')) +
@@ -935,7 +935,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                 inds<-c(inds,j)
 
             }
-           incProgress(tick)
+            incProgress(tick)
         }
     })
     return(list(walks=walks,to_add=to_add,inds=inds))
@@ -959,7 +959,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                 inds<-c(inds,j)
 
             }
-           incProgress(tick)
+            incProgress(tick)
         }
 
         lens           <- sapply(wl, length)
@@ -1109,7 +1109,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         ss_toremove<-which(sapply(tv$reduced_boundary$boundary,function(x) any(x>=to_remove[1])))
         tv$reduced_boundary$low[ss_toremove]<-nrow(tv1$codes)+1
     }
-
+    ## tv2<<-Copy(tv)
+    ## print(tail(tv$reduced_boundary$boundary))
     p <- .compute_persistence(tv, repre, death_birth_ratio, death_on_x_axis,to_remove)
 
     if (!is.null(to_remove)){
@@ -1179,16 +1180,17 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     add1simplex <- 0
     to_remove<-NULL
 
-    max_t             <- tv$clusters[marked_termini[which.max(pseudotime$res[marked_termini])][1]]
-    ends              <- c(walks_clusters$starts[-1] - 1, length(walks_clusters$v))
-    Pends<-walks_clusters$v[ends]
-    if (add1simplicis_tick && length(unique(Pends))>1){
+
+    if (add1simplicis_tick){
+
 
         ## Cluster walks
         withProgress(message = 'Contracting trajectories', expr = {
             walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
         })
-
+        max_t             <- tv$clusters[marked_termini[which.max(pseudotime$res[marked_termini])][1]]
+        ends              <- c(walks_clusters$starts[-1] - 1, length(walks_clusters$v))
+        Pends<-walks_clusters$v[ends]
         ## thiswalkmax <- which.max(pseudotime$res[marked_termini])[1]
         ##walks.selected$v[ends] <- max_t ## move this to triangulation object
         addedw<-.add_ends_to_walks_f(walks.selected,ends,max_t)
@@ -1264,7 +1266,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
     N <- length(idcs)
 
-     ##METHOD CHANGED
+    ##METHOD CHANGED
     ss<-which(unlist(lapply(repre[-1],function(x) any(x<0))))+1
     if (length(ss)>0){
         ## print(length(ss))
@@ -1289,7 +1291,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
     p <- .compute_persistence(tv, repre, death_birth_ratio, death_on_x_axis,to_remove)
 
-     if (!is.null(to_remove)){
+    if (!is.null(to_remove)){
         tv$filtration$cmplx<-tv$filtration$cmplx[-to_remove]
         ## print(to_remove)
         ## ss<-ss_toremove
@@ -1299,7 +1301,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         ## tv$reduced_boundary$low<- tv$reduced_boundary$low[-ss]
         ## tv$reduced_boundary$dim<- tv$reduced_boundary$dim[-ss]
 
-     }
+    }
 
     essential_left<-which( is.infinite(tv$reduced_boundary$values))
     if (length(essential_left)>0){
