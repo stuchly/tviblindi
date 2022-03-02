@@ -1006,7 +1006,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         Pends<-walks_clusters$v[ends]
 
         addedw<-.add_ends_to_walks_f(walks_clusters,ends,max_t)
-
+        walks_clusters <- addedw$walks
         ##walks.selected<-addedw$walks
 
 
@@ -1046,7 +1046,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
 
     ## WW2<<-addedw$walks
-    walks_clusters <- addedw$walks
+
     ##  Triangulate walks
     j <- 0
     N <- length(idcs)
