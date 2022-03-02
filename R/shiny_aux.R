@@ -1061,7 +1061,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
             incProgress(tick)
         }
     })
-
+    ## TT<<-triangulation
     N <- length(idcs)
     repre      <- list()[1:N]
     repre[[1]] <- integer(0)
@@ -1099,7 +1099,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
     }
 
-    tv2<<-Copy(tv)
+    ## tv2<<-Copy(tv)
     walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
 
     if (!is.null(to_remove)){
