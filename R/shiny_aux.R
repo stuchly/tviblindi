@@ -157,7 +157,8 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
         labs        <- nodes[nodes %in% leaves]
         tree$labels <- labs
         class(tree) <- 'hclust'
-
+        ## TT<<-tree
+        ## print(tree)
         d                 <- as.dendrogram(tree)
         data              <- dendro_data(d, type = 'rectangle')
         labs              <- as.character(data$labels$label)
@@ -991,8 +992,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
     ## Cluster  walks
     withProgress(message = 'Contracting trajectories', expr = {
-        ## walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
-        walks_clusters <- contract_walks(walks.selected, tv$clusters)
+        walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
+        ##walks_clusters <- contract_walks(walks.selected, tv$clusters)
     })
 
     ## Put terminal node with highest pseudotime at end of each walk
@@ -1036,6 +1037,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
 
 
+    ## WW2<<-addedw$walks
+    walks_clusters <- addedw$walks
     ##  Triangulate walks
     j <- 0
     N <- length(idcs)
