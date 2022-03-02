@@ -1192,9 +1192,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     add1simplex <- 0
     to_remove<-NULL
 
-    ##print(add1simplicis_tick)
-    ## print(termini_A)
-    ## print(tv$clusters[termini_A])
+
     if (add1simplicis_tick && length(termini_A) > 1){
 
 
@@ -1203,17 +1201,18 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
             walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
         })
         max_t             <- tv$clusters[termini_A[which.max(pseudotime$res[termini_A])][1]]
+
         ends              <- c(walks_clusters$starts[-1] - 1, length(walks_clusters$v))
         Pends<-walks_clusters$v[ends]
         ## thiswalkmax <- which.max(pseudotime$res[marked_termini])[1]
         ##walks.selected$v[ends] <- max_t ## move this to triangulation object
         addedw<-.add_ends_to_walks_f(walks_clusters,ends,max_t)
-
+        walks_clusters <- addedw$walks
 
         if (length(unique(Pends))>0 && add1simplicis_tick){
             PendsP<- unique(Pends[addedw$inds])
-            to_add<-as.data.frame(t(data.frame(PendsP,tail(walks_clusters$v,1))))
-            ## print(to_add)
+            to_add<-as.data.frame(t(data.frame(PendsP,max_t)))
+
             if (any(to_add[1,]==to_add[2,])) {
                 ss<-which(to_add[1,]==to_add[2,])
                 to_add<-as.list(to_add)
@@ -1230,7 +1229,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         }
 
 
-        walks_clusters <- addedw$walks
+
 
         ##  Triangulate walks
         j <- 0
