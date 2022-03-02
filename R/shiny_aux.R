@@ -991,7 +991,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
     ## Cluster  walks
     withProgress(message = 'Contracting trajectories', expr = {
-        walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
+        ## walks_clusters <- remove_cycles(contract_walks(walks.selected, tv$clusters), verbose = FALSE)
+        walks_clusters <- contract_walks(walks.selected, tv$clusters)
     })
 
     ## Put terminal node with highest pseudotime at end of each walk
@@ -1000,7 +1001,9 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     if (length(marked_termini) > 1) {
         max_t             <- tv$clusters[marked_termini[which.max(pseudotime$res[marked_termini])][1]]
         ends              <- c(walks_clusters$starts[-1] - 1, length(walks_clusters$v))
+
         Pends<-walks_clusters$v[ends]
+
         addedw<-.add_ends_to_walks_f(walks_clusters,ends,max_t)
 
         ##walks.selected<-addedw$walks
@@ -1011,8 +1014,9 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     add1simplex <- 0
     to_remove<-NULL
     if (length(Pends)>0 && add1simplicis_tick){
-        PendsP<- unique(tv$clusters[Pends[addedw$inds]])
-        to_add<-as.data.frame(t(data.frame(PendsP,tail(walks_clusters$v,1))))
+        PendsP<- unique(Pends[addedw$inds])
+        to_add<-as.data.frame(t(data.frame(PendsP,max_t)))
+
         if (any(to_add[1,]==to_add[2,])) {
             ss<-which(to_add[1,]==to_add[2,])
             to_add<-as.list(to_add)
@@ -1095,7 +1099,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
     }
 
-
+    tv2<<-Copy(tv)
     walks <- lapply(1:N, function(idx) { select_paths_points(walks.selected, idx) })
 
     if (!is.null(to_remove)){
@@ -1194,7 +1198,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
 
         if (length(Pends)>0 && add1simplicis_tick){
-            PendsP<- unique(tv$clusters[Pends[addedw$inds]])
+            PendsP<- unique(Pends[addedw$inds])
             to_add<-as.data.frame(t(data.frame(PendsP,tail(walks_clusters$v,1))))
             if (any(to_add[1,]==to_add[2,])) {
                 ss<-which(to_add[1,]==to_add[2,])
@@ -1332,8 +1336,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
         m_ypos<-1.5*max((pers$vals$death[-ss]/pers$vals$birth[-ss]))
         m_death<-1.01*max(pers$vals$death[-ss])
-
-        pers$vals$death[ss]<-m_death
+        min_death<-1.01*min(pers$vals$death[-ss])
+        pers$vals$death[ss]<-seq(min_death,m_death,length.out=length(ss))
         ## if (!is.null(to_remove)) {
 
         ##     nn<-which(pers$inds$death[ss] %in% to_remove)
