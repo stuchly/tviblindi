@@ -278,7 +278,8 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
         ##     return(subtrees)
         ## }
 
-        if (!is.null(leaves_to_highlight.A)) {
+        ## if (!is.null(leaves_to_highlight.A)) {
+        if (length(leaves_to_highlight.A)>0) {
             idcs     <- which(branches$label %in% leaves_to_highlight.A)
             X        <- branches$xmin[idcs]
             subtrees <- divide_leaves_by_subtrees(X)
@@ -293,7 +294,8 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
                 }
             }
         }
-        if (!is.null(leaves_to_highlight.B)) {
+        ## if (!is.null(leaves_to_highlight.B)) {
+        if (length(leaves_to_highlight.B)>0) {
             idcs     <- which(branches$label %in% leaves_to_highlight.B)
             X        <- branches$xmin[idcs]
             subtrees <- divide_leaves_by_subtrees(X)
