@@ -44,6 +44,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
                                     out.labels                     = NULL,
                                     out.dendrogram                 = NULL,
                                     make_png_dendrogram            = FALSE) {
+
     ## Create ggplot2 trajectories dendrogram & (optionally) output an hclust object
     if (is.null(precomputed_dendrogram)) {
         if (perc == 100) return(FALSE)
@@ -250,28 +251,32 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
     }
 
     if (!is.null(leaves_to_highlight.A) || !is.null(leaves_to_highlight.B)) {
-
-        divide_leaves_by_subtrees <- function(leaf_idcs) {
-            if (length(leaf_idcs) == 1) return(list(leaf_idcs))
-            subtrees <- vector(mode = 'list')
-            n_leaves <- 0
-            tmp <- c(leaf_idcs[1])
-            idx <- 2
-            while (idx <= length(leaf_idcs)) {
-                this <- leaf_idcs[idx]
-                if (this == tmp[length(tmp)] + 1) {
-                    tmp <- c(tmp, this)
-                    if (idx == length(leaf_idcs)) {
-                        subtrees[[length(subtrees) + 1]] <- tmp
-                    }
-                } else {
-                    subtrees[[length(subtrees) + 1]] <- tmp
-                    tmp <- c(this)
-                }
-                idx <- idx + 1
-            }
-            return(subtrees)
+        ##METHOD CHANGED
+        divide_leaves_by_subtrees <- function(leaf_idcs){
+           split(leaf_idcs,cumsum(c(1,diff(leaf_idcs)!=1)))
         }
+
+        ## divide_leaves_by_subtrees <- function(leaf_idcs) {
+        ##     if (length(leaf_idcs) == 1) return(list(leaf_idcs))
+        ##     subtrees <- vector(mode = 'list')
+        ##     n_leaves <- 0
+        ##     tmp <- c(leaf_idcs[1])
+        ##     idx <- 2
+        ##     while (idx <= length(leaf_idcs)) {
+        ##         this <- leaf_idcs[idx]
+        ##         if (this == tmp[length(tmp)] + 1) {
+        ##             tmp <- c(tmp, this)
+        ##             if (idx == length(leaf_idcs)) {
+        ##                 subtrees[[length(subtrees) + 1]] <- tmp
+        ##             }
+        ##         } else {
+        ##             subtrees[[length(subtrees) + 1]] <- tmp
+        ##             tmp <- c(this)
+        ##         }
+        ##         idx <- idx + 1
+        ##     }
+        ##     return(subtrees)
+        ## }
 
         if (!is.null(leaves_to_highlight.A)) {
             idcs     <- which(branches$label %in% leaves_to_highlight.A)
@@ -1015,7 +1020,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     add1simplex <- 0
     to_remove<-NULL
 
-    if (length(unique(Pends))>0 && add1simplicis_tick){
+    if (length(unique(Pends))>1 && add1simplicis_tick){
         PendsP<- unique(Pends[addedw$inds])
         to_add<-as.data.frame(t(data.frame(PendsP,max_t)))
 
@@ -1181,12 +1186,6 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     ends              <- c(walks.selected$starts[-1] - 1, length(walks.selected$v))
     termini_A<-unique(walks.selected$v[ends])
 
-    ## Put terminal node with highest pseudotime at end of each walk
-    ## if (length(marked_termini) > 1) {
-    ##     max_t             <- marked_termini[which.max(pseudotime$res[marked_termini])][1]
-    ##     ends              <- c(walks.selected$starts[-1] - 1, length(walks.selected$v))
-    ##     walks.selected$v[ends] <- max_t
-    ## }
 
     Pends<-NULL
     add1simplex <- 0
@@ -1204,12 +1203,11 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
         ends              <- c(walks_clusters$starts[-1] - 1, length(walks_clusters$v))
         Pends<-walks_clusters$v[ends]
-        ## thiswalkmax <- which.max(pseudotime$res[marked_termini])[1]
-        ##walks.selected$v[ends] <- max_t ## move this to triangulation object
+
         addedw<-.add_ends_to_walks_f(walks_clusters,ends,max_t)
         walks_clusters <- addedw$walks
 
-        if (length(unique(Pends))>0 && add1simplicis_tick){
+        if (length(unique(Pends))>1){
             PendsP<- unique(Pends[addedw$inds])
             to_add<-as.data.frame(t(data.frame(PendsP,max_t)))
 
@@ -1311,13 +1309,6 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
     if (!is.null(to_remove)){
         tv$filtration$cmplx<-tv$filtration$cmplx[-to_remove]
-        ## print(to_remove)
-        ## ss<-ss_toremove
-        ## tv$reduced_boundary$boundary<- tv$reduced_boundary$boundary[-ss]
-        ## tv$reduced_boundary$values<- tv$reduced_boundary$values[-tv$reduced_boundary$nonzero_col[ss]]
-        ## tv$reduced_boundary$nonzero_col<- tv$reduced_boundary$nonzero_col[-ss]
-        ## tv$reduced_boundary$low<- tv$reduced_boundary$low[-ss]
-        ## tv$reduced_boundary$dim<- tv$reduced_boundary$dim[-ss]
 
     }
 
