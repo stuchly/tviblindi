@@ -192,7 +192,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
         data$labels$label <- labs_per_leaf
     }
 
-    if (!is.null(zoom_idcs)) {
+    if (length(zoom_idcs)>0) {
         X            <- c(data$labels[zoom_idcs, 1])
         x_min        <- min(X)
         x_max        <- max(X)
