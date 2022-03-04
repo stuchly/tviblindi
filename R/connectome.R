@@ -10,7 +10,7 @@
 #' @return \code{tviblindi} returns an invisible tviblindi class object.
 #'
 #' @export
-connectome<-function(x,png="connectome.png",K=70){
+connectome<-function(x,png="connectome.png",K=30,origin_name=1,labels=1,layout=1){
     if (is.null(x$metaclusters)) {
         message("Computing louvain metaclusters...\n")
         if (is.null(x$dsym)){
@@ -24,7 +24,7 @@ connectome<-function(x,png="connectome.png",K=70){
         rm(gU)
     } else dsym<-x$dsym
 
-    e.list <- cbind(x$walks$v[-c(x$walks$starts[-1]-1,length(x$walks$v))],x$walks$v[-x$walks$starts])
+    e.list <- cbind(x$walks[[origin_name]]$v[-c(x$walks[[origin_name]]$starts[-1]-1,length(x$walks[[origin_name]]$v))],x$walks[[origin_name]]$v[-x$walks[[origin_name]]$starts])
     e.list<-rbind(e.list,dim(dsym))
     gD<-graph_from_edgelist(e.list,directed=TRUE)
     gD<-contract(gD,x$metaclusters)
@@ -36,7 +36,7 @@ connectome<-function(x,png="connectome.png",K=70){
     agDc<-sparseMatrix(i=agDc$i,j=agDc$j,x=agDc$x,dims=rep(length(clus),2))
 
     g_layout<-NULL
-    for (i in clus) g_layout<-rbind(g_layout,colMeans(x$layout[which(x$metaclusters==i),]))
+    for (i in clus) g_layout<-rbind(g_layout,colMeans(x$layout[[layout]][which(x$metaclusters==i),]))
     aa1<-Diagonal(x=Matrix::rowSums(Matrix::t(agDc)+agDc)^-1)%*%agDc
     ##aa1<-Diagonal(x=rowSums(agDc)^-1)%*%agDc
     g11<-graph_from_adjacency_matrix((aa1),weighted=TRUE,mode="directed")
@@ -47,19 +47,19 @@ connectome<-function(x,png="connectome.png",K=70){
     E(g11)$arrow.width<-0.7
     V(g11)$label.cex = 1
     pieD<-list()[1:length(clus)]
-    for (i in clus) pieD[[i]]<-as.vector(table(x$labels[x$metaclusters==i]))
+    for (i in clus) pieD[[i]]<-as.vector(table(x$labels[[labels]][x$metaclusters==i]))
 
-    cp<-rainbow(length(unique(x$labels))+1)
+    cp<-rainbow(length(unique(x$labels[[labels]]))+1)
     colors <- list(cp)
 
     colors <- rep(colors,length(clus))
     lsize=0.4
     if (!is.null(png)){
         png(png,2000,2000)
-        lsize=1.5
+        lsize=2.3
     }
     igraph::plot.igraph(g11,layout=g_layout,main="infered conectome",vertex.size=7,vertex.shape = "pie",vertex.pie=pieD,vertex.pie.color=colors)
-    legend("topright",legend=levels(x$labels), col=colors[[1]],pch=19,cex=lsize)
+    legend("topright",legend=levels(x$labels[[labels]]), col=colors[[1]],pch=19,cex=lsize)
      if (!is.null(png)) dev.off()
     return(invisible(x))
 
