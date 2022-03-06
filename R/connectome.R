@@ -12,6 +12,7 @@
 #' @param lcex numeric( default 1); legend cex
 #' @param notplot character (character vector) (default "ungated"); which populations should not be shown in pies
 #' @param qq numeric (default 0); only arrows of edges width above qq percentile will be plotted
+#' @param directed boolean (default TRUE); plot only edges of major direction
 #' @details Computes louvain clusters and estimates the flow (and the direction) between them from simulated walks
 #' (parameter \code{equinumerous} in \code{Walks}) would bias the result!
 #'
@@ -20,7 +21,7 @@
 #' @export
 connectome<-function(x,png="connectome.png",K=30,origin_name=1,labels=1,layout=1,
                      clusters=NULL,arrow.sizefactor=1,legend.position="topright",
-                     lcex=1,notplot="ungated",qq=0){
+                     lcex=1,notplot="ungated",qq=0,directed=TRUE){
   if (!is.null(clusters)) x$metaclusters<-clusters
   if (is.null(x$metaclusters)) {
     message("Computing louvain metaclusters...\n")
@@ -33,6 +34,12 @@ connectome<-function(x,png="connectome.png",K=30,origin_name=1,labels=1,layout=1
     x$metaclusters<-cluster_louvain(gU)$membership
     message("~Done!\n")
     rm(gU)
+  }
+
+  if (is.null(x$dsym)){
+    d<-KofRawN(x$KNN,K)
+    d  <- knn.raw2adj(d)
+    dsym <- knn.spadj2sym(knn.adj2spadj(d))
   } else dsym<-x$dsym
 
   e.list <- cbind(x$walks[[origin_name]]$v[-c(x$walks[[origin_name]]$starts[-1]-1,length(x$walks[[origin_name]]$v))],x$walks[[origin_name]]$v[-x$walks[[origin_name]]$starts])
@@ -53,18 +60,24 @@ connectome<-function(x,png="connectome.png",K=30,origin_name=1,labels=1,layout=1
   scale_factor<-outs
   scale_factor[which(ratio<1)]<-ins[which(ratio<1)]
   S<-x$metaclusters[x$origin[[origin_name]]]
+
   for (i in clus)
     g_layout<-rbind(g_layout,colMeans(x$layout[[layout]][which(x$metaclusters==i),]))
-  ##aa1<-Diagonal(x=scale_factor^-1)%*%agDc
-  aa1<-Diagonal(x=Matrix::rowSums(Matrix::t(agDc)+agDc)^-1)%*%agDc
-  ##aa1<-Diagonal(x=rowSums(agDc)^-1)%*%agDc
+
+  for (i in 1:dim(agDc)[1]){
+    for (j in 1:dim(agDc)[1]){
+      if (agDc[i,j]<agDc[j,i]) agDc[i,j]<-0 else agDc[j,i]<-0
+    }
+  }
+   aa1<-Diagonal(x=scale_factor^-1)%*%agDc
+  ##aa1<-Diagonal(x=Matrix::rowSums(Matrix::t(agDc)+agDc)^-1)%*%agDc
+  ##aa1<-Diagonal(x=Matrix::rowSums(agDc)^-1)%*%agDc
   g11<-graph_from_adjacency_matrix((aa1),weighted=TRUE,mode="directed")
-  xx<<-E(g11)$weight
+
   E(g11)$width<-E(g11)$weight^1.2*19
-  ##E(g11)$width<-E(g11)$width/max(E(g11)$width)
   E(g11)$curved=TRUE
-  E(g11)$arrow.size<-2.7
-  E(g11)$arrow.width<-1.
+  E(g11)$arrow.size<-2.7*arrow.sizefactor
+  E(g11)$arrow.width<-1.*arrow.sizefactor
   E(g11)$arrow.mode<-rep(2,length(E(g11)))
   E(g11)$arrow.mode[E(g11)$width<quantile(E(g11)$width,qq)]<-0
   V(g11)$label.cex = 5
@@ -97,7 +110,7 @@ connectome<-function(x,png="connectome.png",K=30,origin_name=1,labels=1,layout=1
     png(png,2000,2000)
     lsize=2.3
   }
-  igraph::plot.igraph(g11,layout=g_layout,main="infered conectome",vertex.size=vertex.size,
+  igraph::plot.igraph(g11,layout=g_layout,main="infered connectome",vertex.size=vertex.size,
                       vertex.shape = "pie",vertex.pie=pieD,vertex.pie.color=colors,
                       vertex.frame.color=frame.color,vertex.pie.border=frame.color,
                       vertex.frame.width=10)

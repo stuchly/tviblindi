@@ -422,11 +422,14 @@ shiny_ui <- fluidPage(
           style = 'text-align:  right;
                    padding-right: 5px;
                    margin-top:   15px',
+          actionButton('btn_trajectories_pin_events', '', icon = icon('glyphicon glyphicon-pushpin', lib = 'glyphicon')),
+          actionButton('btn_trajectories_clear_events', '', icon = icon('glyphicon glyphicon-trash', lib = 'glyphicon')),
           actionButton('btn_layout_trajectories_remove_highlight', label = '', icon = icon('glyphicon glyphicon-remove', lib = 'glyphicon')),
           actionButton('btn_layout_trajectories_highlight_in_background', label = '', icon = icon('glyphicon glyphicon-sunglasses ', lib = 'glyphicon')),
           HTML("&nbsp;&nbsp;"),
           actionButton('btn_layout_trajectories_flip_colours', label = '', icon = icon('glyphicon glyphicon-adjust', lib = 'glyphicon')),
           actionButton('btn_layout_trajectories_export_image',           '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon'))
+
         ),
         hr(),
         fluidRow(
