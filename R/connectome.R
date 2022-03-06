@@ -52,7 +52,6 @@ connectome<-function(x,png="connectome.png",K=30,origin_name=1,labels=1,layout=1
 
   clus<-sort(unique(x$metaclusters))
   agDc<-sparseMatrix(i=agDc$i,j=agDc$j,x=agDc$x,dims=rep(length(clus),2))
-
   g_layout<-NULL
   ins<-Matrix::rowSums(Matrix::t(agDc))
   outs<-Matrix::rowSums(agDc)
@@ -80,10 +79,10 @@ connectome<-function(x,png="connectome.png",K=30,origin_name=1,labels=1,layout=1
   E(g11)$arrow.width<-1.*arrow.sizefactor
   E(g11)$arrow.mode<-rep(2,length(E(g11)))
   E(g11)$arrow.mode[E(g11)$width<quantile(E(g11)$width,qq)]<-0
-  V(g11)$label.cex = 5
-  V(g11)$label<-rep("",length(clus))
-  V(g11)$label[ratio<1]<-"T"
-  V(g11)$label[S]<-"S"
+  V(g11)$label.cex = 4
+  V(g11)$label<-1:length(clus)
+  V(g11)$label[ratio<1]<-paste("T",which(ratio<1))
+  V(g11)$label[S]<-paste("O",S)
   G11<<-g11
   pieD<-list()[1:length(clus)]
   for (i in clus){
