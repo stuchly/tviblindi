@@ -582,6 +582,8 @@ shiny_server <- function(input, output, session) {
     })
     react$trajectories_marked.A <- NULL
     react$trajectories_marked.B <- NULL
+    react$dendrogram_marked_leaves.A <- NULL
+    react$dendrogram_marked_leaves.B <- NULL
     session$resetBrush('selector_persistence')
     react$dendrogram_ready <- (!is.null(react$trajectories_random_walks) && !is.null(react$persistence_marked))
   })
@@ -698,6 +700,8 @@ shiny_server <- function(input, output, session) {
     if (!dendrogram_plotted) {
       .draw_placeholder()
     }
+    
+    
   })
 
   output$plot_dendrogram_zoom <- renderPlot({

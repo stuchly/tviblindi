@@ -21,7 +21,7 @@
 #' @export
 connectome<-function(x,png="connectome.png",K=30,origin_name=1,labels=1,layout=1,
                      clusters=NULL,arrow.sizefactor=1,legend.position="topright",
-                     lcex=1,notplot="ungated",qq=0,directed=TRUE){
+                     lcex=1,notplot="ungated",qq=0,directed=TRUE,scale="max"){
   if (!is.null(clusters)) x$metaclusters<-clusters
   if (is.null(x$metaclusters)) {
     message("Computing louvain metaclusters...\n")
@@ -56,9 +56,10 @@ connectome<-function(x,png="connectome.png",K=30,origin_name=1,labels=1,layout=1
   ins<-Matrix::rowSums(Matrix::t(agDc))
   outs<-Matrix::rowSums(agDc)
   ratio<-outs/ins
-  scale_factor<-outs
-  scale_factor[which(ratio<1)]<-ins[which(ratio<1)]
+
+  ##scale_factor[which(ratio<1)]<-ins[which(ratio<1)]
   S<-x$metaclusters[x$origin[[origin_name]]]
+  #scale_factor[S]<-outs[S]
 
   for (i in clus)
     g_layout<-rbind(g_layout,colMeans(x$layout[[layout]][which(x$metaclusters==i),]))
@@ -68,10 +69,24 @@ connectome<-function(x,png="connectome.png",K=30,origin_name=1,labels=1,layout=1
       if (agDc[i,j]<agDc[j,i]) agDc[i,j]<-0 else agDc[j,i]<-0
     }
   }
-   aa1<-Diagonal(x=scale_factor^-1)%*%agDc
+
+  if (scale=="max"){
+    scale_factor<-(ins+outs)/2
+    scale_factor<-rep(max(scale_factor),length(scale_factor))
+  }
+  else if (scale=="adaptive"){
+      scale_factor<-(ins+outs)/2
+      scale_factor[which(ratio<1)]<-ins[which(ratio<1)]
+      S<-x$metaclusters[x$origin[[origin_name]]]
+      scale_factor[S]<-outs[S]
+  } else {
+    scale_factor<-(ins+outs)/2
+  }
+  aa1<-Diagonal(x=scale_factor^-1)%*%agDc
+  ##aa1<-agDc
   ##aa1<-Diagonal(x=Matrix::rowSums(Matrix::t(agDc)+agDc)^-1)%*%agDc
-  ##aa1<-Diagonal(x=Matrix::rowSums(agDc)^-1)%*%agDc
-  g11<-graph_from_adjacency_matrix((aa1),weighted=TRUE,mode="directed")
+  ##aa1<-Diagonal(x=Matrix::rowSums(Matrix::t(agDc))^-1)%*%agDc
+  g11<-graph_from_adjacency_matrix(aa1,weighted=TRUE,mode="directed")
 
   E(g11)$width<-E(g11)$weight^1.2*19
   E(g11)$curved=TRUE
@@ -83,7 +98,7 @@ connectome<-function(x,png="connectome.png",K=30,origin_name=1,labels=1,layout=1
   V(g11)$label<-1:length(clus)
   V(g11)$label[ratio<1]<-paste("T",which(ratio<1))
   V(g11)$label[S]<-paste("O",S)
-  G11<<-g11
+
   pieD<-list()[1:length(clus)]
   for (i in clus){
     if (!is.null(notplot)){
