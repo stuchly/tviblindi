@@ -174,7 +174,7 @@ Som<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Som.tviblindi<-function(x,xdim=25,ydim=25,method="som",kmeans_algorithm=c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen")){
+Som.tviblindi<-function(x,xdim=25,ydim=25,method="kmeans",kmeans_algorithm=c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen")){
     if (is.null(x$denoised)) {
         warning("Using original data!")
         x$denoised<-x$data
@@ -272,7 +272,7 @@ Pseudotime<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="Exp",kepsilon=NULL,sym="max",origin_name=names(x$origin)[1],weighted=TRUE){
+Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="SEMer",kepsilon=NULL,sym="max",origin_name=names(x$origin)[1],weighted=TRUE){
     ##METHOD CHANGED - weighted, sym
     stopifnot(!is.null(x$origin[[origin_name]]))
     if (length(x$origin[[origin_name]])==0) stop("Origin not set!")
@@ -345,7 +345,7 @@ Walks<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL, labels_name = 'default', add=FALSE,kernel="Exp",kepsilon=NULL,sym="max",origin_name=names(x$origin)[1]){
+Walks.tviblindi<-function(x,N=1000,breaks=100,base=1.5,K=30, equinumerous=FALSE,to=NULL, labels_name = 'default', add=FALSE,kernel="SEMer",kepsilon=NULL,sym="max",origin_name=names(x$origin)[1]){
     if (length(x$origin[[origin_name]])==0) stop("Origin not set!")
     add.walks<-function(x,walks,origin_name){
 
@@ -775,10 +775,3 @@ Connectome<-function(x,...){
 Connectome.tviblindi<-function(x,...){
     connectome(x,...)
 }
-
-
-
-
-
-
-
