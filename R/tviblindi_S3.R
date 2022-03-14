@@ -169,8 +169,8 @@ Som<-function(x,...){
 #'
 #' \code{Som}
 #' @param x tviblindi class object.
-#' @param xdim, ydim integer (default 25); SOM mesh size
-#'
+#' @param xdim, ydim integer (default 25); SOM mesh size; centers=xdim*ydim for kmeans
+#' @param method - "som" or "kmeans" (default)
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export

@@ -700,8 +700,8 @@ shiny_server <- function(input, output, session) {
     if (!dendrogram_plotted) {
       .draw_placeholder()
     }
-    
-    
+
+
   })
 
   output$plot_dendrogram_zoom <- renderPlot({
@@ -1330,7 +1330,7 @@ shiny_server <- function(input, output, session) {
         react$selected_trajectory_points<-unique(selected_trajectory_points)
 
         highlighted_segments <- sort(unique(pts$segment))
-        react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.B[c(min(highlighted_segments), max(highlighted_segments) + 1)]
+        react$pseudotime_highlight_bounds <- react$tracked_markers_pseudotime_bounds.A[c(min(highlighted_segments), max(highlighted_segments) + 1)]
       } else {
         react$pseudotime_highlight_bounds <- NULL
       }
