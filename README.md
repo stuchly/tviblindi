@@ -11,6 +11,7 @@ parts of code from following libraries are used:\
 [Phat](https://www.sciencedirect.com/science/article/pii/S0747717116300098)
 
 # Docker container
+Apple silicon (M1) is not supported for the time being
 
 port=7777\
 data_path="path to data folder to mount"\
