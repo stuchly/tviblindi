@@ -5,13 +5,10 @@ We recommend to pull the docker container provided with all dependencies and Rst
 
 # Docker container
 
-docker pull stuchly/tviblindi:v0422
-
 port=7777\
 data_path="path to data folder to mount"\
 rpassword="password for rstudio server (user=rstudio)"\
-docker run --tty --interactive  -d -p $port:8787 --cpus=12 --name tviblindi_container -v $data_path:/data -e PASSWORD=$rpassword tviblindi
-
+docker run --tty --interactive -d -p $port:8787 --cpus=12 --name tviblindi_container -v $data_path:/data -e PASSWORD=$rpassword stuchly/tviblindi:v0422
 # Installation 
 devtools::install_github("stuchly/tviblindi")
 
