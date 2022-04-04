@@ -1,4 +1,6 @@
 # tviblindi
+Topological and Geometrical Tools for Single-cell Data
+
 This package is under development and depends on several libraries - issues during installation should be expected.
 
 We recommend to pull the docker container provided with all dependencies and Rstudio server
