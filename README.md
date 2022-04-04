@@ -17,7 +17,7 @@ data_path="path to data folder to mount"\
 rpassword="password for rstudio server (user=rstudio)"\
 docker run -it -d -p $port:8787 --name tviblindi_container -v $data_path:/data -e PASSWORD=$rpassword stuchly/tviblindi
 
-then in your webrowser visit localhost:7777 (user: rstudio, password: rpassword)
+then in your webrowser visit localhost:7777 (user: rstudio, password: rpassword; localhost may depends on your docker daemon setting)
 
 
 # Installation 
