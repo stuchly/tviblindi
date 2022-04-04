@@ -5,7 +5,7 @@ We recommend to pull the docker container provided with all dependencies and Rst
 
 # Docker container
 
-port=7777\ #e.g.
+port=7777 #e.g.\
 data_path="path to data folder to mount"\
 rpassword="password for rstudio server (user=rstudio)"\
 docker run -it -d -p $port:8787 --name tviblindi_container -v $data_path:/data -e PASSWORD=$rpassword stuchly/tviblindi:v0422
