@@ -5,10 +5,14 @@ We recommend to pull the docker container provided with all dependencies and Rst
 
 # Docker container
 
-port=7777\
+port=7777\ #e.g.
 data_path="path to data folder to mount"\
 rpassword="password for rstudio server (user=rstudio)"\
-docker run -it -d -p $port:8787 --cpus=12 --name tviblindi_container -v $data_path:/data -e PASSWORD=$rpassword stuchly/tviblindi:v0422
+docker run -it -d -p $port:8787 --name tviblindi_container -v $data_path:/data -e PASSWORD=$rpassword stuchly/tviblindi:v0422
+
+then in your webrowser visit (user: rstudio, password: rpassword\
+localhost:7777
+
 # Installation 
 devtools::install_github("stuchly/tviblindi")
 
