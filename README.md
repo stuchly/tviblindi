@@ -5,7 +5,7 @@ We recommend to pull the docker container provided with all dependencies and Rst
 
 # Docker container
 
-docker pull stuchly/tviblindi
+docker pull stuchly/tviblindi:v0422
 
 port=7777\
 data_path="path to data folder to mount"\
