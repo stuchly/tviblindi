@@ -19,4 +19,4 @@ brew install CGAL/legacy/CGAL@4.14
 # Citation
 The article is in process
 
-The shiny app was develloped as part of Master's thesis of David Novak [https://github.com/davnovak]: https://dspace.cuni.cz/handle/20.500.11956/119793?locale-attribute=en
+The shiny app was develloped as part of Master's thesis of [David Novak](https://github.com/davnovak):[Studying lymphocyte development using mass cytometry](https://dspace.cuni.cz/handle/20.500.11956/119793?locale-attribute=en)
