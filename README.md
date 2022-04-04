@@ -5,6 +5,11 @@ This package is under development and depends on several libraries - issues duri
 
 We recommend to pull the docker container provided with all dependencies and Rstudio server
 
+parts of code from following libraries is used:\
+[RcppAnnoy](https://cran.r-project.org/web/packages/RcppAnnoy/index.html)
+[Gudhi](https://gudhi.inria.fr)
+[Phat](https://www.sciencedirect.com/science/article/pii/S0747717116300098)
+
 # Docker container
 
 port=7777\
