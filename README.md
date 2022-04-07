@@ -1,3 +1,4 @@
+<img src="vignettes/tviblindi_logo.png" width=220>
 # tviblindi
 Topological and Geometrical Tools for Single-cell Data
 
