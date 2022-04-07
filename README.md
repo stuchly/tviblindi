@@ -67,7 +67,27 @@ brew install CGAL/legacy/CGAL@4.14
 
 
 ```
+library(tviblindi)
+sn<-make_snowman3d(2000) #requires package TDA
 
+
+colnames(sn)<-1:3
+lab<-rep(1,nrow(sn))
+lab[which.max(sn[,2])]<-0
+lab<-as.factor(lab)
+
+
+tv1<-tviblindi(data=sn,labels=lab)
+tv1$origin$default<-which.max(sn[,2]) #fix the origin on the top of snowman's head
+
+KNN.tviblindi(tv1,50,method="balltree") #balltree more faster for small data
+Som(tv1, xdim=15, ydim=15) #kmeans clustering by default - 15*15 clusters
+Filtration(tv1) #default setting is too conservative, less simplices could be created with same resolution (e.g. Filtration(tv1,alpha2=0.1))
+DimRed(tv1)
+Pseudotime(tv1,sym = "min") #sym="min" - experimental asymmetric model, looks better in this example
+Walks(tv1,N=1000)
+
+launch_shiny(tv1)
 ```
 
 
@@ -83,7 +103,7 @@ Connectome(tv1)
 
 <center>
 <kbd>
-  <img src="vignetttes/connectome.png" width=350>
+  <img src="vignettes/connectome.png" width=350>
 </kbd>
 </center>
 
