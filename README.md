@@ -1,4 +1,5 @@
 <img src="vignettes/tviblindi_logo.png" width=220>
+
 # tviblindi
 Topological and Geometrical Tools for Single-cell Data
 
@@ -10,6 +11,31 @@ parts of code from following libraries are used:\
 [RcppAnnoy](https://cran.r-project.org/web/packages/RcppAnnoy/index.html)\
 [Gudhi](https://gudhi.inria.fr)\
 [Phat](https://www.sciencedirect.com/science/article/pii/S0747717116300098)
+
+**Single-cell trajectory inference toolkit**
+
+- - - - -
+
+<kbd>
+  <img src="tviblindi_workflow.png">
+</kbd>
+
+
+
+`tviblindi` puts concepts from graph theory and algebraic topology to use for trajectory inference (TI) in high-dimensional biological data (cytometry, scRNA-seq, CITE-seq).
+
+We provide easy-to-use tools for identifying potential developmental trajectories and grouping them in a classification tree.
+This includes a graphical user interface that enables the user to
+
+* inspect trajectories in different classes by topological relationships,
+
+* view the trajectories drawn on a 2-dimensional layout of input data,
+
+* track progression of expression levels for markers of interest at different stages of development,
+
+* check the composition of tracked populations in terms of labelled cell populations and
+
+* export enhanced FCS files for viewing results of the TI analysis in FlowJo or other gating software.
 
 # Docker container
 Apple silicon (M1) is not supported for the time being
