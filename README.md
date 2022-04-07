@@ -95,7 +95,7 @@ launch_shiny(tv1)
   <img src="vignettes/tviblindi_gui.png">
 </kbd>
 
-To inspect the connectedness of different populations in your dataset based on Louvain clustering, use the 'connectome' functionality.
+To inspect the connectedness of different populations in your dataset based on Louvain clustering, use the 'Connectome' functionality.
 
 ```
 Connectome(tv1)
