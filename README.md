@@ -61,6 +61,34 @@ brew extract --version=4.14 CGAL CGAL/legacy
 
 brew install CGAL/legacy/CGAL@4.14  
 
+
+
+## Usage
+
+
+```
+
+```
+
+
+<kbd>
+  <img src="vignettes/tviblindi_gui.png">
+</kbd>
+
+To inspect the connectedness of different populations in your dataset based on Louvain clustering, use the 'connectome' functionality.
+
+```
+Connectome(tv1)
+```
+
+<center>
+<kbd>
+  <img src="vignetttes/connectome.png" width=350>
+</kbd>
+</center>
+
+
+
 # Citation
 The article is in process
 
