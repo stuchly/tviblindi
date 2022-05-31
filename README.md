@@ -80,7 +80,8 @@ lab<-as.factor(lab)
 tv1<-tviblindi(data=sn,labels=lab)
 tv1$origin$default<-which.max(sn[,2]) #fix the origin on the top of snowman's head
 
-KNN.tviblindi(tv1,50,method="balltree") #balltree more faster for small data
+KNN(tv1,50,method="balltree") #balltree more faster for small data
+#Denoise(tv1) #reduce noise before witness complex construction; for real world data 
 Som(tv1, xdim=15, ydim=15) #kmeans clustering by default - 15*15 clusters
 Filtration(tv1) #default setting is too conservative, less simplices could be created with same resolution (e.g. Filtration(tv1,alpha2=0.1))
 DimRed(tv1)
