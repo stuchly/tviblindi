@@ -88,7 +88,7 @@ DimRed(tv1)
 Pseudotime(tv1,sym = "min") #sym="min" - experimental asymmetric model, looks better in this example
 Walks(tv1,N=1000)
 
-launch_shiny(tv1)
+launch_shiny(tv1) #note the "Min trajectory count % per leaf" slider to see all classes & "Point size" selector
 ```
 
 
