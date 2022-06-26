@@ -38,6 +38,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// build_boundary_Cu
+RcppExport SEXP build_boundary_Cu(Rcpp::List filtration, bool sort_input);
+RcppExport SEXP _tviblindi_build_boundary_Cu(SEXP filtrationSEXP, SEXP sort_inputSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type filtration(filtrationSEXP);
+    Rcpp::traits::input_parameter< bool >::type sort_input(sort_inputSEXP);
+    rcpp_result_gen = Rcpp::wrap(build_boundary_Cu(filtration, sort_input));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cgSparse
 RcppExport SEXP cgSparse(const Eigen::Map<Eigen::SparseMatrix<double> > A, const Eigen::VectorXd b, const Eigen::VectorXd iguess, const Eigen::Index nb_iter, const double err);
 RcppExport SEXP _tviblindi_cgSparse(SEXP ASEXP, SEXP bSEXP, SEXP iguessSEXP, SEXP nb_iterSEXP, SEXP errSEXP) {
@@ -639,6 +651,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_tviblindi_bicgSparse", (DL_FUNC) &_tviblindi_bicgSparse, 4},
     {"_tviblindi_build_boundary_C", (DL_FUNC) &_tviblindi_build_boundary_C, 2},
+    {"_tviblindi_build_boundary_Cu", (DL_FUNC) &_tviblindi_build_boundary_Cu, 2},
     {"_tviblindi_cgSparse", (DL_FUNC) &_tviblindi_cgSparse, 5},
     {"_tviblindi_connect_cliques", (DL_FUNC) &_tviblindi_connect_cliques, 1},
     {"_tviblindi_createKNNgraph_cos", (DL_FUNC) &_tviblindi_createKNNgraph_cos, 4},

@@ -9,6 +9,10 @@ build_boundary_C <- function(filtration, sort_input = TRUE) {
     .Call('_tviblindi_build_boundary_C', PACKAGE = 'tviblindi', filtration, sort_input)
 }
 
+build_boundary_Cu <- function(filtration, sort_input = TRUE) {
+    .Call('_tviblindi_build_boundary_Cu', PACKAGE = 'tviblindi', filtration, sort_input)
+}
+
 cgSparse <- function(A, b, iguess, nb_iter = 100L, err = 1e-15) {
     .Call('_tviblindi_cgSparse', PACKAGE = 'tviblindi', A, b, iguess, nb_iter, err)
 }
