@@ -183,7 +183,7 @@ Som.tviblindi<-function(x,xdim=25,ydim=25,method="kmeans",kmeans_algorithm=c("Ha
   codes <-sample_points(x$denoised,K)
   ###METHOD CHANGED
   if (method!="som"){
-    cl<-kmeans(x$denoised,centers=codes,algorithm=kmeans_algorithm)
+    cl<-kmeans(x$denoised,centers=codes,iter.max = K,algorithm=kmeans_algorithm)
 
     x$clusters<-cl$cluster
     x$codes<-cl$centers
@@ -195,11 +195,10 @@ Som.tviblindi<-function(x,xdim=25,ydim=25,method="kmeans",kmeans_algorithm=c("Ha
     x$codes<-som$codes
     x$sominfo<-c(xdim,ydim)
   }
-
-  ###METHOD CHANGED
+  ###METHOD CHANGED - SOM untested
   missing<-which(!(1:K %in% unique(x$clusters)))
   if (length(missing)>0){
-    x$clusters<-as.numeric(as.factor(x$cluster))
+    x$clusters<-as.numeric(as.factor(x$clusters))
     x$codes<-x$codes[-missing,]
   }
 
