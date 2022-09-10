@@ -17,7 +17,7 @@ parts of code from following libraries are used:\
 - - - - -
 
 <kbd>
-  <img src="vignettes/tviblindi_workflow.png">
+  <img src="vignettes/Figure1_schema_22-07-29.png">
 </kbd>
 
 
