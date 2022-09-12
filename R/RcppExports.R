@@ -101,6 +101,10 @@ openmp_knn_C <- function(coordinates, K, distance_function = 0L) {
     .Call('_tviblindi_openmp_knn_C', PACKAGE = 'tviblindi', coordinates, K, distance_function)
 }
 
+minres <- function(A, b, nb_iter = 100L, err = 1e-15) {
+    .Call('_tviblindi_minres', PACKAGE = 'tviblindi', A, b, nb_iter, err)
+}
+
 hello <- function() {
     .Call('_tviblindi_hello', PACKAGE = 'tviblindi')
 }

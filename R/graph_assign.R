@@ -96,6 +96,7 @@ assign_label<-function(A, labels, big = 1000, nb_it=1500,eps=1E-6) {
 #' @param eps error tolerance for conjugate gradient or biconjugate gradient stabilised method. Defaults to \code{1E-6}.
 #' @param sym Boolean, is \code{A} symmetric?
 #' @param iguess initial guess vector for solution of linear system for conjugate gradient or biconjugate gradient stabilised method.
+#' @param method character, if sym==TRUE, the options are "cg" and "minres". biCGSTAB is used otherwise
 #'
 #' @return
 #' \code{assign_distance} returns a list containing the following elements.
@@ -108,7 +109,7 @@ assign_label<-function(A, labels, big = 1000, nb_it=1500,eps=1E-6) {
 #' \code{error} value is relevant to numerical solution, otherwise is the string \code{exact}.
 #'
 #' @export
-assign_distance <- function(A, origin, big = 1000,nb_it=1500,eps=1E-6,sym=FALSE,iguess=NULL,weights=NULL) {
+assign_distance <- function(A, origin, big = 1000,nb_it=1500,eps=1E-6,sym=FALSE,iguess=NULL,weights=NULL,method="cg") {
     ##A<-Matrix::t(A) ##nope
     N<-dim(A)[1]
     .DD<-Matrix::rowSums(A)
@@ -135,10 +136,13 @@ assign_distance <- function(A, origin, big = 1000,nb_it=1500,eps=1E-6,sym=FALSE,
     if (length(unlabeled) > big) {
         message("iterative")
         if (class(L)!="dgCMatrix") stop("use dgCMatrix for big data!")
-        if (!sym) res<- bicgSparse(L,B,nb_it,eps) else res<- cgSparse(L,B,iguess[unlabeled],nb_it,eps)
-    }
-
-    else {
+        if (!sym) res<- bicgSparse(L,B,nb_it,eps) 
+        else  if (method=="cg") res<- cgSparse(L,B,iguess[unlabeled],nb_it,eps) 
+        else if (method=="minres") res<- minres(L,B,nb_it,eps) 
+        else stop("method not implemented")
+    } 
+    else 
+        {
         print("solve")
         res<-list()
         res$x <- Matrix::solve(L, B)[,1]

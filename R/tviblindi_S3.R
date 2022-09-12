@@ -279,7 +279,7 @@ Pseudotime<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="SEMer",kepsilon=NULL,sym="max",origin_name=names(x$origin)[1],weighted=TRUE){
+Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="SEMer",kepsilon=NULL,sym="max",origin_name=names(x$origin)[1],weighted=TRUE,method="cg"){
   ##METHOD CHANGED - weighted, sym
   stopifnot(!is.null(x$origin[[origin_name]]))
   if (length(x$origin[[origin_name]])==0) stop("Origin not set!")
@@ -314,7 +314,7 @@ Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="S
   ## x$pseudotime[[origin_name]] <- assign_distance(sim, x$origin[[origin_name]],
   ##                                              weights = dsym, nb_it = nb_it, iguess = iguess, eps = eps)
   if (!weighted) weights<-NULL else weights<-dsym
-  x$pseudotime[[origin_name]]  <- assign_distance(sim, x$origin[[origin_name]],weights = weights,nb_it=nb_it,iguess=iguess,eps=eps,sym=symB)
+  x$pseudotime[[origin_name]]  <- assign_distance(sim, x$origin[[origin_name]],weights = weights,nb_it=nb_it,iguess=iguess,eps=eps,sym=symB,method=method)
   cat("Pseudotime error:", x$pseudotime[[origin_name]]$error, "\n")
   if (x$keep) {
     x$sim<-sim

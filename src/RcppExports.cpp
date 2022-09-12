@@ -334,6 +334,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// minres
+RcppExport SEXP minres(const Eigen::Map<Eigen::SparseMatrix<double> > A, const Eigen::VectorXd b, const Eigen::Index nb_iter, const double err);
+RcppExport SEXP _tviblindi_minres(SEXP ASEXP, SEXP bSEXP, SEXP nb_iterSEXP, SEXP errSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::SparseMatrix<double> > >::type A(ASEXP);
+    Rcpp::traits::input_parameter< const Eigen::VectorXd >::type b(bSEXP);
+    Rcpp::traits::input_parameter< const Eigen::Index >::type nb_iter(nb_iterSEXP);
+    Rcpp::traits::input_parameter< const double >::type err(errSEXP);
+    rcpp_result_gen = Rcpp::wrap(minres(A, b, nb_iter, err));
+    return rcpp_result_gen;
+END_RCPP
+}
 // hello
 SEXP hello();
 RcppExport SEXP _tviblindi_hello() {
@@ -674,6 +688,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_tviblindi_jaccard_coeff_true_parallel", (DL_FUNC) &_tviblindi_jaccard_coeff_true_parallel, 1},
     {"_tviblindi_knn_annoy", (DL_FUNC) &_tviblindi_knn_annoy, 3},
     {"_tviblindi_openmp_knn_C", (DL_FUNC) &_tviblindi_openmp_knn_C, 3},
+    {"_tviblindi_minres", (DL_FUNC) &_tviblindi_minres, 4},
     {"_tviblindi_hello", (DL_FUNC) &_tviblindi_hello, 0},
     {"_tviblindi_phatBoundary", (DL_FUNC) &_tviblindi_phatBoundary, 2},
     {"_tviblindi_C_random_walk_adj", (DL_FUNC) &_tviblindi_C_random_walk_adj, 3},
