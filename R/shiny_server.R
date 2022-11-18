@@ -34,6 +34,7 @@ shiny_server <- function(input, output, session) {
   ### Reactive values
   react <- reactiveValues()
   react$pathmodel_name <- names(tv$origin)[1]
+  react$labels<-labels
 
   if (!is.list(tv$pseudotime) || names(tv$pseudotime)[1] == 'res') {
     tv$pseudotime <- list(default = tv$pseudotime)
@@ -450,7 +451,20 @@ shiny_server <- function(input, output, session) {
       ylim = c(0, 1)
     )
     plot(layout.raster)
+###----METHOD CHANGED
+    gated<-which(react$labels[[react$labels_name]]!="ungated")
+    if (length(gated)!=0){
 
+      layout.rasterg <- scattermore(
+        xy = layout[[react$layout_name]][gated,],
+        cex = rep(react$layout_pointsize * 2 + .8, nrow(layout[[react$layout_name]][gated,])),
+        rgba = col2rgb(react$gating_colour_vectors[[react$labels_name]][gated], alpha = 0.4),
+        size = c(900, 900),
+        xlim = c(0, 1),
+        ylim = c(0, 1)
+      )
+      suppressWarnings(plot(layout.rasterg, add = TRUE))
+    }
     layout.raster.origin <- scattermore(
       layout[[react$layout_name]][tv$origin[[react$pathmodel_name]], , drop = FALSE],
       rgba = col2rgb('#ded00b', alpha = 1),
