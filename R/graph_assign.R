@@ -121,6 +121,8 @@ assign_distance <- function(A, origin, big = 1000,nb_it=1500,eps=1E-6,sym=FALSE,
     unlabeled <- which(!(1:nrow(L) %in% origin))
     ## print(head(Matrix::diag(L)))
     L <- L[unlabeled,unlabeled]
+    LL<<-L
+    stop()
     if (is.null(weights)){
         B<-matrix(.DD[unlabeled]^(1/2),nrow=length(unlabeled))
     } else {
