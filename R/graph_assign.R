@@ -121,8 +121,6 @@ assign_distance <- function(A, origin, big = 1000,nb_it=1500,eps=1E-6,sym=FALSE,
     unlabeled <- which(!(1:nrow(L) %in% origin))
     ## print(head(Matrix::diag(L)))
     L <- L[unlabeled,unlabeled]
-    LL<<-L
-    stop()
     if (is.null(weights)){
         B<-matrix(.DD[unlabeled]^(1/2),nrow=length(unlabeled))
     } else {
@@ -138,12 +136,12 @@ assign_distance <- function(A, origin, big = 1000,nb_it=1500,eps=1E-6,sym=FALSE,
     if (length(unlabeled) > big) {
         message("iterative")
         if (class(L)!="dgCMatrix") stop("use dgCMatrix for big data!")
-        if (!sym) res<- bicgSparse(L,B,nb_it,eps) 
-        else  if (method=="cg") res<- cgSparse(L,B,iguess[unlabeled],nb_it,eps) 
-        else if (method=="minres") res<- minres(L,B,nb_it,eps) 
+        if (!sym) res<- bicgSparse(L,B,nb_it,eps)
+        else  if (method=="cg") res<- cgSparse(L,B,iguess[unlabeled],nb_it,eps)
+        else if (method=="minres") res<- minres(L,B,nb_it,eps)
         else stop("method not implemented")
-    } 
-    else 
+    }
+    else
         {
         print("solve")
         res<-list()
