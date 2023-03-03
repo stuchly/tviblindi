@@ -15,16 +15,5 @@ S3method(DimRed,tviblindi)
 S3method(DownSample,tviblindi)
 S3method(Copy,tviblindi)
 S3method(Connectome,tviblindi)
+S3method(KNN,tviblindi)
 S3method(plot,tviblindi)
-
-
-
-
-
-
-
-
-
-
-
-
