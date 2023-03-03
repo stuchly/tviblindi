@@ -1,5 +1,5 @@
 .onLoad<-function(libname,pckgname){
-  vae<-reticulate::import("vaevictis")
+  if (reticulate::py_available("vaevictis")) reticulate::import("vaevictis")
 
   return(invisible(TRUE))
 }
