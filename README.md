@@ -51,7 +51,7 @@ then in your webrowser visit localhost:7777 (user: rstudio, password: rpassword;
 # Installation 
 devtools::install_github("stuchly/tviblindi")
 
-Current version of tviblindi depends on CGAL library version 4.14
+Current version of tviblindi depends on CGAL library version 4.14 (not higher i.e. tviblindi would not compile with CGAL version 5)
 
 Macos:
 
