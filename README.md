@@ -113,4 +113,6 @@ Connectome(tv1)
 # Reference
 The article is in process
 
+See supplemetary_note.pdf in vignette for technical background
+
 The shiny app was developed as a part of master's thesis of co-author [David Novak](https://github.com/davnovak):  [Studying lymphocyte development using mass cytometry](https://dspace.cuni.cz/handle/20.500.11956/119793?locale-attribute=en)
