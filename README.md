@@ -5,9 +5,11 @@ Topological and Geometrical Tools for Single-cell Data
 
 This package is under development and depends on several libraries - issues during installation are expected.
 
-We recommend to pull the docker container provided with all dependencies and Rstudio server
+We recommend to pull the Docker container provided with all dependencies and an RStudio server.
 
-parts of code from following libraries are used:\
+- - - - -
+
+Parts of code from following libraries are used:\
 [RcppAnnoy](https://cran.r-project.org/web/packages/RcppAnnoy/index.html)\
 [Gudhi](https://gudhi.inria.fr)\
 [Phat](https://www.sciencedirect.com/science/article/pii/S0747717116300098)
@@ -19,7 +21,6 @@ parts of code from following libraries are used:\
 <kbd>
   <img src="vignettes/tviblindi_workflow.png">
 </kbd>
-
 
 
 `tviblindi` puts concepts from graph theory and algebraic topology to use for trajectory inference (TI) in high-dimensional biological data (cytometry, scRNA-seq, CITE-seq).
@@ -38,65 +39,75 @@ This includes a graphical user interface that enables the user to
 * export enhanced FCS files for viewing results of the TI analysis in FlowJo or other gating software.
 
 # Docker container
-Apple silicon (M1) is not supported for the time being
 
+(Apple Silicon is not supported for the time being: Mac compatibility is limited to Intel.)
+
+With Docker installed, run the following code in a Unix terminal.
+
+```
 port=7777\
 data_path="path to data folder to mount"\
 rpassword="password for rstudio server (user=rstudio)"\
 docker run -it -d -p $port:8787 --name tviblindi_container -v $data_path:/data -e PASSWORD=$rpassword stuchly/tviblindi
+```
 
-then in your webrowser visit localhost:7777 (user: rstudio, password: rpassword; localhost may depends on your docker daemon setting)
+Then navigate to `localhost:7777` in your web browser.
+Enter the default credentials when prompted (user: `rstudio`, password: `rpassword`).
 
+`localhost` may also depend on your Docker daemon setting.
 
-# Installation 
-devtools::install_github("stuchly/tviblindi")
+# Direct installation
 
-Current version of tviblindi depends on CGAL library version 4.14 (not higher i.e. tviblindi would not compile with CGAL version 5)
+Currently, *tviblindi* depends on the *CGAL* library version 4.14 (not higher).
 
-Macos:
+See installation instructions [here](https://doc.cgal.org/4.14/Manual/installation.html) or follow the instructions below on Intel Macs.
 
+```
 brew tap-new CGAL/legacy   
-
 brew extract --version=4.14 CGAL CGAL/legacy
+brew install CGAL/legacy/CGAL@4.14
+```
 
-brew install CGAL/legacy/CGAL@4.14  
+To install *tviblindi* in R, run
 
-
+```
+devtools::install_github('stuchly/tviblindi')
+```
 
 ## Usage
 
+We include sample code below to run the *tviblindi* pipeline on synthetic data.
+R package *TDA* is required to make the synthetic dataset.
 
 ```
 library(tviblindi)
-sn<-make_snowman3d(2000) #requires package TDA
+sn           <- make_snowman3d(2000) # produces synthetic 3-dimensional 'snowman'
+colnames(sn) <- c('A', 'B', 'C')     # simulated markers
+lab          <- rep(1, nrow(sn))
+lab[which.max(sn[,2])] <- 0          # choose snowman's head as 'cell of origin'
+lab          <- as.factor(lab)
 
+tv1                <- tviblindi(data = sn, labels = lab)
+tv1$origin$default <- which.max(sn[,2])
 
-colnames(sn)<-1:3
-lab<-rep(1,nrow(sn))
-lab[which.max(sn[,2])]<-0
-lab<-as.factor(lab)
+KNN(tv1, 50, method = 'balltree')    # create k-NNG (balltree faster for small data)
+if (FALSE) {
+    Denoise(tv1)                     # reduce noise before witness complex construction (for real world data)
+}
+Som(tv1, xdim = 15, ydim = 15)       # k-means clustering (15*15 clusters)
+Filtration(tv1)                      # witness complex filtration
+DimRed(tv1)                          # create lower-dimensional embedding
+Pseudotime(tv1, sym = 'min')
+Walks(tv1, N = 1000)
 
-
-tv1<-tviblindi(data=sn,labels=lab)
-tv1$origin$default<-which.max(sn[,2]) #fix the origin on the top of snowman's head
-
-KNN(tv1,50,method="balltree") #balltree more faster for small data
-#Denoise(tv1) #reduce noise before witness complex construction; for real world data 
-Som(tv1, xdim=15, ydim=15) #kmeans clustering by default - 15*15 clusters
-Filtration(tv1) #default setting is too conservative, less simplices could be created with same resolution (e.g. Filtration(tv1,alpha2=0.1))
-DimRed(tv1)
-Pseudotime(tv1,sym = "min") #sym="min" - experimental asymmetric model, looks better in this example
-Walks(tv1,N=1000)
-
-launch_shiny(tv1) #note the "Min trajectory count % per leaf" slider to see all classes & "Point size" selector
+launch_shiny(tv1)                    # note the 'Min trajectory count % per leaf' slider (to see all classes) & 'Point size' selector
 ```
-
 
 <kbd>
   <img src="vignettes/tviblindi_gui.png">
 </kbd>
 
-To inspect the connectedness of different populations in your dataset based on Louvain clustering, use the fully automated 'Connectome' functionality - creates a png file.
+To inspect the connectedness of different populations in your dataset based on Louvain clustering, use the fully automated 'connectome' functionality: produces a PNG file.
 
 ```
 Connectome(tv1)
@@ -108,11 +119,9 @@ Connectome(tv1)
 </kbd>
 </center>
 
-
-
 # Reference
-The article is in process
+This package is under construction and we're working on a paper describing the method and validating it.
 
-See supplemetary_note.pdf in vignette for technical background
+See `supplemetary_note.pdf` in vignette for some technical background (will be updated).
 
-The shiny app was developed as a part of master's thesis of co-author [David Novak](https://github.com/davnovak):  [Studying lymphocyte development using mass cytometry](https://dspace.cuni.cz/handle/20.500.11956/119793?locale-attribute=en)
+The Shiny app (GUI) was developed as part of [David Novak](https://github.com/davnovak)'s master thesis: [Studying lymphocyte development using mass cytometry](https://dspace.cuni.cz/handle/20.500.11956/119793?locale-attribute=en).
