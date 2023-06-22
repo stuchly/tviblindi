@@ -73,7 +73,7 @@ To install *tviblindi* in R, run
 devtools::install_github('stuchly/tviblindi')
 ```
 
-## Usage
+# Usage
 
 We include sample code below to run the *tviblindi* pipeline on synthetic data.
 R package *TDA* is required to make the synthetic dataset.
