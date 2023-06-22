@@ -1,6 +1,6 @@
 <img src="vignettes/tviblindi_logo.png" alt="tviblindi" width=220>
 
-Topological and Geometrical Tools for Single-cell Data
+**Topological and Geometrical Tools for Single-Cell Data**
 
 This package is under development and depends on several libraries - issues during installation are expected.
 
