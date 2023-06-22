@@ -2,6 +2,8 @@
 
 **Topological and Geometrical Tools for Single-Cell Data**
 
+*tviblindi* is a trajectory inference toolkit for single-cell data.
+
 This package is under development and depends on several libraries - issues during installation are expected.
 
 We recommend to pull the Docker container provided with all dependencies and an RStudio server.
@@ -12,8 +14,6 @@ Parts of code from following libraries are used:\
 [RcppAnnoy](https://cran.r-project.org/web/packages/RcppAnnoy/index.html)\
 [Gudhi](https://gudhi.inria.fr)\
 [Phat](https://www.sciencedirect.com/science/article/pii/S0747717116300098)
-
-**Single-cell trajectory inference toolkit**
 
 - - - - -
 
