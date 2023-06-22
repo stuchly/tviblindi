@@ -1,6 +1,5 @@
-<img src="vignettes/tviblindi_logo.png" width=220>
+<img src="vignettes/tviblindi_logo.png" alt="tviblindi" width=220>
 
-# tviblindi
 Topological and Geometrical Tools for Single-cell Data
 
 This package is under development and depends on several libraries - issues during installation are expected.
