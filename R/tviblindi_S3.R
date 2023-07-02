@@ -161,6 +161,50 @@ Denoise.tviblindi<-function(x,K=30,iter=1){
   return(invisible(x))
 }
 
+Cluster<-function(x,...){
+  UseMethod("Cluster",x)
+}
+
+#' Computes k-means clusters for triangulation, modifies x
+#'
+#' \code{Som}
+#' @param x tviblindi class object.
+#' @param K integer (default 625); centers for kmeans clustering
+#' @param method  "som" or "kmeans" (default)
+#' @param clustering integer vector of the same length as \code{nrow(x$data)}. User provided landmark clusters
+#' @return  returns an invisible tviblindi class object.
+#'
+#' @export
+Cluster.tviblindi<-function(x,K=625,method="kmeans",kmeans_algorithm=c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen"),clustering=NULL){
+  if (is.null(x$denoised)) {
+    warning("Using original data!")
+    x$denoised<-x$data
+  }
+  if (!is.null(clustering)){
+    if (!is.integer(clustering) || nrow(x$data)!=length(clustering)) stop("parameter clustering is not in the right format")
+    clus<-unique(clustering)
+    x$clusters<-clustering
+    x$codes<-matrix(NA,ncol=ncol(x$data),nrow=length(clus))
+    for (i in clus){
+      x$codes<-colMeans(x$denoised[clustering==i,])
+    }
+  }
+  else {
+    codes <-sample_points(x$denoised,K)
+    cl<-kmeans(x$denoised,centers=codes,iter.max = K,algorithm=kmeans_algorithm)
+    x$clusters<-cl$cluster
+    x$codes<-cl$centers
+    }
+  
+  missing<-which(!(1:K %in% unique(x$clusters)))
+  if (length(missing)>0){
+    x$clusters<-as.numeric(as.factor(x$clusters))
+    x$codes<-x$codes[-missing,]
+  }
+  
+  return(invisible(x))
+}
+
 Som<-function(x,...){
   UseMethod("Som",x)
 }
@@ -170,15 +214,26 @@ Som<-function(x,...){
 #' \code{Som}
 #' @param x tviblindi class object.
 #' @param xdim, ydim integer (default 25); SOM mesh size; centers=xdim*ydim for kmeans
-#' @param method - "som" or "kmeans" (default)
+#' @param method  "som" or "kmeans" (default)
+#' @param clustering integer vector of the same length as \code{nrow(x$data)}. User provided landmark clusters
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Som.tviblindi<-function(x,xdim=25,ydim=25,method="kmeans",kmeans_algorithm=c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen")){
+Som.tviblindi<-function(x,xdim=25,ydim=25,method="kmeans",kmeans_algorithm=c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen"),clustering=NULL){
   if (is.null(x$denoised)) {
     warning("Using original data!")
     x$denoised<-x$data
   }
+  if (!is.null(clustering)){
+    if (!is.integer(clustering) || nrow(x$data)!=length(clustering)) stop("parameter clustering is not in the right format")
+    clus<-unique(clustering)
+    x$clusters<-clustering
+    x$codes<-matrix(NA,ncol=ncol(x$data),nrow=length(clus))
+    for (i in clus){
+      x$codes<-colMeans(x$denoised[clustering==i,])
+    }
+  }
+  else {
   K<-xdim*ydim
   codes <-sample_points(x$denoised,K)
   ###METHOD CHANGED
@@ -194,6 +249,7 @@ Som.tviblindi<-function(x,xdim=25,ydim=25,method="kmeans",kmeans_algorithm=c("Ha
     x$clusters<-som$mapping[, 1]
     x$codes<-som$codes
     x$sominfo<-c(xdim,ydim)
+  }
   }
   ###METHOD CHANGED - SOM untested
   missing<-which(!(1:K %in% unique(x$clusters)))
