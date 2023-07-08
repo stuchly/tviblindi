@@ -835,6 +835,29 @@ Connectome<-function(x,...){
   UseMethod("Connectome",x)
 }
 
+
+#' Create connectome from tvilblindi class object
+#'
+#' \code{Connectome}
+#' @param x tviblindi class object.
+#' @param png chracter; path to the png file to plot connectome. If NULL, connectome is plotted directly. Optimised for png
+#' @param K integer (default K=30); number of nearest neighbors for louvain clustering
+#' @param origin_name integer/character (default 1); path model to use
+#' @param labels integer/character (default 1); labels to use
+#' @param layout integer/character (default 1); layout to use
+#' @param clusters integer vector (default NULL); provide clustering externally
+#' @param arrow.sizefactor numeric vector (default 1); adjust size of an arrow
+#' @param legend.position (default "topright")
+#' @param lcex numeric( default 1); legend cex
+#' @param notplot character (character vector) (default "ungated"); which populations should not be shown in piecharts
+#' @param qq numeric (default 0); only arrows of edges width above qq percentile will be plotted
+#' @param directed boolean (default TRUE); plot only edges of major direction
+#' @details Computes louvain clusters and estimates the flow (and the direction) between them from simulated walks
+#' (parameter \code{equinumerous} in \code{Walks}) would bias the result!
+#'
+#' @return \code{tviblindi} returns an invisible tviblindi class object.
+#'
+#' @export
 Connectome.tviblindi<-function(x,...){
   connectome(x,...)
 }
