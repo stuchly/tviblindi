@@ -14,6 +14,7 @@
 #' @param notplot character (character vector) (default "ungated"); which populations should not be shown in piecharts
 #' @param qq numeric (default 0); only arrows of edges width above qq percentile will be plotted
 #' @param directed boolean (default TRUE); plot only edges of major direction
+#' @param cluster_labels boolean; print the cluster labels (numbers) into piecharts
 #' @details Computes louvain clusters and estimates the flow (and the direction) between them from simulated walks
 #' (parameter \code{equinumerous} in \code{Walks}) would bias the result!
 #'
@@ -35,7 +36,8 @@ connectome <-
             qq = 0,
             directed = TRUE,
             scale = "max",
-            hard_terminus = FALSE)
+            hard_terminus = FALSE,
+            cluster_labels=FALSE)
   {
     if (!is.null(clusters))
       x$metaclusters <- clusters
@@ -124,7 +126,7 @@ connectome <-
       E(g11)$width[E(g11)$width > quantile(E(g11)$width, qq)] + 7
     V(g11)$label.cex = 4
     V(g11)$label <- 1:length(clus)
-    V(g11)$label <- rep("", length(clus))
+    if (!cluster_labels) V(g11)$label <- rep("", length(clus))
     V(g11)$label[ratio < 1] <-
       paste("T", V(g11)$label[which(ratio < 1)])
     V(g11)$label[S] <- paste("O", V(g11)$label[S])
