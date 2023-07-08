@@ -30,7 +30,7 @@ id           = 'tviblindi_dyntoy_test',
 }
 \examples{
 data(tviblindi_dyntoydata)
-group_is<-tviblindi_dyntoydata[,1]
+group_id<-tviblindi_dyntoydata[,1]
 datainput<-as.matrix(tviblindi_dyntoydata[,-1])
 tv1<-tviblindi(data=datainput,labels=group_id)
 DimRed(tv1)
@@ -43,10 +43,10 @@ Cluster(tv1,K=225) #kmeans clustering
 Filtration(tv1) #default setting is very conservative, less simplices could be created with same resolution (e.g. Filtration(tv1,alpha2=1))
 
 Pseudotime(tv1,weighted = FALSE,origin_name = "M4_hitting_time")
-Walks(tv1,N=1000,origin_name = "M4_hitting_time")
+Walks(tv1,N=1000,origin_name = "M4_hitting_time", K=15)
 
 Pseudotime(tv1,weighted = TRUE,origin_name = "M4_hitting_distance")
-Walks(tv1,N=1000,origin_name = "M4_hitting_distance")
+Walks(tv1,N=1000,origin_name = "M4_hitting_distance", K=15)
 launch_shiny(tv1)
 }
 \keyword{datasets}

@@ -12,7 +12,7 @@
 #' @param legend.position (default "topright")
 #' @param lcex numeric( default 1); legend cex
 #' @param notplot character (character vector) (default "ungated"); which populations should not be shown in piecharts
-#' @param qq numeric (default 0); only arrows of edges width above qq percentile will be plotted
+#' @param qq numeric (default 0); only edges with width above qq percentile will be plotted
 #' @param directed boolean (default TRUE); plot only edges of major direction
 #' @param cluster_labels boolean; print the cluster labels (numbers) into piecharts
 #' @details Computes louvain clusters and estimates the flow (and the direction) between them from simulated walks

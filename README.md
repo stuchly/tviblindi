@@ -76,30 +76,28 @@ devtools::install_github('stuchly/tviblindi')
 # Usage
 
 We include sample code below to run the *tviblindi* pipeline on synthetic data.
-R package *TDA* is required to make the synthetic dataset.
 
 ```
 library(tviblindi)
-sn           <- make_snowman3d(2000) # produces synthetic 3-dimensional 'snowman'
-colnames(sn) <- c('A', 'B', 'C')     # simulated markers
-lab          <- rep(1, nrow(sn))
-lab[which.max(sn[,2])] <- 0          # choose snowman's head as 'cell of origin'
-lab          <- as.factor(lab)
+data(tviblindi_dyntoydata)
+group_is<-tviblindi_dyntoydata[,1]
+datainput<-as.matrix(tviblindi_dyntoydata[,-1])
+tv1<-tviblindi(data=datainput,labels=group_id)
+DimRed(tv1)
+DimRed(tv1,method="umap")
 
-tv1                <- tviblindi(data = sn, labels = lab)
-tv1$origin$default <- which.max(sn[,2])
+Set_origin(tv1,label = "M4",origin_name = "M4_hitting_time")
+Set_origin(tv1,label = "M4",origin_name = "M4_hitting_distance")
+KNN(tv1)
+Cluster(tv1,K=225) #kmeans clustering
+Filtration(tv1) #default setting is very conservative, less simplices could be created with same resolution (e.g. Filtration(tv1,alpha2=1))
 
-KNN(tv1, 50, method = 'balltree')    # create k-NNG (balltree faster for small data)
-if (FALSE) {
-    Denoise(tv1)                     # reduce noise before witness complex construction (for real world data)
-}
-Cluster(tv1, K=225)       # k-means clustering (15*15 clusters)
-Filtration(tv1)                      # witness complex filtration
-DimRed(tv1)                          # create lower-dimensional embedding
-Pseudotime(tv1, sym = 'min')
-Walks(tv1, N = 1000)
+Pseudotime(tv1,weighted = FALSE,origin_name = "M4_hitting_time")
+Walks(tv1,N=1000,origin_name = "M4_hitting_time")
 
-launch_shiny(tv1)                    # note the 'Min trajectory count % per leaf' slider (to see all classes) & 'Point size' selector
+Pseudotime(tv1,weighted = TRUE,origin_name = "M4_hitting_distance")
+Walks(tv1,N=1000,origin_name = "M4_hitting_distance")
+launch_shiny(tv1)
 ```
 
 <kbd>
