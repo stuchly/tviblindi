@@ -93,7 +93,7 @@ KNN(tv1, 50, method = 'balltree')    # create k-NNG (balltree faster for small d
 if (FALSE) {
     Denoise(tv1)                     # reduce noise before witness complex construction (for real world data)
 }
-Som(tv1, xdim = 15, ydim = 15)       # k-means clustering (15*15 clusters)
+Cluster(tv1, K=225)       # k-means clustering (15*15 clusters)
 Filtration(tv1)                      # witness complex filtration
 DimRed(tv1)                          # create lower-dimensional embedding
 Pseudotime(tv1, sym = 'min')
