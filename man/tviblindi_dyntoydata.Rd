@@ -49,4 +49,9 @@ Pseudotime(tv1,weighted = TRUE,origin_name = "M4_hitting_distance")
 Walks(tv1,N=1000,origin_name = "M4_hitting_distance", K=15)
 launch_shiny(tv1)
 }
+\references{
+Cannoodt, R., and W. Saelens, 2022: dyntoy: Generating simple toy
+data of cellular differentiation. R package version 0.9.9.
+(\href{github.com/dynverse/dyntoy}{dyntoy})
+}
 \keyword{datasets}
