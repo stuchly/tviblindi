@@ -13,7 +13,8 @@ We recommend to pull the Docker container provided with all dependencies and an 
 Parts of code from following libraries are used:\
 [RcppAnnoy](https://cran.r-project.org/web/packages/RcppAnnoy/index.html)\
 [Gudhi](https://gudhi.inria.fr)\
-[Phat](https://www.sciencedirect.com/science/article/pii/S0747717116300098)
+[Phat](https://www.sciencedirect.com/science/article/pii/S0747717116300098)\
+[CGAL](https://www.cgal.org)
 
 - - - - -
 
