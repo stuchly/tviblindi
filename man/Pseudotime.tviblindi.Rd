@@ -10,10 +10,12 @@
   nb_it = 1500,
   iguess = NULL,
   eps = 1e-15,
-  kernel = "Exp",
+  kernel = "SEMer",
   kepsilon = NULL,
   sym = "max",
-  origin_name = names(x$origin)[1]
+  origin_name = names(x$origin)[1],
+  weighted = TRUE,
+  method = "cg"
 )
 }
 \arguments{

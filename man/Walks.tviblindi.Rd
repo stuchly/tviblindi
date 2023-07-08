@@ -14,7 +14,7 @@
   to = NULL,
   labels_name = "default",
   add = FALSE,
-  kernel = "Exp",
+  kernel = "SEMer",
   kepsilon = NULL,
   sym = "max",
   origin_name = names(x$origin)[1]

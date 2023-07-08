@@ -15,7 +15,7 @@
   perplexity = 10,
   batch_size = 512L,
   epochs = 100L,
-  patience = 0L,
+  patience = 1L,
   ivis_pretrain = 0,
   ww = c(10, 10, 1, 1),
   margin = 1,
@@ -24,7 +24,7 @@
   t = 0,
   K = 30,
   load_model = NULL,
-  upsample = NULL,
+  upsample = list(N = 2000, cluster = 15, method = "kmeans"),
   labels_name = names(x$labels)[1]
 )
 }
