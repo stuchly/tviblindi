@@ -87,7 +87,7 @@ We include sample code below to run the *tviblindi* pipeline on synthetic data.
 ```
 library(tviblindi)
 data(tviblindi_dyntoydata)
-group_is<-tviblindi_dyntoydata[,1]
+group_id<-tviblindi_dyntoydata[,1]
 datainput<-as.matrix(tviblindi_dyntoydata[,-1])
 tv1<-tviblindi(data=datainput,labels=group_id)
 DimRed(tv1)
