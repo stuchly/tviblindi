@@ -73,6 +73,12 @@ To install *tviblindi* in R, run
 devtools::install_github('stuchly/tviblindi')
 ```
 
+To be able to use default dimensionality reduction, install *vaevictis*
+
+```
+reticulate::py_install("git+https://github.com/stuchly/vaevictis.git",pip=TRUE)
+```
+
 # Usage
 
 We include sample code below to run the *tviblindi* pipeline on synthetic data.
