@@ -339,7 +339,7 @@ Pseudotime<-function(x,...){
 #' @param weighted boolean (default TRUE); calculate expected hitting time (weighted=FLASE) or expected hitting distance.
 #' @param method character (default "cg"); numerical solver - conjugate gradients (method="cg") or minimal resisual method (method="minres").
 #'
-#' @details Computes average distance of each cell from the cell-of-origin of all random walks in undirected graph of nearest neigbors.
+#' @details Computes expected distance of each cell from the cell-of-origin of all random walks in undirected graph of nearest neigbors.
 #'
 #' @return  returns an invisible tviblindi class object.
 #'
