@@ -108,7 +108,7 @@ Set_origin.tviblindi<-function(x,label, labels_name = names(x$labels)[1],origin_
 #'
 #' \code{KNN}
 #' @param x tviblindi class object.
-#' @param K integer (default K=100); number of nearest neighbors.
+#' @param K integer (default 100); number of nearest neighbors.
 #' @param method character ("BT" or "annoy";default "annoy"); implements either ball tree nearest neigbor search (https://github.com/lvdmaaten/bhtsne)
 #' or Approximate Nearest Neighbors Oh Yeah (https://github.com/spotify/annoy).
 #' @param trees integer (default 150); number of trees for annoy - more trees more precision and more time of computation.
@@ -328,7 +328,16 @@ Pseudotime<-function(x,...){
 #'
 #' \code{Pseudotime}
 #' @param x tviblindi class object.
-#' @param K integer (default K=30); number of nearest neighbors to compute transition matrix.
+#' @param K integer (default 30); number of nearest neighbors to compute transition matrix.
+#' @param nb_it integer (default 1500); maximum number of iteration of the numerical solver.
+#' @param iguess numeric vector of the length \code(nrow(x$data)) (default NULL); initialtialisation of the numerical solver.
+#' @param eps numeric (default 1e-15); relative error of the numerical solver.
+#' @param kernel character; see \code{knn.adj2spadjsim}.
+#' @param kepsilon character (default NULL); kernel epsilon.
+#' @param sym character (default "max"); how to symmetrize the transition matrix (options "none", "max", "min", "mean", "prob").
+#' @param origin_name character (default names(x$origin)[1]); for which pathway model is the pseudotime calculated.
+#' @param weighted boolean (default TRUE); calculate expected hitting time (weighted=FLASE) or expected hitting distance.
+#' @param method character (default "cg"); numerical solver - conjugate gradients (method="cg") or minimal resisual method (method="minres").
 #'
 #' @details Computes average distance of each cell from the cell-of-origin of all random walks in undirected graph of nearest neigbors.
 #'
@@ -823,7 +832,7 @@ Copy.tviblindi<-function(x){
 
 #' Computes connectome, modifies x
 #'
-#' \code{Pseudotime}
+#' \code{Connectome}
 #' @param x tviblindi class object.
 #'
 #' @details See \code{connectome}
