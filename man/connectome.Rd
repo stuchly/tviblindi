@@ -13,7 +13,7 @@ Connectome(x, ...)
 returns an invisible tviblindi class object.
 }
 \description{
-\code{Pseudotime}
+\code{Connectome}
 }
 \details{
 See \code{connectome}

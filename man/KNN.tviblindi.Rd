@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{tviblindi class object.}
 
-\item{K}{integer (default K=100); number of nearest neighbors.}
+\item{K}{integer (default 100); number of nearest neighbors.}
 
 \item{method}{character ("BT" or "annoy";default "annoy"); implements either ball tree nearest neigbor search (https://github.com/lvdmaaten/bhtsne)
 or Approximate Nearest Neighbors Oh Yeah (https://github.com/spotify/annoy).}

@@ -21,7 +21,25 @@
 \arguments{
 \item{x}{tviblindi class object.}
 
-\item{K}{integer (default K=30); number of nearest neighbors to compute transition matrix.}
+\item{K}{integer (default 30); number of nearest neighbors to compute transition matrix.}
+
+\item{nb_it}{integer (default 1500); maximum number of iteration of the numerical solver.}
+
+\item{iguess}{numeric vector of the length \code(nrow(x$data)) (default NULL); initialtialisation of the numerical solver.}
+
+\item{eps}{numeric (default 1e-15); relative error of the numerical solver.}
+
+\item{kernel}{character; see \code{knn.adj2spadjsim}.}
+
+\item{kepsilon}{character (default NULL); kernel epsilon.}
+
+\item{sym}{character (default "max"); how to symmetrize the transition matrix (options "none", "max", "min", "mean", "prob").}
+
+\item{origin_name}{character (default names(x$origin)[1]); for which pathway model is the pseudotime calculated.}
+
+\item{weighted}{boolean (default TRUE); calculate expected hitting time (weighted=FLASE) or expected hitting distance.}
+
+\item{method}{character (default "cg"); numerical solver - conjugate gradients (method="cg") or minimal resisual method (method="minres").}
 }
 \value{
 returns an invisible tviblindi class object.
