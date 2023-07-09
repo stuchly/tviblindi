@@ -330,7 +330,7 @@ Pseudotime<-function(x,...){
 #' @param x tviblindi class object.
 #' @param K integer (default 30); number of nearest neighbors to compute transition matrix.
 #' @param nb_it integer (default 1500); maximum number of iteration of the numerical solver.
-#' @param iguess numeric vector of the length \code(nrow(x$data)) (default NULL); initialtialisation of the numerical solver.
+#' @param iguess numeric vector of the length \code{nrow(x$data)} (default NULL); initialtialisation of the numerical solver.
 #' @param eps numeric (default 1e-15); relative error of the numerical solver.
 #' @param kernel character; see \code{knn.adj2spadjsim}.
 #' @param kepsilon character (default NULL); kernel epsilon.
