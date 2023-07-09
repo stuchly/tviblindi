@@ -5,14 +5,14 @@
 #' 
 #' devtools::install_github('dynverse/dyntoy')
 #' 
-#' n_events <- 10000
-#' n_features <- 3896
-#' set.seed(12345)
-#' d <- dyntoy::generate_dataset(
-#' id           = 'tviblindi_dyntoy_test',
-#'   model        = 'connected',
-#'   num_features = n_features,
-#'   num_cells    = n_events
+#' n_events <- 10000 \cr
+#' n_features <- 3896 \cr
+#' set.seed(12345) \cr
+#' d <- dyntoy::generate_dataset( \cr
+#' id           = 'tviblindi_dyntoy_test', \cr
+#'   model        = 'connected', \cr
+#'   num_features = n_features, \cr
+#'   num_cells    = n_events \cr
 #' )
 #'
 #'
