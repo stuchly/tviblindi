@@ -25,7 +25,7 @@
 
 \item{nb_it}{integer (default 1500); maximum number of iteration of the numerical solver.}
 
-\item{iguess}{numeric vector of the length \code(nrow(x$data)) (default NULL); initialtialisation of the numerical solver.}
+\item{iguess}{numeric vector of the length \code{nrow(x$data)} (default NULL); initialtialisation of the numerical solver.}
 
 \item{eps}{numeric (default 1e-15); relative error of the numerical solver.}
 
@@ -48,5 +48,5 @@ returns an invisible tviblindi class object.
 \code{Pseudotime}
 }
 \details{
-Computes average distance of each cell from the cell-of-origin of all random walks in undirected graph of nearest neigbors.
+Computes expected distance of each cell from the cell-of-origin of all random walks in undirected graph of nearest neigbors.
 }
