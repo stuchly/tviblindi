@@ -63,7 +63,7 @@ Currently, *tviblindi* depends on the *CGAL* library version 4.14 (not higher).
 See installation instructions [here](https://doc.cgal.org/4.14/Manual/installation.html) or follow the instructions below on Intel Macs.
 
 ```
-brew tap-new CGAL/legacy   
+brew tap-new CGAL/legacy
 brew extract --version=4.14 CGAL CGAL/legacy
 brew install CGAL/legacy/CGAL@4.14
 ```
@@ -97,7 +97,7 @@ Set_origin(tv1,label = "M4",origin_name = "M4_hitting_time")
 Set_origin(tv1,label = "M4",origin_name = "M4_hitting_distance")
 KNN(tv1)
 Cluster(tv1,K=225) #kmeans clustering
-Filtration(tv1) #default setting is very conservative, less simplices could be 
+Filtration(tv1) #default setting is very conservative, less simplices could be
 # created with same resolution (e.g. Filtration(tv1,alpha2=1))
 
 Pseudotime(tv1,weighted = FALSE,origin_name = "M4_hitting_time")
@@ -127,6 +127,6 @@ Connectome(tv1)
 # Reference
 This package is under construction and we're working on a paper describing the method and validating it.
 
-See `supplemetary_note.pdf` in vignette for some technical background (will be updated).
+See `supplemetary_note.pdf` in vignette for some technical background.
 
 The Shiny app (GUI) was developed as part of [David Novak](https://github.com/davnovak)'s master thesis: [Studying lymphocyte development using mass cytometry](https://dspace.cuni.cz/handle/20.500.11956/119793?locale-attribute=en).
