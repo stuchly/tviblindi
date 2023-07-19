@@ -125,8 +125,8 @@ Connectome(tv1)
 </center>
 
 # Reference
-This package is under construction and we're working on a paper describing the method and validating it.
+[Preprint](https://www.biorxiv.org/content/10.1101/2023.07.13.547329v1) describing and validating the method.
 
-See `supplemetary_note.pdf` in vignette for some technical background.
+See `supplemetary_note.pdf` in vignette for technical background.
 
 The Shiny app (GUI) was developed as part of [David Novak](https://github.com/davnovak)'s master thesis: [Studying lymphocyte development using mass cytometry](https://dspace.cuni.cz/handle/20.500.11956/119793?locale-attribute=en).
