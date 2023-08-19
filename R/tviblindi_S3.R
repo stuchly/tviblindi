@@ -162,9 +162,9 @@ Denoise.tviblindi<-function(x,K=30,iter=1,method="KNN",kernel="SEMer",sym="max")
   }
   if (method=="KNN") {
     x$denoised<-denoise(x$data,x$KNN$IND[,2:K]+1,iter=iter)
-  } else {
+  } else if (method=="MAGIC") {
     x$denoised<-magic(x,iter=iter,K=K,kernel=kernel,sym=sym)
-  }
+  } else stop("Method not implemented")
   return(invisible(x))
 }
 
@@ -622,6 +622,12 @@ DimRed.tviblindi <-
 
     vae <- NULL
     if (use.denoised) usedata<-"denoised" else usedata<-"data"
+    if (use.denoised){
+      if (is.null(x$denoised)) {
+        warning("Using original data!")
+        x$denoised<-x$data
+      }
+    }
     if (is.null(layout)) {
       if (method[1] == "vaevictis") {
         vv = reticulate::import("vaevictis")
