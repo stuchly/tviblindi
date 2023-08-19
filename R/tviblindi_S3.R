@@ -195,13 +195,13 @@ Cluster.tviblindi<-function(x,K=625,method="kmeans",kmeans_algorithm=c("Hartigan
     x$clusters<-cl$cluster
     x$codes<-cl$centers
     }
-  
+
   missing<-which(!(1:K %in% unique(x$clusters)))
   if (length(missing)>0){
     x$clusters<-as.numeric(as.factor(x$clusters))
     x$codes<-x$codes[-missing,]
   }
-  
+
   return(invisible(x))
 }
 
@@ -582,6 +582,7 @@ DimRed<-function(x,...){
 #' @param load_model character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied
 #' @param upsample named list \code{list(N=,takeall=)} or \code{NULL};  sample events by labels (involves recomputation of KNN matrix); affects "vaevictis" only; if NULL nothing happens, \code{N} events per label, takes all events from labels in character vector \code{takeall}
 #' @param labels_name name of label vector if one is used for upsampling and \code{x} has mutliple label vectors.
+#' @param use.denoised logical; use denoised data for dimensional reduction
 #'
 #' @details The pathway analysis visualisation benefits from dimensional reductions which are by definition continuous... to be elaborated
 #'
@@ -609,15 +610,17 @@ DimRed.tviblindi <-
            K=30,
            load_model=NULL,
            upsample=list(N=2000,cluster=15,method="kmeans"),
-           labels_name = names(x$labels)[1]) {
+           labels_name = names(x$labels)[1],
+           use.denoised=FALSE) {
 
     vae <- NULL
+    if (use.denoised) usedata<-"denoised" else usedata<-"data"
     if (is.null(layout)) {
       if (method[1] == "vaevictis") {
         vv = reticulate::import("vaevictis")
         if (!is.null(load_model)){
           model <- vv$loadModel(config_file = load_model[1],weights_file = load_model[2])
-          layout <- model[[2]](x$data)
+          layout <- model[[2]](x[[usedata]])
           vae <- model
         } else {
           if (!is.null(upsample)){
@@ -626,18 +629,18 @@ DimRed.tviblindi <-
             else {
               if (upsample$method=="kmeans"){
                 message("running kmeans clustering...")
-                labl<-kmeans(x$data,centers=upsample$cluster)$cluster
+                labl<-kmeans(x[[usedata]],centers=upsample$cluster)$cluster
                 message("~done\n")
               } else {
                 message("running clara clustering...")
-                labl<-cluster::clara(x$data,k=upsample$cluster)$clustering
+                labl<-cluster::clara(x[[usedata]],k=upsample$cluster)$clustering
                 message("~done\n")
               }
             }
             ss<-.upsample.labels(labl,N=upsample$N,takeall = upsample$takeall)
-            knn_loc<-KNN.annoy(x$data[ss,], K, 150)$IND
+            knn_loc<-KNN.annoy(x[[usedata]][ss,], K, 150)$IND
             layout = vv$dimred(
-              x$data[ss,],
+              x[[usedata]][ss,],
               as.integer(dim),
               vsplit,
               enc_shape,
@@ -654,14 +657,14 @@ DimRed.tviblindi <-
               knn_loc
             )
           } else {
-            if (shuffle) sshuf<-sample(nrow(x$data)) else sshuf<-1:nrow(x$data)
+            if (shuffle) sshuf<-sample(nrow(x[[usedata]])) else sshuf<-1:nrow(x[[usedata]])
             if (shuffle){
-              knn.plc<-KNN.annoy(x$data[sshuf,],  K, 150)$IND
+              knn.plc<-KNN.annoy(x[[usedata]][sshuf,],  K, 150)$IND
             } else {
-              if (!is.null(x$KNN)) knn.plc<-KofRawN(x$KNN,K) else knn.plc<-KNN.annoy(x$data[sshuf,],  K, 150)$IND
+              if (!is.null(x$KNN)) knn.plc<-KofRawN(x$KNN,K) else knn.plc<-KNN.annoy(x[[usedata]][sshuf,],  K, 150)$IND
             }
             layout = vv$dimred(
-              x$data[sshuf,],
+              x[[usedata]][sshuf,],
               as.integer(dim),
               vsplit,
               enc_shape,
@@ -680,7 +683,7 @@ DimRed.tviblindi <-
           }
           x$vae <- layout[[3]]
           #x$vae_structure<-list(config=layout[[3]]$get_config(),weights=layout[[3]]$get_weights())
-          layout <- layout[[2]](x$data)
+          layout <- layout[[2]](x[[usedata]])
         }
 
 
@@ -694,7 +697,7 @@ DimRed.tviblindi <-
 
       } else if (method[1]=="umap"){
         if (!require(uwot)) stop("install package 'uwot' first")
-        layout<-uwot::umap(x$data,verbose=TRUE)
+        layout<-uwot::umap(x[[usedata]],verbose=TRUE)
         rownames(layout)<-NULL ##METHOD CHANGED
       }  else {
         message("Unimplemented method. Nothing done.")

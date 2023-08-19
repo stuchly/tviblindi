@@ -13,7 +13,7 @@ orient.sim.matrix<-function(sim,pseudotime,breaks=NULL,base=2){
   A<-.DD%*%A
 }
 
-transition.matrix<-function (x, K = 30, kernel = "SEMer", sym = "max",kepsilon = NULL,normalize=TRUE)
+transition.matrix<-function (x, K = 30, kernel = "SEMer", sym = "max",dv=NULL,kepsilon = NULL,normalize=TRUE)
 {
 
   if (K > dim(x$KNN$IND)[2]) {
@@ -43,8 +43,8 @@ transition.matrix<-function (x, K = 30, kernel = "SEMer", sym = "max",kepsilon =
     symB = FALSE
   }
   else stop("symmetrisation not implemented")
+  if (!is.null(dv)) diag(sim)<-dv
   if (normalize){
-    diag(sim)<-1
     .DD <- Matrix::rowSums(sim)
 
     .DD <- Matrix::Diagonal(x=.DD^-1)
