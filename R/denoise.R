@@ -22,3 +22,10 @@ denoiseFix<-function(X,IND,iter=1){
     }
     return(X)
 }
+
+magic<-function(x,iter=1,K=30,kernel="SEMer",sym="max"){
+  mm<-transition.matrix(x,K=K,kernel=kernel,sym=sym,dv=0,normalize=TRUE)
+  X<-x$data
+  for (i in 1:iter) X<-mm%*%X
+  return(as.matrix(X))
+}

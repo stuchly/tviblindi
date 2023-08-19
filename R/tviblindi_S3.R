@@ -143,6 +143,9 @@ Denoise<-function(x,...){
 #' @param x tviblindi class object.
 #' @param K integer (default K=30); number of neigbors to average (see details).
 #' @param iter integer (default 1); number of iterations (see details).
+#' @param method character; either "KNN" or "MAGIC"
+#' @param kernel character; for method=="MAGIC", see \code{knn.adj2spadjsim}.
+#' @param sym character (default "max"); for method=="MAGIC", how to symmetrize the transition matrix (options "none", "max", "min", "mean", "prob").
 #'
 #' @details A simple noise reducution algorithm is applied - every cell coordinates are replaced by the average of \code{K} nearest neigbors.
 #' This process is repeated \code{iter}-times.
@@ -150,14 +153,18 @@ Denoise<-function(x,...){
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Denoise.tviblindi<-function(x,K=30,iter=1){
+Denoise.tviblindi<-function(x,K=30,iter=1,method="KNN",kernel="SEMer",sym="max"){
   stopifnot(!is.null(x$KNN))
 
   if (K>dim(x$KNN$IND)[2]){
     K<-min(K,dim(x$KNN)[2])
     warning("K > dim(KNN)[2]; K<-min(K,dim(x$KNN)[2])")
   }
-  x$denoised<-denoise(x$data,x$KNN$IND[,2:K]+1,iter=iter)
+  if (method=="KNN") {
+    x$denoised<-denoise(x$data,x$KNN$IND[,2:K]+1,iter=iter)
+  } else {
+    x$denoised<-magic(x,iter=iter,K=K,kernel=kernel,sym=sym)
+  }
   return(invisible(x))
 }
 
