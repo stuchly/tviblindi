@@ -24,7 +24,7 @@
   t = 0,
   K = 30,
   load_model = NULL,
-  upsample = list(N = 2000, cluster = 15, method = "kmeans"),
+  upsample = list(N = 5000, cluster = 15, method = "kmeans"),
   labels_name = names(x$labels)[1],
   use.denoised = FALSE
 )
@@ -66,7 +66,7 @@ any integer value (for "diffuse" \code{< nrow(data)})).}
 
 \item{load_model}{character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied}
 
-\item{upsample}{named list \code{list(N=,takeall=)} or \code{NULL};  sample events by labels (involves recomputation of KNN matrix); affects "vaevictis" only; if NULL nothing happens, \code{N} events per label, takes all events from labels in character vector \code{takeall}}
+\item{upsample}{named list \code{list(N=5000,cluster=15,method="kmeans")} or \code{NULL};  sample events by clusters (involves recomputation of KNN matrix); affects "vaevictis" only; if NULL nothing happens, \code{N} events per clusters, \code{cluster} number of clusters, \code{method} clustering method (either "CLARA" or "kmeans")}
 
 \item{labels_name}{name of label vector if one is used for upsampling and \code{x} has mutliple label vectors.}
 

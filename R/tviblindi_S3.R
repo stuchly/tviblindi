@@ -587,7 +587,7 @@ DimRed<-function(x,...){
 #' @param neigen integer; for "diffuse" number of eigen vectors to compute.
 #' @param t double; time parameter for "diffuse", if \code{t==0} multi-time scale is used (geometric sum).
 #' @param load_model character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied
-#' @param upsample named list \code{list(N=,takeall=)} or \code{NULL};  sample events by labels (involves recomputation of KNN matrix); affects "vaevictis" only; if NULL nothing happens, \code{N} events per label, takes all events from labels in character vector \code{takeall}
+#' @param upsample named list \code{list(N=5000,cluster=15,method="kmeans")} or \code{NULL};  sample events by clusters (involves recomputation of KNN matrix); affects "vaevictis" only; if NULL nothing happens, \code{N} events per clusters, \code{cluster} number of clusters, \code{method} clustering method (either "CLARA" or "kmeans")
 #' @param labels_name name of label vector if one is used for upsampling and \code{x} has mutliple label vectors.
 #' @param use.denoised logical; use denoised data for dimensional reduction
 #'
@@ -616,7 +616,7 @@ DimRed.tviblindi <-
            t = 0,
            K=30,
            load_model=NULL,
-           upsample=list(N=2000,cluster=15,method="kmeans"),
+           upsample=list(N=5000,cluster=15,method="kmeans"),
            labels_name = names(x$labels)[1],
            use.denoised=FALSE) {
 
