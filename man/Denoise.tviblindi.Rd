@@ -4,7 +4,7 @@
 \alias{Denoise.tviblindi}
 \title{Reduce noise in data for the purpose of triangulation, modifies x}
 \usage{
-\method{Denoise}{tviblindi}(x, K = 30, iter = 1)
+\method{Denoise}{tviblindi}(x, K = 30, iter = 1, method = "KNN", kernel = "SEMer", sym = "max")
 }
 \arguments{
 \item{x}{tviblindi class object.}
@@ -12,6 +12,12 @@
 \item{K}{integer (default K=30); number of neigbors to average (see details).}
 
 \item{iter}{integer (default 1); number of iterations (see details).}
+
+\item{method}{character; either "KNN" or "MAGIC"}
+
+\item{kernel}{character; for method=="MAGIC", see \code{knn.adj2spadjsim}.}
+
+\item{sym}{character (default "max"); for method=="MAGIC", how to symmetrize the transition matrix (options "none", "max", "min", "mean", "prob").}
 }
 \value{
 returns an invisible tviblindi class object.

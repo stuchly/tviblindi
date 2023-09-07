@@ -25,7 +25,8 @@
   K = 30,
   load_model = NULL,
   upsample = list(N = 2000, cluster = 15, method = "kmeans"),
-  labels_name = names(x$labels)[1]
+  labels_name = names(x$labels)[1],
+  use.denoised = FALSE
 )
 }
 \arguments{
@@ -68,6 +69,8 @@ any integer value (for "diffuse" \code{< nrow(data)})).}
 \item{upsample}{named list \code{list(N=,takeall=)} or \code{NULL};  sample events by labels (involves recomputation of KNN matrix); affects "vaevictis" only; if NULL nothing happens, \code{N} events per label, takes all events from labels in character vector \code{takeall}}
 
 \item{labels_name}{name of label vector if one is used for upsampling and \code{x} has mutliple label vectors.}
+
+\item{use.denoised}{logical; use denoised data for dimensional reduction}
 }
 \value{
 returns an invisible tviblindi class object.
