@@ -125,7 +125,7 @@ Connectome(tv1)
 </center>
 
 # Reference
-[Preprint](https://www.biorxiv.org/content/10.1101/2023.07.13.547329v1) describing and validating the method.
+[Preprint](https://www.biorxiv.org/content/10.1101/2023.07.13.547329v2) describing and validating the method.
 
 See `supplemetary_note.pdf` in vignette for technical background.
 
