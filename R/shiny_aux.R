@@ -279,7 +279,7 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
         ## }
 
         ## if (!is.null(leaves_to_highlight.A)) {
-        
+
         if (length(leaves_to_highlight.A)>0) {
             idcs     <- which(branches$label %in% leaves_to_highlight.A)
             X        <- branches$xmin[idcs]
@@ -1124,7 +1124,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
     if (!is.null(to_remove)){
         ss_toremove<-which(sapply(tv$reduced_boundary$boundary,function(x) any(x>=to_remove[1])))
-        tv$reduced_boundary$low[ss_toremove]<-nrow(tv1$codes)+1
+        tv$reduced_boundary$low[ss_toremove]<-nrow(tv$codes)+1
     }
     ## tv2<<-Copy(tv)
     ## print(tail(tv$reduced_boundary$boundary))
@@ -1304,7 +1304,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
     if (!is.null(to_remove)){
         ss_toremove<-which(sapply(tv$reduced_boundary$boundary,function(x) any(x>=to_remove[1])))
-        tv$reduced_boundary$low[ss_toremove]<-nrow(tv1$codes)+1
+        tv$reduced_boundary$low[ss_toremove]<-nrow(tv$codes)+1
     }
 
 
