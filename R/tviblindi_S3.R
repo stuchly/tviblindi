@@ -404,7 +404,7 @@ Pseudotime.tviblindi <- function (x, K = 30, nb_it = 1500, iguess = NULL, eps = 
   if (!weighted)
     weights <- NULL
   else weights <- dsym
-  x$pseudotime[[origin_name]] <- assign_distance1(sim, x$origin[[origin_name]],
+  x$pseudotime[[origin_name]] <- assign_distance(sim, x$origin[[origin_name]],
                                                  weights = weights, nb_it = nb_it, iguess = iguess, eps = eps,
                                                  sym = symB, method = method, target = target,
                                                  target_values=target_values)
