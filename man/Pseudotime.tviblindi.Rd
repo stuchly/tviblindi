@@ -15,7 +15,10 @@
   sym = "max",
   origin_name = names(x$origin)[1],
   weighted = TRUE,
-  method = "cg"
+  method = "cg",
+  target = NULL,
+  target_values = rep(10^9, length(target)),
+  labels_name = 1
 )
 }
 \arguments{
@@ -40,6 +43,13 @@
 \item{weighted}{boolean (default TRUE); calculate expected hitting time (weighted=FLASE) or expected hitting distance.}
 
 \item{method}{character (default "cg"); numerical solver - conjugate gradients (method="cg") or minimal resisual method (method="minres").}
+
+\item{target}{character or integer vector (optional); either label of target populations (cell nearest to the mean of the population will
+be consider as target) or indices of target events. Allows to set pseudotime value of given target events.}
+
+\item{target_values}{numeric; prescribed values of target}
+
+\item{labels_name}{character/integer; if is.character(target) - which set of labels should be considered}
 }
 \value{
 returns an invisible tviblindi class object.

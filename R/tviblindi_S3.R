@@ -345,52 +345,74 @@ Pseudotime<-function(x,...){
 #' @param origin_name character (default names(x$origin)[1]); for which pathway model is the pseudotime calculated.
 #' @param weighted boolean (default TRUE); calculate expected hitting time (weighted=FLASE) or expected hitting distance.
 #' @param method character (default "cg"); numerical solver - conjugate gradients (method="cg") or minimal resisual method (method="minres").
+#' @param target character or integer vector (optional); either label of target populations (cell nearest to the mean of the population will
+#' be consider as target) or indices of target events. Allows to set pseudotime value of given target events.
+#' @param target_values numeric; prescribed values of target
+#' @param labels_name character/integer; if is.character(target) - which set of labels should be considered
 #'
 #' @details Computes expected distance of each cell from the cell-of-origin of all random walks in undirected graph of nearest neigbors.
 #'
 #' @return  returns an invisible tviblindi class object.
 #'
 #' @export
-Pseudotime.tviblindi<-function(x,K=30,nb_it=1500,iguess=NULL,eps=1e-15,kernel="SEMer",kepsilon=NULL,sym="max",origin_name=names(x$origin)[1],weighted=TRUE,method="cg"){
-  ##METHOD CHANGED - weighted, sym
+Pseudotime.tviblindi <- function (x, K = 30, nb_it = 1500, iguess = NULL, eps = 1e-15,
+          kernel = "SEMer", kepsilon = NULL, sym = "max", origin_name = names(x$origin)[1],
+          weighted = TRUE, method = "cg", target=NULL, target_values=rep(10^9,length(target)),labels_name=1)
+{
   stopifnot(!is.null(x$origin[[origin_name]]))
-  if (length(x$origin[[origin_name]])==0) stop("Origin not set!")
-  if (K>dim(x$KNN$IND)[2]){
-    K<-min(K,dim(x$KNN)[2])
+  if (length(x$origin[[origin_name]]) == 0)
+    stop("Origin not set!")
+
+  if (!is.null(target)){
+    if (is.character(target)){
+    target<-sapply(target,FUN=function(tx){
+      inds <- which(x$labels[[labels_name]] == tx)
+      return(inds[which.min(rowSums(t(t(x$data[inds, , drop = FALSE]) - colMeans(x$data[inds, , drop = FALSE]))^2))])
+    })
+
+    } else stopifnot(is.numeric(target))
+    if (length(target)==0) stop("target not set!")
+  }
+
+  if (K > dim(x$KNN$IND)[2]) {
+    K <- min(K, dim(x$KNN)[2])
     warning("K > dim(KNN)[2]; K<-min(K,dim(x$KNN)[2])")
   }
-  d<-KofRawN(x$KNN,K)
-  d  <- knn.raw2adj(d)
+  d <- KofRawN(x$KNN, K)
+  d <- knn.raw2adj(d)
   dsym <- knn.spadj2sym(knn.adj2spadj(d))
-
-  ## sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
-  ##METHOD CHANGED
-  symB<-TRUE
-  if (sym=="none"){
-    sim<-knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon)
-    symB<-FALSE
+  symB <- TRUE
+  if (sym == "none") {
+    sim <- knn.adj2spadjsim(d, kernel = kernel, epsilon = kepsilon)
+    symB <- FALSE
   }
-  else if (sym=="mean")
-    sim <- knn.spadj.symmetrize(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
-  else if (sym=="prob")
-    sim <- knn.spadj.symmetrize.P(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
-  else if (sym=="max")
-    sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,epsilon=kepsilon))
-  else if (sym=="min"){
-    d<-t(summary(dsym))
-    sim <- knn.adj2spadjsim1(d, kernel = kernel,epsilon=kepsilon)
-    symB=FALSE
-  } else stop("symmetrisation not implemented")
-
-
-  ## x$pseudotime[[origin_name]] <- assign_distance(sim, x$origin[[origin_name]],
-  ##                                              weights = dsym, nb_it = nb_it, iguess = iguess, eps = eps)
-  if (!weighted) weights<-NULL else weights<-dsym
-  x$pseudotime[[origin_name]]  <- assign_distance(sim, x$origin[[origin_name]],weights = weights,nb_it=nb_it,iguess=iguess,eps=eps,sym=symB,method=method)
-  cat("Pseudotime error:", x$pseudotime[[origin_name]]$error, "\n")
+  else if (sym == "mean")
+    sim <- knn.spadj.symmetrize(knn.adj2spadjsim(d, kernel = kernel,
+                                                 epsilon = kepsilon))
+  else if (sym == "prob")
+    sim <- knn.spadj.symmetrize.P(knn.adj2spadjsim(d, kernel = kernel,
+                                                   epsilon = kepsilon))
+  else if (sym == "max")
+    sim <- knn.spadj2sym(knn.adj2spadjsim(d, kernel = kernel,
+                                          epsilon = kepsilon))
+  else if (sym == "min") {
+    d <- t(summary(dsym))
+    sim <- knn.adj2spadjsim1(d, kernel = kernel, epsilon = kepsilon)
+    symB = FALSE
+  }
+  else stop("symmetrisation not implemented")
+  if (!weighted)
+    weights <- NULL
+  else weights <- dsym
+  x$pseudotime[[origin_name]] <- assign_distance1(sim, x$origin[[origin_name]],
+                                                 weights = weights, nb_it = nb_it, iguess = iguess, eps = eps,
+                                                 sym = symB, method = method, target = target,
+                                                 target_values=target_values)
+  cat("Pseudotime error:", x$pseudotime[[origin_name]]$error,
+      "\n")
   if (x$keep) {
-    x$sim<-sim
-    x$dsym<-dsym
+    x$sim <- sim
+    x$dsym <- dsym
   }
   return(invisible(x))
 }

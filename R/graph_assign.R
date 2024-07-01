@@ -97,6 +97,8 @@ assign_label<-function(A, labels, big = 1000, nb_it=1500,eps=1E-6) {
 #' @param sym Boolean, is \code{A} symmetric?
 #' @param iguess initial guess vector for solution of linear system for conjugate gradient or biconjugate gradient stabilised method.
 #' @param method character, if sym==TRUE, the options are "cg" and "minres". biCGSTAB is used otherwise
+#' @param target (optional) index/indices of events with prescribed values
+#' @param target_values (obligatory if !is.null(target)), numeric - prescribed values for target events
 #'
 #' @return
 #' \code{assign_distance} returns a list containing the following elements.
@@ -109,51 +111,74 @@ assign_label<-function(A, labels, big = 1000, nb_it=1500,eps=1E-6) {
 #' \code{error} value is relevant to numerical solution, otherwise is the string \code{exact}.
 #'
 #' @export
-assign_distance <- function(A, origin, big = 1000,nb_it=1500,eps=1E-6,sym=FALSE,iguess=NULL,weights=NULL,method="cg") {
-    ##A<-Matrix::t(A) ##nope
-    N<-dim(A)[1]
-    .DD<-Matrix::rowSums(A)
-    D <- Matrix::Diagonal(x=.DD)
-    Dm<-Matrix::Diagonal(x=(.DD)^(-1/2))
-    L <- Dm %*% (D - A) %*% Dm ##to preserve symmetry if any
-    ## LL<<-L
-    rm(D)
-    unlabeled <- which(!(1:nrow(L) %in% origin))
-    ## print(head(Matrix::diag(L)))
-    L <- L[unlabeled,unlabeled]
-    if (is.null(weights)){
-        B<-matrix(.DD[unlabeled]^(1/2),nrow=length(unlabeled))
-    } else {
-        B<-Matrix::rowSums((Matrix::Diagonal(x=(.DD)^(-1/2))%*%A)*weights)
-        ##B<-.DD^(1/2)*B
-        B<-matrix(B[unlabeled],nrow=length(unlabeled))
+assign_distance <- function (A, origin, big = 1000, nb_it = 1500, eps = 1e-06, sym = FALSE,
+          iguess = NULL, weights = NULL, method = "cg", target = NULL,target_values=NULL)
+{
+  N <- dim(A)[1]
+  .DD <- Matrix::rowSums(A)
+  D <- Matrix::Diagonal(x = .DD)
+  Dm <- Matrix::Diagonal(x = (.DD)^(-1/2))
+  L <- Dm %*% (D - A) %*% Dm
+  rm(D)
+  adval<-as(rep(0,nrow(L)),"sparseMatrix")
 
-    }
-    rm(A)
-    ## print(head(B))
-    if (sym) if (is.null(iguess)) iguess<-rep(0,N) else iguess<-.DD^(1/2) * iguess
-
-    if (length(unlabeled) > big) {
-        message("iterative")
-        if (class(L)!="dgCMatrix") stop("use dgCMatrix for big data!")
-        if (!sym) res<- bicgSparse(L,B,nb_it,eps)
-        else  if (method=="cg") res<- cgSparse(L,B,iguess[unlabeled],nb_it,eps)
-        else if (method=="minres") res<- minres(L,B,nb_it,eps)
-        else stop("method not implemented")
-    }
+  if (!is.null(target)){
+    if (length(target)>1)
+      adval<-as(Matrix::rowSums(L[,target]*target_values),"sparseMatrix")
     else
-        {
-        print("solve")
-        res<-list()
-        res$x <- Matrix::solve(L, B)[,1]
-        res$nb_it<-"exact"
-        res$error<-"exact"
+      adval<-as(L[,target]*target_values,"sparseMatrix")
+  }
+
+
+  unlabeled <- which(!(1:nrow(L) %in% c(origin,target)))
+  L <- L[unlabeled, unlabeled]
+  adval<-adval[unlabeled,]
+
+  if (is.null(weights)) {
+    B <- matrix(.DD[unlabeled]^(1/2), nrow = length(unlabeled))
+  }
+  else {
+    B <- Matrix::rowSums((Matrix::Diagonal(x = (.DD)^(-1/2)) %*%
+                            A) * weights)
+    B <- matrix(B[unlabeled], nrow = length(unlabeled))
+  }
+  if (!is.null(target)) {
+
+    B<-B-adval
+  }
+
+  rm(A)
+  if (sym)
+    if (is.null(iguess))
+      iguess <- rep(0, N)
+  else iguess <- .DD^(1/2) * iguess
+  if (length(unlabeled) > big) {
+    message("iterative")
+    if (class(L) != "dgCMatrix")
+      stop("use dgCMatrix for big data!")
+    if (!sym)
+      res <- bicgSparse(L, B, nb_it, eps)
+    else if (method == "cg") {
+      res <- cgSparse(L, B, iguess[unlabeled], nb_it, eps)
+      print(dim(L))
+      print(dim(B))
+      print(length(iguess[unlabeled]))
     }
-
-    out<-matrix(NA,nrow=N)
-    out[origin,]<-0
-    out[unlabeled,]<-res$x
-    out<-as.vector(Dm %*% out) #back to solution of standard laplacian
-    return(list(res=out,nb_it=res$nb_it,error=res$error))
-
+    else if (method == "minres")
+      res <- minres(L, B, nb_it, eps)
+    else stop("method not implemented")
+  }
+  else {
+    print("solve")
+    res <- list()
+    res$x <- Matrix::solve(L, B)[, 1]
+    res$nb_it <- "exact"
+    res$error <- "exact"
+  }
+  out <- matrix(NA, nrow = N)
+  out[origin, ] <- 0
+  out[unlabeled, ] <- res$x
+  out[target,]<-target_values
+  out <- as.vector(Dm %*% out)
+  return(list(res = out, nb_it = res$nb_it, error = res$error))
 }

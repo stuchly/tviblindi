@@ -34,6 +34,3 @@ points(coord[coord.adj$IND[1,]+1,], col="blue", pch=20)
 points(coord[coord.adj$IND[2,]+1,], col="red", pch=20)
 
 }
-\references{
-
-}

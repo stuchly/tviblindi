@@ -14,4 +14,4 @@ Suggests: PRIMME, flowCore
 Imports: Rcpp (>= 0.12.12), RcppEigen (>= 0.3.3.3.0), BiocGenerics, reticulate
 LinkingTo: RcppArmadillo, Rcpp, RcppEigen, BH
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.1
