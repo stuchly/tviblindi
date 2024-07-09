@@ -8,9 +8,9 @@ Description: tviblindi puts ideas from graph theory and algebraic topology to us
 Maintainer: Jan Stuchly <jan.stuchly@lfmotol.cuni.cz>
 License: open
 biocViews:
-Depends: R (>= 3.0.0), Matrix, igraph, RcppArmadillo, Rcpp, RcppEigen, BH, FlowSOM, shiny, shinyBS, shinyWidgets, shinyFiles, tidyverse, ggdendro, dendextend, scales, gplots, scattermore, jpeg, cowplot, shinycssloaders, cluster, shinybusy
+Depends: R (>= 3.0.0), Matrix, igraph, RcppArmadillo, Rcpp, RcppEigen, BH, shiny, shinyBS, shinyWidgets, shinyFiles, tidyverse, ggdendro, dendextend, scales, gplots, scattermore, jpeg, cowplot, shinycssloaders, cluster, shinybusy
 Remotes: github::exaexa/scattermore
-Suggests: PRIMME, flowCore
+Suggests: PRIMME, flowCore, FlowSOM
 Imports: Rcpp (>= 0.12.12), RcppEigen (>= 0.3.3.3.0), BiocGenerics, reticulate
 LinkingTo: RcppArmadillo, Rcpp, RcppEigen, BH
 Encoding: UTF-8

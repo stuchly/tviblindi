@@ -174,7 +174,7 @@ Cluster<-function(x,...){
 
 #' Computes k-means clusters for triangulation, modifies x
 #'
-#' \code{Som}
+#' \code{Cluster}
 #' @param x tviblindi class object.
 #' @param K integer (default 625); centers for kmeans clustering
 #' @param method  "som" or "kmeans" (default)
