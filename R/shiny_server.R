@@ -187,7 +187,7 @@ shiny_server <- function(input, output, session) {
     react$cols_as_matrix <- pal.rgba[, psc]
 
     ## Produce event colouring by pseudotime values & sort population labels by pseudotime
-    gating_palette <- c(RColorBrewer::brewer.pal(8, 'Dark2'), RColorBrewer::brewer.pal(12, 'Paired')[-11], RColorBrewer::brewer.pal(9, 'Set1')[-6], RColorBrewer::brewer.pal(8, 'Accent')[5:8])
+    gating_palette <- c(RColorBrewer::brewer.pal(8, 'Dark2'), RColorBrewer::brewer.pal(12, 'Paired')[-11], RColorBrewer::brewer.pal(9, 'Set1')[-6], RColorBrewer::brewer.pal(8, 'Accent')[5:8],RColorBrewer::brewer.pal(8, 'Spectral'))
     labels.unique <- lapply(labels, unique) %>% setNames(names(labels))
     react$labels.aligned <-
       react$colours.aligned <-
