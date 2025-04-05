@@ -434,7 +434,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     efcs.mod           <- cbind(efcs, new_col)
     colnames(efcs.mod) <- c(channel_names, colname)
 
-    ff.mod             <- flowFrame(efcs.mod, params, description = keyword(ff))
+    ff.mod             <- flowCore::flowFrame(efcs.mod, params, description = keyword(ff))
 
     keyval                                      <- list()
     keyval[[paste0('$P', channel_number, 'B')]] <- '32'

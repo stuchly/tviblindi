@@ -1,6 +1,6 @@
 make_valid_fcs<-function(exprs,fcs=NULL,desc1=NULL){
   ##require(flowCore)
-  if(!is.null(fcs)) fcs<-flowCore::flowFrame(exprs, parameters = flowCore::parameters(fcs)) else fcs<-flowFrame(exprs)
+  if(!is.null(fcs)) fcs<-flowCore::flowFrame(exprs, parameters = flowCore::parameters(fcs)) else fcs<-flowCore::flowFrame(exprs)
 ##  for (i in 1:ncol(exprs)) if (min(exprs[,i])<0) exprs[,i]<-exprs[,i]-min(exprs[,i])
   params <- flowCore::parameters(fcs)
   pd <-NULL

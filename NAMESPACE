@@ -1,7 +1,6 @@
 useDynLib(tviblindi)
 import(RcppEigen)
 importFrom(Rcpp, evalCpp)
-import(flowCore)
 exportPattern("^[[:alpha:]]+")
 S3method(Set_origin,tviblindi)
 S3method(print,tviblindi)

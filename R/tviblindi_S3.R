@@ -652,7 +652,7 @@ DimRed.tviblindi <-
     }
     if (is.null(layout)) {
       if (method[1] == "vaevictis") {
-        vv = reticulate::import("vaevictis")
+        vv = get_vaevictis()
         if (!is.null(load_model)){
           model <- vv$loadModel(config_file = load_model[1],weights_file = load_model[2])
           layout <- model[[2]](x[[usedata]])
