@@ -1,0 +1,24 @@
+#!/bin/sh
+
+OS=$(uname)
+LIBOMP_STATIC=/opt/homebrew/opt/libomp/lib/libomp.a
+
+echo "checking for static libomp.a..."
+
+if [ "$OS" = "Darwin" ]; then
+  if [ ! -f "$LIBOMP_STATIC" ]; then
+    echo ""
+    echo "ERROR: libomp.a not found at:"
+    echo "  $LIBOMP_STATIC"
+    echo "You may need to run: brew install libomp"
+    echo ""
+    exit 1
+  else
+    echo "  found: $LIBOMP_STATIC"
+  fi
+else
+  echo "  not a macOS system — skipping libomp.a check"
+fi
+
+exit 0
+

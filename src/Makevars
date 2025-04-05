@@ -1,14 +1,8 @@
-PKG_CPPFLAGS = -I.
-# PKG_CPPFLAGS += -fopenmp
-LDFLAGS += -lomp
-PKG_CXXFLAGS = -DBOOST_DISABLE_THREADS -DCGAL_EIGEN3_ENABLED -DCGAL_HEADER_ONLY $(SHLIB_OPENMP_FFLAGS)
-PKG_LIBS = -lgmp $(SHLIB_OPENMP_CFLAGS)
-##PKG_FFLAGS = $(SHLIB_OPENMP_FFLAGS)
-PKG_LIBS=-lomp
-PKG_LIBS = $(SHLIB_OPENMP_CFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
-## We want C++11
-CXX_STD = CXX11
-# C = g++ -std=gnu99 -fsanitize=undefined -fno-omit-frame-pointer
-# CXX = g++ -fsanitize=undefined -fno-omit-frame-pointer
-CXXFLAGS =  -g
-all: $(SHLIB)
+PKG_CPPFLAGS = -fopenmp -I. -I./phat -I./gudhi -I/opt/homebrew/include
+PKG_CXXFLAGS = -fopenmp -DBOOST_DISABLE_THREADS -DCGAL_EIGEN3_ENABLED -DCGAL_HEADER_ONLY
+PKG_LIBS = /opt/homebrew/opt/libomp/lib/libomp.a \
+           -L/opt/homebrew/lib \
+           -L/opt/homebrew/opt/gcc/lib/gcc/14 \
+           -lgmp -lgfortran \
+           $(LAPACK_LIBS) $(BLAS_LIBS)
+CXX_STD = CXX17
