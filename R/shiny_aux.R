@@ -402,8 +402,6 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
 
 ## Function: add a column (~ channel) to an FCS file
 fcs.add_col <- function(ff, new_col, colname = 'label') {
-    require(flowCore)
-
     if (class(ff) != 'flowFrame') stop('Parameter ff is not a valid flowFrame object')
 
     efcs <- ff@exprs
@@ -413,7 +411,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     if (N != len)  stop(paste0('Number of rows of expression matrix is ', N, ', whereas length of new column is ', len, '.'))
 
     params <- ff@parameters
-    pd     <- pData(params)
+    pd     <- Biobase::pData(params)
     cols   <- as.vector(pd$name)
     idcs   <- match(cols, pd$name)
 
@@ -429,12 +427,12 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     rownames(plist)    <- c('name', 'desc', 'range', 'minRange', 'maxRange')
     colnames(plist)    <- c(channel_id)
     pd                 <- rbind(pd, t(plist))
-    pData(params)      <- pd
+    Biobase::pData(params) <- pd
     channel_names      <- colnames(efcs)
     efcs.mod           <- cbind(efcs, new_col)
     colnames(efcs.mod) <- c(channel_names, colname)
 
-    ff.mod             <- flowCore::flowFrame(efcs.mod, params, description = keyword(ff))
+    ff.mod             <- flowCore::flowFrame(efcs.mod, params, description = flowCore::keyword(ff))
 
     keyval                                      <- list()
     keyval[[paste0('$P', channel_number, 'B')]] <- '32'
@@ -442,13 +440,13 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     keyval[[paste0('$P', channel_number, 'E')]] <- '0,0'
     keyval[[paste0('$P', channel_number, 'N')]] <- channel_name
     keyval[[paste0('$P', channel_number, 'S')]] <- channel_name
-    keyword(ff.mod)                             <- keyval
+    flowCore::keyword(ff.mod)                   <- keyval
 
     flowCoreP_Rmax <- paste0('flowCore_$P', channel_number, 'Rmax')
     flowCoreP_Rmin <- paste0('flowCore_$P', channel_number, 'Rmin')
 
-    keyword(ff.mod)[flowCoreP_Rmax] <- max(20000, keyword(ff.mod)$`flowCore_$P1Rmax`)
-    keyword(ff.mod)[flowCoreP_Rmin] <- 0
+    flowCore::keyword(ff.mod)[flowCoreP_Rmax] <- max(20000, flowCore::keyword(ff.mod)$`flowCore_$P1Rmax`)
+    flowCore::keyword(ff.mod)[flowCoreP_Rmin] <- 0
 
     ff.mod
 }

@@ -1,19 +1,7 @@
 CXX_STD = CXX17
 
-UNAME := $(shell uname)
-
 PKG_CPPFLAGS = -I. -I./phat -I./gudhi
 
-ifeq ($(UNAME), Darwin)  # macOS
-  PKG_CPPFLAGS += -I/opt/homebrew/include
-  PKG_CXXFLAGS = -Xpreprocessor -fopenmp -DBOOST_DISABLE_THREADS -DCGAL_EIGEN3_ENABLED -DCGAL_HEADER_ONLY
-  PKG_LIBS = /opt/homebrew/opt/libomp/lib/libomp.a \
-             -L/opt/homebrew/lib \
-             -L/opt/homebrew/opt/gcc/lib/gcc/$(shell gcc -dumpversion | cut -f1 -d.) \
-             -lgmp -lgfortran \
-             $(LAPACK_LIBS) $(BLAS_LIBS)
-else  # Linux
-  PKG_CXXFLAGS = -fopenmp -DBOOST_DISABLE_THREADS -DCGAL_EIGEN3_ENABLED -DCGAL_HEADER_ONLY
-  PKG_LIBS = -fopenmp -lgmp -lgfortran \
-             $(LAPACK_LIBS) $(BLAS_LIBS)
-endif
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
+
+PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(SHLIB_FCLIBS) $(SHLIB_OPENMP_CXXFLAGS) -lgmp -lmpfr

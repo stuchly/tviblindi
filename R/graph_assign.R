@@ -123,10 +123,7 @@ assign_distance <- function (A, origin, big = 1000, nb_it = 1500, eps = 1e-06, s
   adval<-as(rep(0,nrow(L)),"sparseMatrix")
 
   if (!is.null(target)){
-    if (length(target)>1)
-      adval<-as(Matrix::rowSums(L[,target]*target_values),"sparseMatrix")
-    else
-      adval<-as(L[,target]*target_values,"sparseMatrix")
+    adval<-as(Matrix::rowSums(t(t(L[,target])*(target_values*sqrt(.DD[target])))),"sparseMatrix")
   }
 
 
@@ -178,7 +175,8 @@ assign_distance <- function (A, origin, big = 1000, nb_it = 1500, eps = 1e-06, s
   out <- matrix(NA, nrow = N)
   out[origin, ] <- 0
   out[unlabeled, ] <- res$x
-  out[target,]<-target_values
+  out[target,] <- 0
   out <- as.vector(Dm %*% out)
+  out[target] <- target_values
   return(list(res = out, nb_it = res$nb_it, error = res$error))
 }

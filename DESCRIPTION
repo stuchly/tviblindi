@@ -1,14 +1,14 @@
 Package: tviblindi
 Type: Package
 Title: Tools for computational single-cell data analysis
-Version: 1.0
-Date: 2017-08-25
+Version: 1.0.5
+Date: 2026-08-13
 Author: Jan Stuchly, David Novak
 Description: tviblindi puts ideas from graph theory and algebraic topology to use for single-cell data. This product includes software developed by the Delft University of Technology (modified parts of bh tsne), GUDHI supported by an Advanced Investigator Grant of the European Research Council and hosted by INRIA and PHAT - Persistent Homology Algorithm Toolbox
 Maintainer: Jan Stuchly <jan.stuchly@lfmotol.cuni.cz>
 License: open
 biocViews:
-Depends: R (>= 3.0.0), Matrix, igraph, RcppArmadillo, Rcpp, RcppEigen, BH, shiny, shinyBS, shinyWidgets, shinyFiles, tidyverse, ggdendro, dendextend, scales, gplots, scattermore, jpeg, cowplot, shinycssloaders, cluster, shinybusy, flowCore
+Depends: R (>= 3.0.0), Matrix, igraph, RcppArmadillo, Rcpp, RcppEigen, BH, shiny, shinyBS, shinyWidgets, shinyFiles, tidyverse, ggdendro, dendextend, scales, gplots, scattermore, jpeg, cowplot, shinycssloaders, cluster, shinybusy, uwot
 Remotes: github::exaexa/scattermore
 Suggests: PRIMME, FlowSOM
 Imports: Rcpp (>= 0.12.12), RcppEigen (>= 0.3.3.3.0), BiocGenerics, reticulate

@@ -36,13 +36,13 @@ shiny_server <- function(input, output, session) {
   react$pathmodel_name <- names(tv$origin)[1]
   react$labels<-labels
 
-  if (!is.list(tv$pseudotime) || names(tv$pseudotime)[1] == 'res') {
+  if (!is.list(tv$pseudotime) || isTRUE(names(tv$pseudotime)[1] == 'res')) {
     tv$pseudotime <- list(default = tv$pseudotime)
   }
   if (!is.list(tv$origin)) {
     tv$origin <- list(default = tv$origin)
   }
-  if (!is.list(tv$walks) || names(tv$walks)[1] == 'v') {
+  if (!is.list(tv$walks) || isTRUE(names(tv$walks)[1] == 'v')) {
     tv$walks <- list(default = tv$walks)
   }
   react$persistence <-
@@ -444,7 +444,7 @@ shiny_server <- function(input, output, session) {
     par(xpd = TRUE, mar = c(2, 2, 2, 50))
     layout.raster <- scattermore(
       xy = layout[[react$layout_name]],
-      cex = rep(react$layout_pointsize * 2 + .8, nrow(layout[[react$layout_name]])),
+      cex = react$layout_pointsize * 2 + .8,
       rgba = col2rgb(react$gating_colour_vectors[[react$labels_name]], alpha = 0.4),
       size = c(900, 900),
       xlim = c(0, 1),
@@ -457,7 +457,7 @@ shiny_server <- function(input, output, session) {
 
       layout.rasterg <- scattermore(
         xy = layout[[react$layout_name]][gated,],
-        cex = rep(react$layout_pointsize * 2 + .8, nrow(layout[[react$layout_name]][gated,])),
+        cex = react$layout_pointsize * 2 + .8,
         rgba = col2rgb(react$gating_colour_vectors[[react$labels_name]][gated], alpha = 0.4),
         size = c(900, 900),
         xlim = c(0, 1),
@@ -796,13 +796,13 @@ shiny_server <- function(input, output, session) {
       react$dendrogram_marked_leaves.A   <- unique(unlist(c(react$dendrogram_marked_leaves.A,   react$dendrogram_selected_leaves)))
       react$dendrogram_redraw_highlights <- TRUE
 
-      react$trajectories_marked_idcs.A   <- unique(unlist(c(react$trajectories_marked_idcs.A),  react$dendrogram_selected_idcs))
+      react$trajectories_marked_idcs.A   <- unique(unlist(c(react$trajectories_marked_idcs.A,  react$dendrogram_selected_idcs)))
     } else if (react$trajectories_group == 'B') {
       react$trajectories_marked.B        <- unique(unlist(c(react$trajectories_marked.B,        react$dendrogram_selection)))
       react$dendrogram_marked_leaves.B   <- unique(unlist(c(react$dendrogram_marked_leaves.B, react$dendrogram_selected_leaves)))
       react$dendrogram_redraw_highlights <- TRUE
 
-      react$trajectories_marked_idcs.B   <- unique(unlist(c(react$trajectories_marked_idcs.B),  react$dendrogram_selected_idcs))
+      react$trajectories_marked_idcs.B   <- unique(unlist(c(react$trajectories_marked_idcs.B,  react$dendrogram_selected_idcs)))
     }
   })
 
