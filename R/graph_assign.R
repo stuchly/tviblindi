@@ -123,7 +123,7 @@ assign_distance <- function (A, origin, big = 1000, nb_it = 1500, eps = 1e-06, s
   adval<-as(rep(0,nrow(L)),"sparseMatrix")
 
   if (!is.null(target)){
-    adval<-as(Matrix::rowSums(t(t(L[,target])*(target_values*sqrt(.DD[target])))),"sparseMatrix")
+    adval<-as(Matrix::rowSums(Matrix::t(Matrix::t(L[,target])*(target_values*sqrt(.DD[target])))),"sparseMatrix")
   }
 
 
