@@ -10,8 +10,9 @@ License: open
 biocViews:
 Depends: R (>= 3.0.0), Matrix, igraph, RcppArmadillo, Rcpp, RcppEigen, BH, shiny, shinyBS, shinyWidgets, shinyFiles, tidyverse, ggdendro, dendextend, scales, gplots, scattermore, jpeg, cowplot, shinycssloaders, cluster, shinybusy, uwot
 Remotes: github::exaexa/scattermore
-Suggests: PRIMME, FlowSOM
+Suggests: PRIMME, FlowSOM, phateR, testthat (>= 3.0.0)
 Imports: Rcpp (>= 0.12.12), RcppEigen (>= 0.3.3.3.0), BiocGenerics, reticulate
 LinkingTo: RcppArmadillo, Rcpp, RcppEigen, BH
 Encoding: UTF-8
 RoxygenNote: 7.3.1
+Config/testthat/edition: 3

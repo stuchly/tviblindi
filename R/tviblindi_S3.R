@@ -71,7 +71,7 @@ print.tviblindi<-function(x){
   cat("tviblindi object\n",
       "data size: ",nrow(x$data),"\n", sep = "")
   for (idx.labels in 1:length(x$labels)) {
-    cat("labels (", names(labels)[idx.labels], "): ", paste(levels(x$labels[[idx.labels]]),collapse=", "),"\n", sep = "")
+    cat("labels (", names(x$labels)[idx.labels], "): ", paste(levels(x$labels[[idx.labels]]),collapse=", "),"\n", sep = "")
   }
 
 }
@@ -586,32 +586,26 @@ DimRed<-function(x,...){
 }
 
 
-##METHOD CHANGED
 #' Dimensional reduction, modifies x
 #'
-#' \code{DimRed}
+#' \code{DimRed} computes (or plugs in) a low-dimensional layout of \code{x$data}/\code{x$denoised}
+#' and appends it to \code{x$layout}. The actual reduction is delegated to a method function looked
+#' up in tviblindi's dimred method registry (see \code{\link{register_dimred_method}}) - built-in
+#' methods are "vaevictis" (deep autoencoder, see \code{\link{dimred_vaevictis}}), "diffuse"
+#' (sparse diffusion maps, see \code{\link{dimred_diffuse}}) and "umap" (see \code{\link{dimred_umap}}).
+#' Call \code{\link{list_dimred_methods}} to see all currently registered methods, including any
+#' third-party ones added via \code{register_dimred_method}.
+#'
 #' @param x tviblindi class object.
-#' @param method character; "vaevictis" - deep (auto)encoder (combination of ideas from different papers - to be eleborated)
-#' or "diffuse" - saparse diffusion maps
-#' @param layout numeric matrix \code{[nrow(data),2]} (optional); if \code{!is.null(layout)} dimensional reduction is plugged-in.
-#' @param dim integer (default 2); dimension of reduced data (for the moment only resonable value is 2 but the reduction should work for
-#' any integer value (for "diffuse" \code{< nrow(data)})).
-#' @param vsplit double (default 0.1); percentage of data used as validation step in "vaevictis".
-#' @param enc_shape integer vector (default \code{c(128,128,128)}); shape (depth and wisth) of the encoder.
-#' @param dec_shape integer vector (default \code{c(128,128,128)}); shape (depth and wisth) of decoder.
-#' @param perplexity double (default 10.); perplexity for tsne regularisation see https://www.nature.com/articles/s41467-018-04368-5.
-#' @param batch_size integer (default 512); batch size for "vaevictis" training.
-#' @param epochs integer; maximum number of epochs for "vaevictis" training.
-#' @param patience integer; maxim patience for for "vaevictis" training (early stopping).
-#' @param ww vector double; weights for vaevictis in this order - tsne_regularisations, ivis pn loss, reconstruction error, KL divergence
-#' @param margin double; ivis pn loss margin
-#' @param shuffle logical; shuffle data before validation split; involves recomputation of KNN matrix
-#' @param neigen integer; for "diffuse" number of eigen vectors to compute.
-#' @param t double; time parameter for "diffuse", if \code{t==0} multi-time scale is used (geometric sum).
-#' @param load_model character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied
-#' @param upsample named list \code{list(N=5000,cluster=15,method="kmeans")} or \code{NULL};  sample events by clusters (involves recomputation of KNN matrix); affects "vaevictis" only; if NULL nothing happens, \code{N} events per clusters, \code{cluster} number of clusters, \code{method} clustering method (either "CLARA" or "kmeans")
-#' @param labels_name name of label vector if one is used for upsampling and \code{x} has mutliple label vectors.
-#' @param use.denoised logical; use denoised data for dimensional reduction
+#' @param method character; name of a registered dimred method (default "vaevictis"). Only the
+#' first element is used.
+#' @param layout numeric matrix \code{[nrow(data),2]} (optional); if \code{!is.null(layout)}, this
+#' is used directly instead of running \code{method} - i.e. dimensional reduction is plugged-in.
+#' @param use.denoised logical (default FALSE); use \code{x$denoised} instead of \code{x$data} as
+#' the input to \code{method}.
+#' @param ... method-specific parameters, forwarded as-is to the registered method function. See
+#' e.g. \code{\link{dimred_vaevictis}}, \code{\link{dimred_diffuse}}, \code{\link{dimred_umap}} for
+#' each built-in method's own parameters and defaults.
 #'
 #' @details The pathway analysis visualisation benefits from dimensional reductions which are by definition continuous... to be elaborated
 #'
@@ -620,123 +614,22 @@ DimRed<-function(x,...){
 #' @export
 DimRed.tviblindi <-
   function(x,
-           method = c("vaevictis", "diffuse"),
+           method = "vaevictis",
            layout = NULL,
-           dim = 2,
-           vsplit = 0.1,
-           enc_shape = c(128, 128, 128),
-           dec_shape = c(128, 128, 128),
-           perplexity = 10.,
-           batch_size = 512L,
-           epochs = 100L,
-           patience = 1L,
-           ivis_pretrain=0,
-           ww=c(10.,10.,1.,1.),
-           margin=1.,
-           shuffle=FALSE,
-           neigen = 2,
-           t = 0,
-           K=30,
-           load_model=NULL,
-           upsample=list(N=5000,cluster=15,method="kmeans"),
-           labels_name = names(x$labels)[1],
-           use.denoised=FALSE) {
+           use.denoised = FALSE,
+           ...) {
 
-    vae <- NULL
-    if (use.denoised) usedata<-"denoised" else usedata<-"data"
-    if (use.denoised){
+    if (use.denoised) usedata <- "denoised" else usedata <- "data"
+    if (use.denoised) {
       if (is.null(x$denoised)) {
         warning("Using original data!")
-        x$denoised<-x$data
+        x$denoised <- x$data
       }
     }
+
     if (is.null(layout)) {
-      if (method[1] == "vaevictis") {
-        vv = get_vaevictis()
-        if (!is.null(load_model)){
-          model <- vv$loadModel(config_file = load_model[1],weights_file = load_model[2])
-          layout <- model[[2]](x[[usedata]])
-          vae <- model
-        } else {
-          if (!is.null(upsample)){
-            if (is.null(upsample$method)) upsample$method<-"CLARA"
-            if (is.null(upsample$cluster)) labl<-x$labels[[labels_name]]
-            else {
-              if (upsample$method=="kmeans"){
-                message("running kmeans clustering...")
-                labl<-kmeans(x[[usedata]],centers=upsample$cluster)$cluster
-                message("~done\n")
-              } else {
-                message("running clara clustering...")
-                labl<-cluster::clara(x[[usedata]],k=upsample$cluster)$clustering
-                message("~done\n")
-              }
-            }
-            ss<-.upsample.labels(labl,N=upsample$N,takeall = upsample$takeall)
-            knn_loc<-KNN.annoy(x[[usedata]][ss,], K, 150)$IND
-            layout = vv$dimred(
-              x[[usedata]][ss,],
-              as.integer(dim),
-              vsplit,
-              as.integer(enc_shape),
-              as.integer(dec_shape),
-              perplexity,
-              as.integer(batch_size),
-              as.integer(epochs),
-              as.integer(patience),
-              as.integer(ivis_pretrain),
-              ww,
-              "euclidean",
-              margin,
-              K,
-              knn_loc
-            )
-          } else {
-            if (shuffle) sshuf<-sample(nrow(x[[usedata]])) else sshuf<-1:nrow(x[[usedata]])
-            if (shuffle){
-              knn.plc<-KNN.annoy(x[[usedata]][sshuf,],  K, 150)$IND
-            } else {
-              if (!is.null(x$KNN)) knn.plc<-KofRawN(x$KNN,K) else knn.plc<-KNN.annoy(x[[usedata]][sshuf,],  K, 150)$IND
-            }
-            layout = vv$dimred(
-              x[[usedata]][sshuf,],
-              as.integer(dim),
-              vsplit,
-              as.integer(enc_shape),
-              as.integer(dec_shape),
-              perplexity,
-              as.integer(batch_size),
-              as.integer(epochs),
-              as.integer(patience),
-              as.integer(ivis_pretrain),
-              ww,
-              "euclidean",
-              margin,
-              K,
-              knn.plc
-            )
-          }
-          x$vae <- layout[[3]]
-          #x$vae_structure<-list(config=layout[[3]]$get_config(),weights=layout[[3]]$get_weights())
-          layout <- layout[[2]](x[[usedata]])
-        }
-
-
-      } else if (method[1] == "diffuse") {
-        if (is.null(x$KNN)) stop("Compute KNN graph first.")
-        layout<-sparse.diffuse(
-          sparse.Laplacian.construct(knn.raw2adj(x$KNN)),
-          neigen = neigen,
-          t = t
-        )$X
-
-      } else if (method[1]=="umap"){
-        if (!require(uwot)) stop("install package 'uwot' first")
-        layout<-uwot::umap(x[[usedata]],verbose=TRUE)
-        rownames(layout)<-NULL ##METHOD CHANGED
-      }  else {
-        message("Unimplemented method. Nothing done.")
-      }
+      fn <- .get_dimred_method(method[1])
+      layout <- do.call(fn, c(list(x = x, data = x[[usedata]]), list(...)))
     }
 
     if (is.null(x$layout)) {
@@ -850,6 +743,17 @@ Copy<-function(x,...){
 
 
 ##Adapted for Rfast package
+# Recursively deep-copies an environment's contents into a fresh environment
+# (nested environment-valued fields are copied too, not shared by reference).
+env.copy <- function(env, all.names = TRUE) {
+  y <- new.env(parent = parent.env(env))
+  for (nm in ls(env, all.names = all.names)) {
+    val <- get(nm, envir = env, inherits = FALSE)
+    assign(nm, if (is.environment(val)) env.copy(val, all.names) else val, envir = y)
+  }
+  y
+}
+
 #' Deep copy of x
 #'
 #' \code{Copy}
@@ -863,7 +767,7 @@ Copy.tviblindi<-function(x){
   all.vars<-ls(x)
   for(var in all.vars){
     val<-x[[var]]
-    y[[var]] <- if(is.environment(val)) env.copy(val,all.names) else x[[var]]
+    y[[var]] <- if(is.environment(val)) env.copy(val, all.names = TRUE) else val
   }
   structure(y,class="tviblindi")
 }

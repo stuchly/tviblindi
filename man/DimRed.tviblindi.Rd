@@ -4,79 +4,35 @@
 \alias{DimRed.tviblindi}
 \title{Dimensional reduction, modifies x}
 \usage{
-\method{DimRed}{tviblindi}(
-  x,
-  method = c("vaevictis", "diffuse"),
-  layout = NULL,
-  dim = 2,
-  vsplit = 0.1,
-  enc_shape = c(128, 128, 128),
-  dec_shape = c(128, 128, 128),
-  perplexity = 10,
-  batch_size = 512L,
-  epochs = 100L,
-  patience = 1L,
-  ivis_pretrain = 0,
-  ww = c(10, 10, 1, 1),
-  margin = 1,
-  shuffle = FALSE,
-  neigen = 2,
-  t = 0,
-  K = 30,
-  load_model = NULL,
-  upsample = list(N = 5000, cluster = 15, method = "kmeans"),
-  labels_name = names(x$labels)[1],
-  use.denoised = FALSE
-)
+\method{DimRed}{tviblindi}(x, method = "vaevictis", layout = NULL, use.denoised = FALSE, ...)
 }
 \arguments{
 \item{x}{tviblindi class object.}
 
-\item{method}{character; "vaevictis" - deep (auto)encoder (combination of ideas from different papers - to be eleborated)
-or "diffuse" - saparse diffusion maps}
+\item{method}{character; name of a registered dimred method (default "vaevictis"). Only the
+first element is used.}
 
-\item{layout}{numeric matrix \code{[nrow(data),2]} (optional); if \code{!is.null(layout)} dimensional reduction is plugged-in.}
+\item{layout}{numeric matrix \code{[nrow(data),2]} (optional); if \code{!is.null(layout)}, this
+is used directly instead of running \code{method} - i.e. dimensional reduction is plugged-in.}
 
-\item{dim}{integer (default 2); dimension of reduced data (for the moment only resonable value is 2 but the reduction should work for
-any integer value (for "diffuse" \code{< nrow(data)})).}
+\item{use.denoised}{logical (default FALSE); use \code{x$denoised} instead of \code{x$data} as
+the input to \code{method}.}
 
-\item{vsplit}{double (default 0.1); percentage of data used as validation step in "vaevictis".}
-
-\item{enc_shape}{integer vector (default \code{c(128,128,128)}); shape (depth and wisth) of the encoder.}
-
-\item{dec_shape}{integer vector (default \code{c(128,128,128)}); shape (depth and wisth) of decoder.}
-
-\item{perplexity}{double (default 10.); perplexity for tsne regularisation see https://www.nature.com/articles/s41467-018-04368-5.}
-
-\item{batch_size}{integer (default 512); batch size for "vaevictis" training.}
-
-\item{epochs}{integer; maximum number of epochs for "vaevictis" training.}
-
-\item{patience}{integer; maxim patience for for "vaevictis" training (early stopping).}
-
-\item{ww}{vector double; weights for vaevictis in this order - tsne_regularisations, ivis pn loss, reconstruction error, KL divergence}
-
-\item{margin}{double; ivis pn loss margin}
-
-\item{shuffle}{logical; shuffle data before validation split; involves recomputation of KNN matrix}
-
-\item{neigen}{integer; for "diffuse" number of eigen vectors to compute.}
-
-\item{t}{double; time parameter for "diffuse", if \code{t==0} multi-time scale is used (geometric sum).}
-
-\item{load_model}{character vector of 2 components; paths to files created by by x$vae$save(file1,file2) - model is loaded and applied}
-
-\item{upsample}{named list \code{list(N=5000,cluster=15,method="kmeans")} or \code{NULL};  sample events by clusters (involves recomputation of KNN matrix); affects "vaevictis" only; if NULL nothing happens, \code{N} events per clusters, \code{cluster} number of clusters, \code{method} clustering method (either "CLARA" or "kmeans")}
-
-\item{labels_name}{name of label vector if one is used for upsampling and \code{x} has mutliple label vectors.}
-
-\item{use.denoised}{logical; use denoised data for dimensional reduction}
+\item{...}{method-specific parameters, forwarded as-is to the registered method function. See
+e.g. \code{\link{dimred_vaevictis}}, \code{\link{dimred_diffuse}}, \code{\link{dimred_umap}} for
+each built-in method's own parameters and defaults.}
 }
 \value{
 returns an invisible tviblindi class object.
 }
 \description{
-\code{DimRed}
+\code{DimRed} computes (or plugs in) a low-dimensional layout of \code{x$data}/\code{x$denoised}
+and appends it to \code{x$layout}. The actual reduction is delegated to a method function looked
+up in tviblindi's dimred method registry (see \code{\link{register_dimred_method}}) - built-in
+methods are "vaevictis" (deep autoencoder, see \code{\link{dimred_vaevictis}}), "diffuse"
+(sparse diffusion maps, see \code{\link{dimred_diffuse}}) and "umap" (see \code{\link{dimred_umap}}).
+Call \code{\link{list_dimred_methods}} to see all currently registered methods, including any
+third-party ones added via \code{register_dimred_method}.
 }
 \details{
 The pathway analysis visualisation benefits from dimensional reductions which are by definition continuous... to be elaborated
