@@ -10,15 +10,21 @@
 #' @param keep_intermediate bool (default FALSE); if intermediate matrices (transition probability and spar distance matrix)
 #' @param ShowAllFate bool; if all teoretical fates (see \code{Walks}) should be stored and plotted
 #' should be kept during computation
+#' @param viz_data numeric matrix or \code{Matrix::Matrix} (optional), same \code{nrow} as \code{data}; a
+#' display-only expression matrix used by the Shiny GUI and FCS export instead of \code{data} - e.g. true
+#' marker/gene expression when \code{data} itself is a PCA embedding used to drive the pipeline. Never read
+#' by \code{KNN}/\code{Denoise}/\code{Cluster}/\code{Som}/\code{Filtration}/\code{Pseudotime}/\code{Walks}/
+#' \code{DimRed}. Defaults to \code{data} when not supplied. May be a sparse \code{Matrix} (unlike \code{data},
+#' which must be a base matrix). See also \code{\link{Set_viz_data}}.
 #'
 #' @return \code{tviblindi} returns a tviblindi class object.
 #'
 #' @export
-tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep_intermediate=FALSE, analysis_name = paste0('tviblindi_', Sys.Date())){
-  new_tviblindi(data,labels,fcs_path,events_sel,analysis_name,keep_intermediate)
+tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,keep_intermediate=FALSE, analysis_name = paste0('tviblindi_', Sys.Date()), viz_data=NULL){
+  new_tviblindi(data,labels,fcs_path,events_sel,analysis_name,keep_intermediate,viz_data)
 }
 
-new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=NULL,keep.intermediate=FALSE){
+new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=NULL,keep.intermediate=FALSE,viz_data=NULL){
   stopifnot(is.matrix(data))
   if (!is.list(labels)) {
     labels <- list(default = labels)
@@ -29,6 +35,12 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=
     stopifnot(length(labels[[idx.labels]])==nrow(data) && (is.factor(labels[[idx.labels]]) || is.character(labels[[idx.labels]])))
   }
   stopifnot(is.logical(keep.intermediate))
+  if (is.null(viz_data)) {
+    viz_data <- data
+  } else {
+    stopifnot(is.matrix(viz_data) || methods::is(viz_data, "Matrix"))
+    stopifnot(nrow(viz_data) == nrow(data))
+  }
   if (is.null(events_sel)) events_sel<-1:nrow(data) ##for downsampling
   if(is.null(analysis_name)) {
     username<-Sys.info()['login']
@@ -42,6 +54,7 @@ new_tviblindi<-function(data,labels,fcs_path=NULL,events_sel=NULL,analysis_name=
   out$analysis_name<-analysis_name
   out$origin<-list()
   out$data=data
+  out$viz_data=viz_data
   out$denoised=NULL
   out$labels<-lapply(labels, as.factor)
   names(out$labels) <- names(labels)
@@ -78,6 +91,28 @@ print.tviblindi<-function(x){
 
 Set_origin<-function(x,...){
   UseMethod("Set_origin",x)
+}
+
+Set_viz_data<-function(x,...){
+  UseMethod("Set_viz_data",x)
+}
+
+#' Sets (or replaces) the display-only visualization data, modifies x
+#'
+#' \code{Set_viz_data}
+#' @param x tviblindi class object
+#' @param viz_data numeric matrix or \code{Matrix::Matrix}, same \code{nrow} as \code{x$data}; a display-only
+#' expression matrix used by the Shiny GUI and FCS export instead of \code{x$data}. See \code{\link{tviblindi}}'s
+#' \code{viz_data} argument for the full contract.
+#'
+#' @return  returns an invisible tviblindi class object.
+#'
+#' @export
+Set_viz_data.tviblindi<-function(x,viz_data,...){
+  stopifnot(is.matrix(viz_data) || methods::is(viz_data, "Matrix"))
+  stopifnot(nrow(viz_data) == nrow(x$data))
+  x$viz_data <- viz_data
+  return(invisible(x))
 }
 
 #' Sets cell-of-origin, modifies x
@@ -706,6 +741,7 @@ DownSample.tviblindi<-function(x,N=10000,K=10,method="default",e=1.,D=2){
     x$labels[[idx.labels]]<-x$labels[[idx.labels]][ss]
   }
   x$data<-x$data[ss,]
+  x$viz_data<-x$viz_data[ss,]
   x$events_sel<-x$events_sel[ss]
   return(invisible(x))
 }

@@ -23,7 +23,9 @@ shiny_server <- function(input, output, session) {
   layout <- if (is.list(tv$layout)) tv$layout else list(default = tv$layout)
   labels <- if (is.list(tv$labels)) tv$labels else list(default = tv$labels)
   event_sel <- tv$events_sel
-  markers <- colnames(tv$data)
+  ## tv$viz_data may be absent on a tviblindi object saved before this field existed
+  viz_data <- if (is.null(tv$viz_data)) tv$data else tv$viz_data
+  markers <- colnames(viz_data)
 
   ##  input_ff <- if (!is.null(tv$fcs)) flowCore::read.FCS(tv$fcs) else make_valid_fcs(exprs = tv$data)
 
@@ -908,7 +910,14 @@ shiny_server <- function(input, output, session) {
   observeEvent((input$btn_trajectories_export_fcs), {
 
     withProgress(message = 'Loading/creating fcs file...', detail="!!Pinned walks are expected to be sampled from active Path Model!!",expr = {
-      react$output_ff <- if (!is.null(tv$fcs)) flowCore::read.FCS(tv$fcs) else make_valid_fcs(exprs = tv$data)
+      ## Base expression matrix, in priority order: original FCS on disk, then the
+      ## display-only viz_data (defaults to tv$data when unset - see Set_viz_data()).
+      react$output_ff <- if (!is.null(tv$fcs)) {
+        flowCore::read.FCS(tv$fcs)
+      } else {
+        export_viz_data <- if (is.null(tv$viz_data)) tv$data else tv$viz_data
+        make_valid_fcs(exprs = as.matrix(export_viz_data))
+      }
 
       if ((is.null(event_sel) && nrow(react$output_ff) != nrow(tv$data)) || (!is.null(event_sel) && length(event_sel) != nrow(tv$data))) {
         stop('Number of events in expression matrix incongruent with dimensionality of input FCS file. Did you misuse the events_sel parameter?')
@@ -1180,19 +1189,21 @@ shiny_server <- function(input, output, session) {
   ## Marker expression trackers
   # Inputs
   observe({
-    updateSelectInput(session, 'input_tracked_markers.A', choices = markers)
-    updateSelectInput(session, 'input_tracked_markers.B', choices = markers)
+    ## server=TRUE: large choice sets (e.g. a full gene panel attached via viz_data)
+    ## are matched/paged server-side instead of being embedded whole into the page.
+    updateSelectizeInput(session, 'input_tracked_markers.A', choices = markers, server = TRUE)
+    updateSelectizeInput(session, 'input_tracked_markers.B', choices = markers, server = TRUE)
   })
   observeEvent(input$input_tracked_markers.A, {
     react$tracked_markers.A <- input$input_tracked_markers.A
     if (is.null(react$tracked_markers.B)) {
-      updateSelectInput(session, 'input_tracked_markers.B', selected = input$input_tracked_markers.A)
+      updateSelectizeInput(session, 'input_tracked_markers.B', choices = markers, selected = input$input_tracked_markers.A, server = TRUE)
     }
   })
   observeEvent(input$input_tracked_markers.B, {
     react$tracked_markers.B <- input$input_tracked_markers.B
     if (is.null(react$tracked_markers.A)) {
-      updateSelectInput(session, 'input_tracked_markers.A', selected = input$input_tracked_markers.B)
+      updateSelectizeInput(session, 'input_tracked_markers.A', choices = markers, selected = input$input_tracked_markers.B, server = TRUE)
     }
   })
   observeEvent(input$input_trackers_scaling_exponent, {

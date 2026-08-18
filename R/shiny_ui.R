@@ -466,7 +466,7 @@ shiny_ui <- fluidPage(
               column(
                 width = 8,
                 style = 'padding-left: 5px',
-                selectInput('input_tracked_markers.A', label = 'Group A markers of interest', choices = c(), multiple = TRUE, width = '100%')
+                selectizeInput('input_tracked_markers.A', label = 'Group A markers of interest', choices = c(), multiple = TRUE, width = '100%')
               ),
               column(
                 width = 4,
@@ -495,7 +495,7 @@ shiny_ui <- fluidPage(
               column(
                 width = 8,
                 style = 'padding-left: 5px',
-                selectInput('input_tracked_markers.B', label = 'Group B markers of interest', choices = c(), multiple = TRUE, width = '100%')
+                selectizeInput('input_tracked_markers.B', label = 'Group B markers of interest', choices = c(), multiple = TRUE, width = '100%')
               ),
               column(
                 width = 4,

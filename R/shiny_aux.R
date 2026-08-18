@@ -679,7 +679,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                         # for each point on walk, which segment does it fall into?
 
     pseudotime_bounds <- sort(c(unlist(progress)[which(!duplicated(categs))], 1))
-    coords <- tv$data[, markers]
+    viz_data <- if (is.null(tv$viz_data)) tv$data else tv$viz_data
+    coords <- viz_data[, markers]
 
     stats  <- lapply(1:N, function(i) {
         inds <- categs == i # pick points on paths by pseudotime increment
@@ -779,7 +780,8 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 
     pseudotime_bounds <- sort(c(unlist(progress)[which(!duplicated(categs))], 1))
 
-    coords <- tv$data[, markers]
+    viz_data <- if (is.null(tv$viz_data)) tv$data else tv$viz_data
+    coords <- viz_data[, markers]
 
     stats  <- lapply(markers, function(m) {
         lapply(1:N, function(i) {
