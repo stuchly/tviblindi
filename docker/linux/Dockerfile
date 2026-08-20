@@ -1,4 +1,4 @@
-# Native Linux (arm64 or amd64) test image for tviblindi, with RStudio Server
+# Native Linux (arm64 or amd64) image for tviblindi, with RStudio Server
 # and vaevictis. See README.md in this directory for build/run instructions
 # and why this exists.
 FROM rocker/rstudio:4.5
@@ -48,6 +48,6 @@ RUN sed -i '15i #define CGAL_HEADER_ONLY 1' /usr/include/CGAL/config.h
 COPY . /pkgsrc
 RUN R CMD INSTALL /pkgsrc
 
-COPY docker/linux-test/start_app.R /start_app.R
+COPY docker/linux/start_app.R /start_app.R
 
 EXPOSE 8787 3838

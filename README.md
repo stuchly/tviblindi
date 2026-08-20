@@ -103,7 +103,7 @@ defined to compile without it:
 sudo sed -i '15i #define CGAL_HEADER_ONLY 1' /usr/include/CGAL/config.h
 ```
 
-`docker/linux-test/` in this repo is a working, verified reference for the
+`docker/linux/` in this repo is a working, verified reference for the
 whole Linux setup (RStudio Server included) if you'd rather use a container
 than replicate these steps by hand.
 
