@@ -979,7 +979,51 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
 }
 
 
+## Generalization of .add_ends_to_walks_f: `targets` gives one endpoint per
+## walk (a single value is recycled to every walk) instead of one endpoint
+## shared by the whole batch. Used to stitch different groups of walks to
+## their own, different representative nodes in a single pass. Kept
+## separate from .add_ends_to_walks_f (still used by
+## .update_walks_by_dendrogram) rather than generalizing it in place, so
+## that caller is unaffected.
+.add_group_ends_to_walks_f <- function(walks, targets) {
+    n <- length(walks$starts)
+    if (length(targets) == 1) targets <- rep(targets, n)
+    inds<-to_add<-NULL
+    j<-0
+    tick<-1/n
+    withProgress(message = 'Fixing walks termini', expr = {
+        wl<- lapply(1:n, function(idx) select_paths_points(walks, idx))
+
+        for (i in 1:n){
+            j<-j+1
+            L<-length(wl[[i]])
+            if (wl[[i]][L]!=targets[i]){
+                to_add<-c(to_add,wl[[i]][L])
+                wl[[i]]<-c(wl[[i]],targets[i])
+
+                inds<-c(inds,j)
+
+            }
+            incProgress(tick)
+        }
+
+        lens           <- sapply(wl, length)
+        walks <- list(v      = unlist(wl),
+                      starts = c(1, 1 + cumsum(lens[-length(lens)])))
+    })
+    return(list(walks=walks,to_add=to_add,inds=inds))
+}
+
 ##METHOD CHANGED - heavilly rewriten to include new 1simplices and to fix remove_cycles bug
+##METHOD CHANGED - generalized from a single flat pool of marked termini to
+## named groups (metagroups): within a group, walks are always stitched
+## geometrically to that group's own highest-pseudotime terminus (pass 1,
+## mandatory, never injects simplices); when more than one group is in
+## play, the resulting per-group representatives are then stitched to each
+## other exactly like the original single-level algorithm did (pass 2,
+## checkbox-gated). A single group (or a single flat vector wrapped as one
+## group) reduces to exactly the original behaviour - pass 2 never runs.
 .update_walks_by_termini <- function(tv,
                                      pathmodel_name,
                                      pseudotime,
@@ -988,8 +1032,15 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
                                      death_birth_ratio,
                                      death_on_x_axis,
                                      add1simplicis_tick=FALSE) {
+    ## marked_termini is a named list of groups (each a vector of raw
+    ## termini). Accept a plain vector too, for callers that don't group.
+    if (!is.list(marked_termini)) marked_termini <- list('1' = marked_termini)
+    marked_termini <- marked_termini[sapply(marked_termini, length) > 0]
+
+    all_termini <- unlist(marked_termini, use.names = FALSE)
+
     ## Identify chosen walks
-    idcs <- which(termini_per_path %in% marked_termini)
+    idcs <- which(termini_per_path %in% all_termini)
 
     ## Remove other walks
     walks.selected <- lapply(idcs, function(idx) select_paths_points(tv$walks[[pathmodel_name]], idx))
@@ -1004,49 +1055,65 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
         ##walks_clusters <- contract_walks(walks.selected, tv$clusters)
     })
 
-    ## Put terminal node with highest pseudotime at end of each walk
-
-    Pends<-NULL
-    if (length(marked_termini) > 1) {
-        max_t             <- tv$clusters[marked_termini[which.max(pseudotime$res[marked_termini])][1]]
-        ends              <- c(walks_clusters$starts[-1] - 1, length(walks_clusters$v))
-
-        Pends<-walks_clusters$v[ends]
-
-        addedw<-.add_ends_to_walks_f(walks_clusters,ends,max_t)
-        walks_clusters <- addedw$walks
-        ##walks.selected<-addedw$walks
-
-
-    }
-
     add1simplex <- 0
     to_remove<-NULL
 
-    if (length(unique(Pends))>1 && add1simplicis_tick){
-        PendsP<- unique(Pends[addedw$inds])
-        to_add<-as.data.frame(t(data.frame(PendsP,max_t)))
+    if (length(all_termini) > 1) {
+        ## Pass 1 (mandatory, per group): put each group's own
+        ## highest-pseudotime terminus at the end of that group's walks -
+        ## always geometric, never injects simplices.
+        idcs_termini <- termini_per_path[idcs]
+        targets      <- rep(NA_integer_, length(idcs))
+        group_reps   <- list()
 
-        if (any(to_add[1,]==to_add[2,])) {
-            ss<-which(to_add[1,]==to_add[2,])
-            to_add<-as.list(to_add)
-            names(to_add)<-NULL
-            to_add<-to_add[-ss]
+        for (g in names(marked_termini)) {
+            g_termini <- marked_termini[[g]]
+            in_group  <- which(idcs_termini %in% g_termini)
+            if (length(in_group) == 0) next
+
+            g_max_t <- tv$clusters[g_termini[which.max(pseudotime$res[g_termini])][1]]
+            group_reps[[g]]    <- g_max_t
+            targets[in_group]  <- g_max_t
         }
 
-        if (length(to_add)>0){
-            message(" temporarily adding following simplices: ", to_add, " - this will create ", length(to_add), " essential class(es).\n")
-            orig_length<-length(tv$filtration$cmplx)
-            tv$filtration$cmplx<-c(tv$filtration$cmplx,to_add)
-            to_remove<-(orig_length+1):(length(tv$filtration$cmplx))
-            add1simplex<-length(to_add)
+        walks_clusters <- .add_group_ends_to_walks_f(walks_clusters, targets)$walks
 
-            ##to fix
-            ## tv$reduced_boundary$boundary<- c(tv$reduced_boundary$boundary,to_remove)
-            ## tv$reduced_boundary$values<- c(tv$reduced_boundary$values,rep(Inf,length(to_remove)))
-            ## tv$reduced_boundary$nonzero_col<- c(tv$reduced_boundary$nonzero_col,which(is.infinite( tv$reduced_boundary$values)))
-            ## tv$reduced_boundary$low<- c(tv$reduced_boundary$low,to_remove-1)
-            ## tv$reduced_boundary$dim<- c(tv$reduced_boundary$dim,rep(2,length(to_remove)))
+        ## Pass 2 (only when >1 group actually has walks): bridge the
+        ## per-group representatives to each other, exactly like the
+        ## original single-level algorithm - mandatory geometric stitch to
+        ## the overall highest-pseudotime representative, plus a
+        ## checkbox-gated 1-simplex injection per distinct representative
+        ## that needed bridging.
+        if (length(group_reps) > 1) {
+            reps           <- unlist(group_reps)
+            rep_pseudotime <- sapply(names(group_reps), function(g) max(pseudotime$res[marked_termini[[g]]]))
+            max_t          <- reps[which.max(rep_pseudotime)][1]
+
+            ends  <- c(walks_clusters$starts[-1] - 1, length(walks_clusters$v))
+            Pends <- walks_clusters$v[ends]
+
+            addedw <- .add_group_ends_to_walks_f(walks_clusters, max_t)
+            walks_clusters <- addedw$walks
+
+            if (length(unique(Pends))>1 && add1simplicis_tick){
+                PendsP<- unique(Pends[addedw$inds])
+                to_add<-as.data.frame(t(data.frame(PendsP,max_t)))
+
+                if (any(to_add[1,]==to_add[2,])) {
+                    ss<-which(to_add[1,]==to_add[2,])
+                    to_add<-as.list(to_add)
+                    names(to_add)<-NULL
+                    to_add<-to_add[-ss]
+                }
+
+                if (length(to_add)>0){
+                    message(" temporarily adding following simplices: ", to_add, " - this will create ", length(to_add), " essential class(es).\n")
+                    orig_length<-length(tv$filtration$cmplx)
+                    tv$filtration$cmplx<-c(tv$filtration$cmplx,to_add)
+                    to_remove<-(orig_length+1):(length(tv$filtration$cmplx))
+                    add1simplex<-length(to_add)
+                }
+            }
         }
     }
 

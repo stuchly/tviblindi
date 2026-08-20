@@ -57,9 +57,9 @@ shiny_server <- function(input, output, session) {
   ## Labels vector
   react$labels_name <- names(labels)[1]
   ## Terminal nodes selection
-  react$termini_selected <-
-    react$termini_marked <-
-      react$termini_processed <- NULL
+  react$termini_selected  <- NULL
+  react$termini_marked    <- list() ## named list of metagroups, key = active-group number as character
+  react$termini_processed <- NULL
   ## Homology classes selection
   react$persistence_selected <-
     react$persistence_marked <- NULL
@@ -243,7 +243,7 @@ shiny_server <- function(input, output, session) {
       size = 'l',
       HTML("This interface is a tool to allow for discrimination within a set of canonical developmental trajectories in input data, as well as between canonical and aberrant trajectories. Some trajectories will be biologically relevant, others not.
              <br><br>
-             First, select terminal nodes of simulated random walks in the left pane (tab <i>Terminal nodes selection</i>). This is done by clicking and drawing a rectangular selection. To mark selected points, press the <b>PLUS</b> button underneath. To remove marked points (and start selecting over again), press the <b>FIRE</b> button underneath. Once you are satisfied with your selection (the marked terminal nodes will be clustered together!), press the <b>THUMBS-UP</b> button to compute the relevant triangulation and create trajectory representations. Additionally, press the <b>ENLARGE</b> button in the right part of the left panel to view the dimension reduction layout coloured according to annotated cell populations.
+             First, select terminal nodes of simulated random walks in the left pane (tab <i>Terminal nodes selection</i>). This is done by clicking and drawing a rectangular selection. To mark selected points, press the <b>PLUS</b> button underneath - each terminal node marked this way joins the metagroup currently chosen in the <b>Group</b> number field, so you can build up one group's membership across several rectangular selections (in any order). To work on a different metagroup, change the <b>Group</b> number and mark more points the same way; terminal nodes within a metagroup are always merged together geometrically. To remove marked points from just the currently active metagroup (and start selecting over again for that group), press the <b>FIRE</b> button underneath; to discard every metagroup and start over completely, press the <b>RESET ALL</b> button (trash icon) next to it. If you marked more than one metagroup, check <i>Add 1-simplices when bridging groups</i> to connect the metagroups topologically (creating a genuine, temporary homology class for each bridge) rather than only geometrically - leave it unchecked to bridge them the same way termini within a single group are always merged. Once you are satisfied with your selection, press the <b>THUMBS-UP</b> button to compute the relevant triangulation and create trajectory representations. Additionally, press the <b>ENLARGE</b> button in the right part of the left panel to view the dimension reduction layout coloured according to annotated cell populations.
              <br><br>
              Second, select the tab <i>Homology classes by persistence selection</i> in the left pane. Here, select relevant homology classes to be used for hierarchical classification of trajectories. (For our analysis, these correspond roughly to more or less significant holes in the high-dimensional data.) Persistence increases upward. Again, you can make multiple piecewise selections by consecutively drawing rectangles and pressing <b>PLUS</b> to mark the selected points, or you can discard the marked points by pressing the <b>FIRE</b> button.
              <br><br>
@@ -360,15 +360,23 @@ shiny_server <- function(input, output, session) {
   })
 
   # Buttons
+  ## FIRE clears only the active metagroup's membership, so a mistake in
+  ## one group doesn't discard the others. RESET ALL clears everything.
   observeEvent(input$btn_termini_clear_termini, {
-    react$termini_marked          <- data.frame()
+    active <- as.character(input$input_termini_active_group)
+    react$termini_marked[[active]] <- NULL
+    output$log_persistence_marked  <- renderText('')
+  })
+
+  observeEvent(input$btn_termini_reset_all_termini, {
+    react$termini_marked          <- list()
     output$log_persistence_marked <- renderText('')
   })
 
   ##METHOD CHANGED - need to store walks_by_termini selection
   observeEvent(input$btn_termini_update_walks_by_termini, {
     react$termini_processed <- react$termini_marked
-    if (length(react$termini_marked) > 0) {
+    if (length(unlist(react$termini_marked)) > 0) {
       updated <- .update_walks_by_termini(tv                = tv,
                                           pathmodel_name    = react$pathmodel_name,
                                           pseudotime        = tv$pseudotime[[react$pathmodel_name]],
@@ -377,7 +385,7 @@ shiny_server <- function(input, output, session) {
                                           death_birth_ratio = react$persistence.death_birth_ratio,
                                           death_on_x_axis = react$persistence.death_on_x_axis,
                                           add1simplicis_tick = react$add1simplicis_tick)
-      react$walks_sel<-which(react$termini %in%  react$termini_processed)  ##METHOD CHANGED
+      react$walks_sel<-which(react$termini %in% unlist(react$termini_processed))  ##METHOD CHANGED
       react$triangulation<-updated$triangulation ##METHOD CHANGED
       react$add1simplicis<-updated$add1simplicis ##METHOD CHANGED
       react$trajectories_random_walks <- updated$random_walks
@@ -435,8 +443,22 @@ shiny_server <- function(input, output, session) {
     cat(sapply(react$termini_selected, function(s) paste0(s, ' (label: ', labels[[react$labels_name]][s], '; ', sum(react$termini == s), ' walks terminate here)')), sep = '\n')
   })
   observeEvent(input$btn_termini_mark_termini, {
-    react$termini_marked <- unique(unlist(c(react$termini_marked, react$termini_selected)))
-    output$log_termini_marked <- renderPrint({ cat(sapply(react$termini_marked, function(s) paste0(s, ' (label: ', labels[[react$labels_name]][s], '; ', sum(react$termini == s), ' walks terminate here)')), sep = '\n') })
+    active <- as.character(input$input_termini_active_group)
+    react$termini_marked[[active]] <- unique(c(react$termini_marked[[active]], react$termini_selected))
+  })
+  ## Standalone (not nested in an observeEvent) so it also refreshes on
+  ## FIRE/RESET ALL, not just on marking.
+  output$log_termini_marked <- renderPrint({
+    groups <- react$termini_marked
+    if (length(groups) == 0) {
+      cat('(no terminal nodes marked yet)\n')
+    } else {
+      for (g in names(groups)) {
+        cat('Group ', g, ':\n', sep = '')
+        cat(sapply(groups[[g]], function(s) paste0('  ', s, ' (label: ', labels[[react$labels_name]][s], '; ', sum(react$termini == s), ' walks terminate here)')), sep = '\n')
+        cat('\n')
+      }
+    }
   })
 
   ## Gating layout pop-up
@@ -1598,14 +1620,26 @@ shiny_server <- function(input, output, session) {
   })
   ## TOOLTIPS ON HOVER
   addTooltip(session,
+             id    = 'input_termini_active_group',
+             title = 'Which metagroup PLUS/FIRE act on. Switch freely and mark more points into an earlier group at any time.',
+             trigger = 'hover',
+             options = list(delay = list(show=500))
+             )
+  addTooltip(session,
              id    = 'btn_termini_mark_termini',
-             title = 'Mark selected terminal nodes',
+             title = 'Mark selected terminal nodes into the active metagroup',
              trigger = 'hover',
              options = list(delay = list(show=500))
              )
   addTooltip(session,
              id    = 'btn_termini_clear_termini',
-             title = 'Clear marked terminal nodes',
+             title = 'Clear the active metagroup only',
+             trigger = 'hover',
+             options = list(delay = list(show=500))
+             )
+  addTooltip(session,
+             id    = 'btn_termini_reset_all_termini',
+             title = 'Clear every metagroup',
              trigger = 'hover',
              options = list(delay = list(show=500))
              )
@@ -1613,6 +1647,12 @@ shiny_server <- function(input, output, session) {
              id    = 'btn_termini_update_walks_by_termini',
              title = 'Classify walks',
              trigger = 'hover',     options = list(delay = list(show=500))
+             )
+  addTooltip(session,
+             id    = 'add1simplicis_tick',
+             title = 'Only relevant with more than one metagroup. Checked: bridge metagroups topologically (creates a temporary homology class per bridge). Unchecked: bridge them geometrically only, like termini within a single group.',
+             trigger = 'hover',
+             options = list(delay = list(show=500))
              )
   addTooltip(session,
              id    = 'btn_termini_export_image',
