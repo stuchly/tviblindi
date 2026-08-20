@@ -91,8 +91,13 @@ error at install time).
 
 ```
 sudo apt install libcgal-dev libboost-dev libeigen3-dev libgmp-dev libmpfr-dev \
-  libglpk-dev build-essential gfortran cmake
+  libglpk-dev libwebpmux3 build-essential gfortran cmake
 ```
+
+`libwebpmux3` isn't a CGAL/tviblindi dependency directly - it's needed for
+the R package `ragg` (pulled in transitively via `tidyverse`) to load at
+all. Without it, plotting fails with `unable to load shared object
+'.../ragg/libs/ragg.so': libwebpmux.so.3: cannot open shared object file`.
 
 One extra step on Debian/Ubuntu: their `libcgal-dev` package ships no
 compiled library (header-only by design), so a couple of CGAL symbols

@@ -67,6 +67,14 @@ whatever's current on Ubuntu:
 3. **`libglpk-dev`** is needed for `igraph` to load at all (`libglpk.so.40`
    missing otherwise) - not a `tviblindi`-specific issue, just an apt package
    that isn't pulled in by `libcgal-dev`/friends.
+4. **`libwebpmux3`** is needed for the R package `ragg` to load at all
+   (pulled in transitively via `tidyverse`, which `tviblindi` Depends on).
+   Without it, any Shiny plot fails with `unable to load shared object
+   '.../ragg/libs/ragg.so': libwebpmux.so.3: cannot open shared object
+   file` - found by actually launching the Shiny GUI and clicking into the
+   "Terminal nodes selection" / "Homology classes by persistence selection"
+   panels, not by any earlier compile or install step (`R CMD INSTALL`
+   succeeds fine without it - `ragg` only gets touched at plot-render time).
 
 ## `rocker/rstudio` vs. a conda-based image + RStudio Server
 
