@@ -1,0 +1,4 @@
+.git
+src/*.o
+src/*.so
+tviblindi_tmp

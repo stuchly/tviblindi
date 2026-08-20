@@ -18,6 +18,8 @@
 #'
 #' @docType data
 #'
+#' @name tviblindi_dyntoydata
+#'
 #' @usage data(tviblindi_dyntoydata)
 #'
 #' @format An object of class \code{"data.frame"}; First column group_id 

@@ -40,15 +40,27 @@ This includes a graphical user interface that enables the user to
 
 # Docker container
 
-(Apple Silicon is not supported for the time being: Mac compatibility is limited to Intel.)
-
 With Docker installed, run the following code in a Unix terminal.
+
+## Intel / amd64
 
 ```
 port=7777\
 data_path="path to data folder to mount"\
 rpassword="password for rstudio server (user=rstudio)"\
 docker run -it -d -p $port:8787 --name tviblindi_container -v $data_path:/data -e PASSWORD=$rpassword stuchly/tviblindi
+```
+
+## Apple Silicon / arm64
+
+A native `linux/arm64` image is also published as `stuchly/tviblindi:arm64`
+(includes RStudio Server and vaevictis):
+
+```
+port=7777\
+data_path="path to data folder to mount"\
+rpassword="password for rstudio server (user=rstudio)"\
+docker run -it -d --platform linux/arm64 -p $port:8787 --name tviblindi_container -v $data_path:/home/rstudio/work -e PASSWORD=$rpassword stuchly/tviblindi:arm64
 ```
 
 Then navigate to `localhost:7777` in your web browser.
@@ -58,15 +70,55 @@ Enter the default credentials when prompted (user: `rstudio`, password: `rpasswo
 
 # Direct installation
 
-Currently, *tviblindi* depends on the *CGAL* library version 4.14 (not higher).
+Supported on **macOS** and **Linux**. Windows is not supported — the CGAL/GUDHI/PHAT
+C++ toolchain this package builds on doesn't build cleanly there.
 
-See installation instructions [here](https://doc.cgal.org/4.14/Manual/installation.html) or follow the instructions below on Intel Macs.
+*tviblindi* depends on the *CGAL* library — no upper version pin, verified
+working from CGAL 5.6 through 6.2. GUDHI and PHAT are vendored (no separate
+install needed).
+
+## macOS
 
 ```
-brew tap-new CGAL/legacy
-brew extract --version=4.14 CGAL CGAL/legacy
-brew install CGAL/legacy/CGAL@4.14
+brew install cgal libomp
 ```
+
+`libomp` is required separately — `tviblindi`'s `configure` script checks for
+it explicitly (`brew install libomp` if you ever see a "libomp not found"
+error at install time).
+
+## Linux
+
+```
+sudo apt install libcgal-dev libboost-dev libeigen3-dev libgmp-dev libmpfr-dev \
+  libglpk-dev build-essential gfortran cmake
+```
+
+One extra step on Debian/Ubuntu: their `libcgal-dev` package ships no
+compiled library (header-only by design), so a couple of CGAL symbols
+(`CGAL::Random` and similar) need the `CGAL_HEADER_ONLY` preprocessor macro
+defined to compile without it:
+
+```
+sudo sed -i '15i #define CGAL_HEADER_ONLY 1' /usr/include/CGAL/config.h
+```
+
+`docker/linux-test/` in this repo is a working, verified reference for the
+whole Linux setup (RStudio Server included) if you'd rather use a container
+than replicate these steps by hand.
+
+## Both platforms
+
+If you end up on CGAL 5.x (not 6.x), also pin R's `BH` package to
+`1.87.0-1` or older:
+
+```r
+install.packages("https://cran.r-project.org/src/contrib/Archive/BH/BH_1.87.0-1.tar.gz", repos=NULL, type="source")
+```
+
+Newer `BH` bundles a Boost that dropped `boost::mpl::if_c`, which CGAL 5.x's
+headers still need. CGAL 6.x doesn't have this dependency, so skip this step
+if you're on 6.x.
 
 To install *tviblindi* in R, run
 

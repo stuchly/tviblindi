@@ -25,5 +25,5 @@
 returns an invisible tviblindi class object.
 }
 \description{
-\code{Som}
+\code{Cluster}
 }

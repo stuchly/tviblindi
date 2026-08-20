@@ -10,7 +10,8 @@ tviblindi(
   fcs_path = NULL,
   events_sel = NULL,
   keep_intermediate = FALSE,
-  analysis_name = paste0("tviblindi_", Sys.Date())
+  analysis_name = paste0("tviblindi_", Sys.Date()),
+  viz_data = NULL
 )
 }
 \arguments{
@@ -25,6 +26,13 @@ Alternatively, \code{labels} can be a named list of one or label vectors.}
 \item{events_sel}{integer vector (optional); the indices of data in fcs file, defaults to 'code{1:nor(data)}.}
 
 \item{keep_intermediate}{bool (default FALSE); if intermediate matrices (transition probability and spar distance matrix)}
+
+\item{viz_data}{numeric matrix or \code{Matrix::Matrix} (optional), same \code{nrow} as \code{data}; a
+display-only expression matrix used by the Shiny GUI and FCS export instead of \code{data} - e.g. true
+marker/gene expression when \code{data} itself is a PCA embedding used to drive the pipeline. Never read
+by \code{KNN}/\code{Denoise}/\code{Cluster}/\code{Som}/\code{Filtration}/\code{Pseudotime}/\code{Walks}/
+\code{DimRed}. Defaults to \code{data} when not supplied. May be a sparse \code{Matrix} (unlike \code{data},
+which must be a base matrix). See also \code{\link{Set_viz_data}}.}
 
 \item{ShowAllFate}{bool; if all teoretical fates (see \code{Walks}) should be stored and plotted
 should be kept during computation}
