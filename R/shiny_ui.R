@@ -207,27 +207,29 @@ shiny_ui <- fluidPage(
               color='#1d2c8f'
             )
           ),
-          column(
-            width = 4,
-            style = 'text-align:    left;
-                     pading-bottom: 10px',
-            ## Active metagroup: `+`/fire act on this group's membership only,
-            ## not a single flat pool - lets you build up a group's points
-            ## across several rectangular brushes, in any order, then switch
-            ## groups and do the same for the next one.
-            numericInput('input_termini_active_group', label = 'Group', min = 1, max = 99, value = 1, step = 1, width = '80px'),
-            actionButton('btn_termini_mark_termini',            '', icon = icon('glyphicon glyphicon-plus',      lib = 'glyphicon')),
-            actionButton('btn_termini_clear_termini',           '', icon = icon('glyphicon glyphicon-fire',      lib = 'glyphicon')),
-            actionButton('btn_termini_reset_all_termini',       '', icon = icon('glyphicon glyphicon-trash',     lib = 'glyphicon')),
-            HTML("&nbsp;&nbsp;&nbsp;&nbsp;"),
-            actionButton('btn_termini_update_walks_by_termini', '', icon = icon('glyphicon glyphicon-thumbs-up', lib = 'glyphicon'))
-          ),
-          column(
-            width = 8,
-            style = 'text-align:    right;
-                     padding-bottom: 10px',
-            actionButton('btn_termini_show_gating', '', icon = icon('glyphicon glyphicon-fullscreen', lib = 'glyphicon')),
-            actionButton('btn_termini_export_image',           '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon'))
+          fluidRow(
+            column(
+              width = 4,
+              style = 'text-align:    left;
+                       pading-bottom: 10px',
+              ## Active metagroup: `+`/fire act on this group's membership only,
+              ## not a single flat pool - lets you build up a group's points
+              ## across several rectangular brushes, in any order, then switch
+              ## groups and do the same for the next one.
+              numericInput('input_termini_active_group', label = 'Group', min = 1, max = 99, value = 1, step = 1, width = '80px'),
+              actionButton('btn_termini_mark_termini',            '', icon = icon('glyphicon glyphicon-plus',      lib = 'glyphicon')),
+              actionButton('btn_termini_clear_termini',           '', icon = icon('glyphicon glyphicon-fire',      lib = 'glyphicon')),
+              actionButton('btn_termini_reset_all_termini',       '', icon = icon('glyphicon glyphicon-trash',     lib = 'glyphicon')),
+              HTML("&nbsp;&nbsp;&nbsp;&nbsp;"),
+              actionButton('btn_termini_update_walks_by_termini', '', icon = icon('glyphicon glyphicon-thumbs-up', lib = 'glyphicon'))
+            ),
+            column(
+              width = 8,
+              style = 'text-align:    right;
+                       padding-bottom: 10px',
+              actionButton('btn_termini_show_gating', '', icon = icon('glyphicon glyphicon-fullscreen', lib = 'glyphicon')),
+              actionButton('btn_termini_export_image',           '', icon = icon('glyphicon glyphicon-picture',  lib = 'glyphicon'))
+            )
           ),
           HTML('&nbsp;&nbsp;'),
           checkboxInput('add1simplicis_tick', label = 'Add 1-simplices when bridging groups - experimental', value = FALSE),
