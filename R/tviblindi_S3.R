@@ -817,6 +817,7 @@ Copy.tviblindi<-function(x){
 #'
 #' @return  returns an invisible tviblindi class object.
 #'
+#' @rdname connectome
 #' @export
 Connectome<-function(x,...){
   UseMethod("Connectome",x)
