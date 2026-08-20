@@ -1,0 +1,30 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "Deconstructing Complexity: A Computational Topology Approach to Trajectory Inference in the Human Thymus with tviblindi",
+  author   = c(
+    person("Jan", "Stuchly"),
+    person("David", "Novak"),
+    person("Nadezda", "Brdickova"),
+    person("Petra", "Hadlova"),
+    person("Alzbeta", "Iksi"),
+    person("Daniela", "Kuzilkova"),
+    person("Michael", "Svaton"),
+    person("Ghaleb Ahmed", "Saad"),
+    person("Pierre", "Engel"),
+    person("Herve", "Luche"),
+    person("Ana E.", "Sousa"),
+    person("Afonso R. M.", "Almeida"),
+    person("Tomas", "Kalina")
+  ),
+  journal  = "bioRxiv",
+  year     = "2023",
+  doi      = "10.1101/2023.07.13.547329",
+  url      = "https://www.biorxiv.org/content/10.1101/2023.07.13.547329",
+  textVersion = paste(
+    "Stuchly J, Novak D, Brdickova N, Hadlova P, Iksi A, Kuzilkova D,",
+    "Svaton M, Saad GA, Engel P, Luche H, Sousa AE, Almeida ARM, Kalina T (2023).",
+    "\"Deconstructing Complexity: A Computational Topology Approach to Trajectory",
+    "Inference in the Human Thymus with tviblindi.\" bioRxiv.",
+    "doi:10.1101/2023.07.13.547329."
+  )
+)
