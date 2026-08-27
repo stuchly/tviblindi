@@ -542,7 +542,7 @@ shiny_server <- function(input, output, session) {
           theme(legend.position = 'none',
                 panel.background = element_rect(fill = '#f2f2f2',
                                                 colour = '#f2f2f2',
-                                                size = 0.5, linetype = 'solid'))
+                                                linewidth = 0.5, linetype = 'solid'))
         #
         # scale_size_continuous(range = c(.2, 8)) +
         # scale_colour_gradientn(colours = rainbow(5)) +
@@ -578,7 +578,7 @@ shiny_server <- function(input, output, session) {
         theme(legend.position = 'none',
               panel.background = element_rect(fill = '#f2f2f2',
                                               colour = '#f2f2f2',
-                                              size = 0.5, linetype = 'solid'))
+                                              linewidth = 0.5, linetype = 'solid'))
       if (react$persistence.death_on_x_axis) {
         g <- g + xlab('Death')
       } else {
@@ -717,7 +717,11 @@ shiny_server <- function(input, output, session) {
             png_dendrogram_plot <- dendrogram_plot$png
             dendrogram_plot     <- dendrogram_plot$regular
           }
-          plot(dendrogram_plot)
+          ## NOTE: deliberately no plot() here -- the ggplot object is returned
+          ## at the end of this render expression instead. renderPlot only builds
+          ## a data-coordinate coordmap (needed by brushedPoints) when the
+          ## expression RETURNS the ggplot; printing it here and returning NULL
+          ## makes Shiny fall back to a device-normalised [0,1] base coordmap.
         }
       })
       if (dendrogram_plotted && react$image_export.dendrogram) {
@@ -735,11 +739,12 @@ shiny_server <- function(input, output, session) {
         react$image_export.dendrogram <- FALSE
       }
     }
-    if (!dendrogram_plotted) {
+    if (dendrogram_plotted && !is.null(dendrogram_plot)) {
+      dendrogram_plot   # returned, so Shiny derives the brush coordmap from the ggplot
+    } else {
       .draw_placeholder()
+      NULL
     }
-
-
   })
 
   output$plot_dendrogram_zoom <- renderPlot({
@@ -794,12 +799,17 @@ shiny_server <- function(input, output, session) {
               react$dendrogram_zoom_redraw_highlights <- TRUE
             }
           }
-          plot(dendrogram_zoom_plot)
+          ## NOTE: deliberately no plot() here -- see output$plot_dendrogram.
+          ## renderPlot only builds a data-coordinate coordmap (which the brush
+          ## needs) when the expression RETURNS the ggplot object.
         }
       })
     }
-    if (!dendrogram_zoom_plotted) {
+    if (dendrogram_zoom_plotted && !is.null(dendrogram_zoom_plot)) {
+      dendrogram_zoom_plot
+    } else {
       .draw_placeholder(picture = 'petal')
+      NULL
     }
   })
 
@@ -1037,9 +1047,7 @@ shiny_server <- function(input, output, session) {
   })
 
   observeEvent(input$btn_dendrogram_zoom, {
-    df  <- data.frame(y = seq(0, 1, length.out = length(react$dendrogram_classes)))
-    pts <- brushedPoints(df, input$selector_dendrogram, yvar = 'y')
-    pts <- rev(as.numeric(rownames(pts)))
+    pts <- .brushed_leaf_idcs(input$selector_dendrogram, seq_along(react$dendrogram_classes))
     if (length(pts) < 2) {
       react$dendrogram_zoom_idcs      <- NULL
       react$dendrogram_zoom_ready     <- FALSE
@@ -1100,9 +1108,10 @@ shiny_server <- function(input, output, session) {
   output$log_dendrogram_selected <- renderPrint({
     if (any(c(!is.na(react$dendrogram), !is.na(react$dendrogram_zoom)))) {
       if (react$dendrogram_zoom_active) {
-        df      <- data.frame(y = seq(0, 1, length.out = length(react$dendrogram_zoom_classes)))
-        pts     <- brushedPoints(df, input$selector_dendrogram_zoom, yvar = 'y')
-        pts     <- rev(as.numeric(rownames(pts)))
+        ## The zoom plot renders leaves x_min..x_max of the full tree, while
+        ## dendrogram_zoom_classes is indexed 1..m over exactly that span.
+        zx      <- react$dendrogram_zoom_idcs
+        pts     <- if (is.null(zx)) integer(0) else .brushed_leaf_idcs(input$selector_dendrogram_zoom, zx[1]:zx[2])
         leaves  <- names(react$dendrogram_zoom_classes)[pts]
         #uniques                          <- which(!duplicated(leaves))
         react$dendrogram_selected_leaves <- leaves#[uniques]
@@ -1110,9 +1119,7 @@ shiny_server <- function(input, output, session) {
         react$dendrogram_selection       <- as.numeric(unlist(react$dendrogram_zoom_classes[pts]))#[uniques]
         sizes                            <- unlist(sapply(react$dendrogram_zoom_classes[pts], length))#[uniques]
       } else {
-        df      <- data.frame(y = seq(0, 1, length.out = length(react$dendrogram_classes)))
-        pts     <- brushedPoints(df, input$selector_dendrogram, yvar = 'y')
-        pts     <- rev(as.numeric(rownames(pts)))
+        pts     <- .brushed_leaf_idcs(input$selector_dendrogram, seq_along(react$dendrogram_classes))
         leaves  <- names(react$dendrogram_classes)[pts]
         #uniques                          <- which(!duplicated(leaves))
         react$dendrogram_selected_leaves <- leaves#[uniques]
