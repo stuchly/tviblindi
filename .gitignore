@@ -1,3 +1,5 @@
 *.o
 *.so
 *.dll
+Rplots.pdf
+.DS_Store

@@ -216,23 +216,46 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
         if (length(which_remove) > 0) { data$labels <- data$labels[-which_remove, ] }
     }
 
+    ## NOTE: top/bottom plot margins must NOT be negative. A negative vertical
+    ## margin makes the gtable panel taller than the device (shiny reports a
+    ## 1472.7 px panel on a 1450 px image), and shiny's coordmap arithmetic then
+    ## disagrees with where grid actually draws by exactly that overhang -- a
+    ## constant 0.4 cm = 22.2 px at 144 dpi, measured. Brush coordinates come back
+    ## shifted by 22.2/px_per_leaf leaves: 0.15 at n=9, 0.40 at n=24, 0.57 on a
+    ## short panel. That is the whole "worse on complex data / differs per
+    ## environment" symptom. Horizontal margins may be negative; they do not
+    ## affect the flipped brush axis.
+    ##
+    ## Pin the leaf axis to one slot per leaf, so the panel domain never moves.
+    ## Highlight rectangles below are real geometry drawn at leaf +/- 0.25; letting
+    ## them set the data range makes ggplot re-expand the scale whenever a highlight
+    ## touches the first or last leaf. The domain then shifts under a brush that was
+    ## already drawn in pixels, and selection chases a moving target. Leaves are at
+    ## x_min..x_max (1..n unless zoomed), so each occupies exactly [k-0.5, k+0.5].
+    ##
+    ## Deliberately NOT expand = FALSE: that would also zero the height axis, whose
+    ## expansion is the margin the hjust = 1 leaf labels are drawn into. The limits
+    ## alone are enough to fix the domain; the rects (+/- 0.25) stay inside +/- 0.5
+    ## and so are still drawn in full.
+    leaf_coord <- coord_flip(xlim = range(data$labels[, 1]) + c(-0.5, 0.5))
+
     p.png <- NULL
 
     if (make_png_dendrogram) {
         p.png <- ggplot(data$segments) + geom_segment(aes(x = x, y = y, xend = xend, yend = yend), lineend = 'round', linejoin = 'round',
-                                                      size = if (!is.null(zoom_idcs)) { 2 } else { 1 }) +
+                                                      linewidth = if (!is.null(zoom_idcs)) { 2 } else { 1 }) +
             geom_text(data = data$labels, aes(x, y - 0.01, label = label), hjust = 1, angle = 0, size = if (!is.null(zoom_idcs)) { 6 } else { 4.1 }) +
             cowplot::theme_nothing() +
-            theme(plot.margin = unit(c(-.2, -0.05, -.2, 0), 'cm')) +
-            coord_flip()
+            theme(plot.margin = unit(c(0, -0.05, 0, 0), 'cm')) +
+            leaf_coord
     }
 
     p.regular <- ggplot(data$segments) + geom_segment(aes(x = x, y = y, xend = xend, yend = yend), lineend = 'round', linejoin = 'round',
-                                                      size = if (!is.null(zoom_idcs)) { .8 } else { .5 }) +
+                                                      linewidth = if (!is.null(zoom_idcs)) { .8 } else { .5 }) +
         geom_text(data = data$labels, aes(x, y, label = label), hjust = 1, angle = 0, size = if (!is.null(zoom_idcs)) { 5.2 } else { 3.4 }) +
         cowplot::theme_nothing() +
-        theme(plot.margin = unit(c(-.2, 0, -.2, 0), 'cm')) +
-        coord_flip()
+        theme(plot.margin = unit(c(0, 0, 0, 0), 'cm')) +
+        leaf_coord
 
     if (!is.null(leaves_to_highlight.zoom) || (!is.null(leaves_to_highlight.A) || !is.null(leaves_to_highlight.B))) {
         branches           <- data.frame(tree_data$segments[tree_data$segments$yend == 0, ], label = tree_data$labels$label)
@@ -375,6 +398,43 @@ trajectories_dendrogram <- function(precomputed_dendrogram         = NULL,
                                             brother)
         assign(son, col, envir = pres)
     }
+}
+
+## Resolve which dendrogram leaves a y-direction brush covers.
+##
+## `leaf_x` are the data coordinates the leaves are actually drawn at, in the same
+## order as the classes vector the caller will index. The main plot draws leaves at
+## 1..n; the zoom plot draws leaves x_min..x_max of the full tree while its classes
+## vector is still indexed 1..m, so the two cannot be assumed to coincide. Returns
+## POSITIONS in `leaf_x` (i.e. classes-vector indices), never the coordinates.
+##
+## A leaf is selected when the brush covers its branch line -- plain containment,
+## no tolerance. That is only meaningful because two coordinate defects were fixed
+## first: the render now returns its ggplot (so the coordmap is in data space, not
+## a device-normalised [0,1]), and trajectories_dendrogram() pins the panel and
+## keeps its vertical plot margins non-negative (so brush coordinates are not
+## shifted by a constant pixel overhang). Any tolerance constant here would be
+## papering over a coordinate bug rather than fixing it.
+##
+## The one concession is the fallback: a brush thin enough to land entirely between
+## two branch lines covers nothing, and silently selecting nothing reads as a dead
+## click, so it resolves to the single nearest leaf. That is a UX choice about an
+## unambiguous case, not a fudge factor.
+##
+## Descending order, matching what the callers previously got from
+## rev(rownames(brushedPoints(...))).
+.brushed_leaf_idcs <- function(brush, leaf_x) {
+    if (is.null(brush) || is.null(brush$ymin) || is.null(brush$ymax)) return(integer(0))
+    if (length(leaf_x) == 0 || anyNA(leaf_x)) return(integer(0))
+    pos <- seq_along(leaf_x)
+    hit <- pos[leaf_x >= brush$ymin & leaf_x <= brush$ymax]
+    if (length(hit) == 0) {
+        centre <- (brush$ymin + brush$ymax) / 2
+        if (centre >= min(leaf_x) - 0.5 && centre <= max(leaf_x) + 0.5) {
+            hit <- pos[which.min(abs(leaf_x - centre))]
+        }
+    }
+    rev(hit)
 }
 
 .draw_placeholder <- function(picture = 'tree') {
@@ -729,7 +789,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     if (grey) {
         g <- g + theme(panel.background = element_rect(fill = '#f2f2f2',
                                                        colour = '#f2f2f2',
-                                                       size = 0.5, linetype = 'solid'))
+                                                       linewidth = 0.5, linetype = 'solid'))
     } else {
         g <- g + theme_minimal()
     }
@@ -820,7 +880,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     if (grey) {
         g <- g + theme(panel.background = element_rect(fill = '#f2f2f2',
                                                        colour = '#f2f2f2',
-                                                       size = 0.5, linetype = 'solid'))
+                                                       linewidth = 0.5, linetype = 'solid'))
     } else {
         g <- g + theme_minimal()
     }
@@ -911,7 +971,7 @@ fcs.add_col <- function(ff, new_col, colname = 'label') {
     if (grey) {
         g <- g + theme(panel.background = element_rect(fill = '#f2f2f2',
                                                        colour = '#f2f2f2',
-                                                       size = 0.5, linetype = 'solid'))
+                                                       linewidth = 0.5, linetype = 'solid'))
     } else {
         g <- g + theme_minimal()
     }
