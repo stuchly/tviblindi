@@ -42,7 +42,7 @@
 #'
 #' Set_origin(tv1,label = "M4",origin_name = "M4_hitting_time")
 #' Set_origin(tv1,label = "M4",origin_name = "M4_hitting_distance")
-
+#'
 #' KNN(tv1)
 #' Cluster(tv1,K=225) #kmeans clustering
 #' Filtration(tv1) #default setting is very conservative, less simplices could be created with same resolution (e.g. Filtration(tv1,alpha2=1))
@@ -52,6 +52,6 @@
 #'
 #' Pseudotime(tv1,weighted = TRUE,origin_name = "M4_hitting_distance")
 #' Walks(tv1,N=1000,origin_name = "M4_hitting_distance", K=15)
-
+#'
 #' launch_shiny(tv1)
 "tviblindi_dyntoydata"
