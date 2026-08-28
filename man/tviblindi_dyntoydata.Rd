@@ -33,7 +33,7 @@ data(tviblindi_dyntoydata)
 group_id<-tviblindi_dyntoydata[,1]
 datainput<-as.matrix(tviblindi_dyntoydata[,-1])
 tv1<-tviblindi(data=datainput,labels=group_id)
-DimRed(tv1)
+DimRed(tv1,epochs=5) # few epochs to keep the example quick; default is 100
 DimRed(tv1,method="umap")
 
 Set_origin(tv1,label = "M4",origin_name = "M4_hitting_time")
